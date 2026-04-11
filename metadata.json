@@ -1,0 +1,5 @@
+{
+  "name": "Architectural Lens",
+  "description": "A high-density, editorial analytics environment for managing data ingestion and schema bindings.",
+  "requestFramePermissions": []
+}
