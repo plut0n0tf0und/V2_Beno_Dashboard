@@ -22,7 +22,7 @@
 }
 
 .dsm-body {
-  @apply p-5 flex flex-col gap-5 overflow-y-auto no-scrollbar;
+  @apply p-5 flex flex-col gap-5 overflow-y-auto;
 }
 
 /* Section Components shared */
@@ -31,7 +31,7 @@
 }
 
 .dsm-section-header {
-  @apply flex items-center justify-between cursor-pointer group;
+  @apply flex items-center justify-between cursor-pointer;
 }
 
 .dsm-section-header-left {
@@ -68,7 +68,7 @@
 }
 
 .dsm-datasource-saved-item {
-  @apply flex items-center justify-between bg-surface-container-low border border-on-surface-variant/10 rounded-xl p-4 group hover:border-tertiary/30 transition-all;
+  @apply flex items-center justify-between bg-surface-container-low border border-on-surface-variant/10 rounded-xl p-4 hover:border-tertiary/30 transition-all;
 }
 
 .dsm-datasource-saved-icon {
@@ -145,7 +145,7 @@
 }
 
 .dsm-mapping-submit-btn {
-  @apply w-full py-3 rounded-xl bg-on-surface text-surface font-bold text-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-lg animate-in fade-in slide-in-from-bottom-2 duration-300;
+  @apply w-full py-3 rounded-xl bg-on-surface text-surface font-bold text-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-lg;
 }
 
 .dsm-mapping-cancel-btn {
