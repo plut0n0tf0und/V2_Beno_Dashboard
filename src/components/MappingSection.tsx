@@ -162,15 +162,6 @@ export default function MappingSection({
                       {editingChartId ? 'Update Mapping' : 'Select Label & Value'}
                     </button>
                   )}
-                  
-                  {editingChartId && (
-                    <button 
-                      onClick={onCancelEdit}
-                      className="w-full py-2 text-xs font-bold text-on-surface-variant hover:text-on-surface transition-colors uppercase tracking-widest mt-2"
-                    >
-                      Cancel Editing
-                    </button>
-                  )}
                 </div>
               )}
             </div>
