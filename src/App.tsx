@@ -1,27 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
+import Lenis from 'lenis';
 import HomeNavbar from './components/HomeNavbar';
 import ProjectNavbar from './components/ProjectNavbar';
 import Home from './pages/Home';
 import ProjectDetails from './pages/ProjectDetails';
 import PreviewDataSourceModal from './components/PreviewDataSourceModal';
-import DataSelectionModal from './components/DataSelectionModal';
 import EditNameModal from './components/EditNameModal';
-import { Page, Project, ChartConfig } from './types';
+import { Page, Project, ChartConfig, DataSource } from './types';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDataSelectionOpen, setIsDataSelectionOpen] = useState(false);
   const [isEditNameOpen, setIsEditNameOpen] = useState(false);
   const [editingChartId, setEditingChartId] = useState<string | null>(null);
   const [editingChartIdForMapping, setEditingChartIdForMapping] = useState<string | null>(null);
-  const [apiUrl, setApiUrl] = useState('');
+  const [dataSources, setDataSources] = useState<DataSource[]>([]);
+  const [selectedSourceId, setSelectedSourceId] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [isSourceSaved, setIsSourceSaved] = useState(false);
   const [charts, setCharts] = useState<ChartConfig[]>([]);
-  const [mappingConfig, setMappingConfig] = useState<{label: string, value: string, chartType?: string} | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -31,6 +29,29 @@ export default function App() {
       document.documentElement.classList.remove('dark');
     }
   }, [isDarkMode]);
+
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      infinite: false,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
 
   const handleNavigate = (page: Page) => {
     setCurrentPage(page);
@@ -42,43 +63,47 @@ export default function App() {
     setCurrentPage('project-details');
   };
 
-  const handlePreviewData = (url: string) => {
-    setApiUrl(url);
-    setIsModalOpen(true);
+  const handleAddSource = (url: string, name: string) => {
+    const newSource: DataSource = {
+      id: Math.random().toString(36).substr(2, 9),
+      name,
+      url,
+      type: 'API'
+    };
+    setDataSources(prev => [...prev, newSource]);
+    setSelectedSourceId(newSource.id);
   };
 
   const handleConfirmMapping = () => {
     setIsModalOpen(false);
-    setIsSourceSaved(true);
   };
 
-  const handleOpenDataSelection = (config: {chartType: string, label: string, value: string}) => {
-    setMappingConfig(config);
-    setIsDataSelectionOpen(true);
+  const handleDeleteSource = (id: string) => {
+    setDataSources(prev => prev.filter(s => s.id !== id));
+    if (selectedSourceId === id) {
+      setSelectedSourceId(null);
+    }
   };
 
-  const handleCreateChart = (name: string, data: any[]) => {
-    setIsDataSelectionOpen(false);
-    if (!mappingConfig) return;
-    
+  const handleCreateChart = (name: string, data: any[], config: {chartType: string, label: string, value: string}) => {
     if (editingChartIdForMapping) {
       setCharts(prev => prev.map(c => c.id === editingChartIdForMapping ? {
         ...c,
         name,
-        type: mappingConfig.chartType || c.type,
+        type: config.chartType || c.type,
         data,
-        labelField: mappingConfig.label,
-        valueField: mappingConfig.value
+        labelField: config.label,
+        valueField: config.value
       } : c));
       setEditingChartIdForMapping(null);
     } else {
       const newChart: ChartConfig = {
         id: Math.random().toString(36).substr(2, 9),
         name,
-        type: mappingConfig.chartType || 'Bar Chart',
+        type: config.chartType || 'Bar Chart',
         data,
-        labelField: mappingConfig.label,
-        valueField: mappingConfig.value
+        labelField: config.label,
+        valueField: config.value
       };
       setCharts(prev => [...prev, newChart]);
     }
@@ -136,14 +161,17 @@ export default function App() {
           {currentPage === 'project-details' && selectedProject && (
             <ProjectDetails 
               project={selectedProject} 
-              onPreviewData={handlePreviewData}
-              isSourceSaved={isSourceSaved}
-              onOpenDataSelection={handleOpenDataSelection}
+              onAddSource={handleAddSource}
+              dataSources={dataSources}
+              selectedSourceId={selectedSourceId}
+              onSelectSource={setSelectedSourceId}
+              onCreateChart={handleCreateChart}
               charts={charts}
               onEditName={handleEditName}
               onEditMapping={handleEditMapping}
               onReorder={handleReorderCharts}
               editingChartId={editingChartIdForMapping || undefined}
+              onDeleteSource={handleDeleteSource}
             />
           )}
 
@@ -154,16 +182,7 @@ export default function App() {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onConfirm={handleConfirmMapping}
-        apiUrl={apiUrl}
-      />
-
-      <DataSelectionModal 
-        isOpen={isDataSelectionOpen}
-        onClose={() => { setIsDataSelectionOpen(false); setEditingChartIdForMapping(null); }}
-        onConfirm={handleCreateChart}
-        labelField={mappingConfig?.label || ''}
-        valueField={mappingConfig?.value || ''}
-        initialName={editingChartIdForMapping ? charts.find(c => c.id === editingChartIdForMapping)?.name : ''}
+        apiUrl={dataSources.find(s => s.id === selectedSourceId)?.url || ''}
       />
 
       <EditNameModal 

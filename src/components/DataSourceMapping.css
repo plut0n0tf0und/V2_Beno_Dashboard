@@ -1,0 +1,153 @@
+
+/* Modal Overlay & Container */
+.dsm-overlay {
+  @apply fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-sm transition-all;
+}
+
+.dsm-modal {
+  @apply bg-surface-container-low w-full max-w-xl rounded-3xl shadow-2xl flex flex-col overflow-hidden;
+  max-height: 90vh;
+}
+
+.dsm-header {
+  @apply flex items-center justify-between p-5 border-b border-on-surface-variant/10 bg-surface-container;
+}
+
+.dsm-header-title {
+  @apply font-headline text-lg font-bold text-on-surface;
+}
+
+.dsm-close-btn {
+  @apply p-2 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-on-surface-variant/10 transition-colors;
+}
+
+.dsm-body {
+  @apply p-5 flex flex-col gap-5 overflow-y-auto no-scrollbar;
+}
+
+/* Section Components shared */
+.dsm-section-card {
+  @apply bg-surface-container rounded-2xl p-4 sm:p-6 flex flex-col gap-4 shadow-sm transition-all duration-300;
+}
+
+.dsm-section-header {
+  @apply flex items-center justify-between cursor-pointer group;
+}
+
+.dsm-section-header-left {
+  @apply flex items-center gap-4;
+}
+
+.dsm-section-number {
+  @apply w-8 h-8 rounded-full bg-on-surface-variant/20 flex items-center justify-center font-bold text-sm text-on-surface;
+}
+
+.dsm-section-title {
+  @apply font-headline text-base sm:text-lg font-bold text-on-surface group-hover:text-tertiary transition-colors;
+}
+
+.dsm-section-add-btn {
+  @apply bg-on-surface-variant/10 hover:bg-on-surface-variant/20 text-on-surface px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 transition-all;
+}
+
+.dsm-section-subtitle {
+  @apply text-[10px] font-medium text-on-surface-variant/40 uppercase tracking-wider;
+}
+
+.dsm-section-content {
+  @apply pt-2 space-y-4;
+}
+
+/* Add Data Source specific */
+.dsm-datasource-saved-container {
+  @apply space-y-4;
+}
+
+.dsm-datasource-saved-label {
+  @apply font-body text-[10px] font-bold text-on-surface-variant uppercase tracking-widest;
+}
+
+.dsm-datasource-saved-item {
+  @apply flex items-center justify-between bg-surface-container-low border border-on-surface-variant/10 rounded-xl p-4 group hover:border-tertiary/30 transition-all;
+}
+
+.dsm-datasource-saved-icon {
+  @apply w-8 h-8 rounded-lg bg-tertiary/10 flex items-center justify-center;
+}
+
+.dsm-datasource-input-label {
+  @apply font-body text-sm font-semibold text-on-surface tracking-tight;
+}
+
+.dsm-datasource-input-sublabel {
+  @apply text-[10px] font-bold uppercase tracking-widest text-on-surface-variant;
+}
+
+.dsm-datasource-input {
+  @apply w-full bg-surface-container-low border border-on-surface-variant/10 rounded-lg py-2.5 px-4 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-tertiary/20 transition-all outline-none;
+}
+
+.dsm-button-primary {
+  @apply w-full py-2.5 rounded-lg font-bold text-sm transition-all shadow-sm bg-on-surface text-surface hover:opacity-90 active:scale-[0.98];
+}
+
+.dsm-button-disabled {
+  @apply w-full py-2.5 rounded-lg font-bold text-sm transition-all shadow-sm bg-on-surface-variant/20 text-on-surface-variant cursor-not-allowed;
+}
+
+/* Mapping specific */
+.dsm-mapping-highlight {
+  @apply ring-4 ring-tertiary shadow-[0_0_50px_-12px_rgba(var(--color-tertiary),0.5)] bg-surface-container-high;
+}
+
+.dsm-mapping-empty {
+  @apply h-24 flex items-center justify-center border-2 border-dashed border-on-surface-variant/10 rounded-xl;
+}
+
+.dsm-mapping-empty-text {
+  @apply text-xs text-on-surface-variant font-medium text-center px-4;
+}
+
+.dsm-mapping-container {
+  @apply space-y-6 border border-on-surface-variant/10 rounded-2xl p-5 bg-surface-container-low;
+}
+
+.dsm-mapping-field-label {
+  @apply text-[10px] font-bold uppercase tracking-widest text-on-surface;
+}
+
+.dsm-mapping-select-wrapper {
+  @apply relative;
+}
+
+.dsm-mapping-select {
+  @apply w-full border border-on-surface-variant/10 rounded-xl py-3 px-4 text-sm appearance-none outline-none focus:ring-2 focus:ring-tertiary/20 font-medium transition-all;
+}
+
+.dsm-mapping-select-enabled {
+  @apply bg-surface-container-highest text-on-surface;
+}
+
+.dsm-mapping-select-disabled {
+  @apply bg-on-surface-variant/5 text-on-surface-variant/40 cursor-not-allowed;
+}
+
+.dsm-mapping-divider {
+  @apply h-[1px] bg-on-surface-variant/10;
+}
+
+.dsm-mapping-tip {
+  @apply text-[10px] text-on-surface-variant leading-relaxed;
+}
+
+.dsm-mapping-subfield-label {
+  @apply text-sm font-semibold text-on-surface;
+}
+
+.dsm-mapping-submit-btn {
+  @apply w-full py-3 rounded-xl bg-on-surface text-surface font-bold text-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-lg animate-in fade-in slide-in-from-bottom-2 duration-300;
+}
+
+.dsm-mapping-cancel-btn {
+  @apply w-full py-2 text-xs font-bold text-on-surface-variant hover:text-on-surface transition-colors uppercase tracking-widest mt-2;
+}

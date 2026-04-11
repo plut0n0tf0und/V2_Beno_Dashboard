@@ -7,7 +7,6 @@ interface BentoChartProps {
   config: ChartConfig;
   onEditName: (id: string) => void;
   onEditMapping: (id: string) => void;
-  onEditMapping: (id: string) => void;
   onMaximize: (id: string) => void;
   isEditing?: boolean;
 }

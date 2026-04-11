@@ -12,6 +12,7 @@ export interface Project {
 export interface DataSource {
   id: string;
   name: string;
+  url: string;
   type: string;
 }
 
