@@ -28,8 +28,7 @@ const BentoCard: React.FC<BentoCardProps> = ({
   return (
     <motion.article
       whileHover={{ y: -2 }}
-      onClick={onClick}
-      className={`bg-surface-container rounded-xl p-6 flex flex-col group hover:bg-surface-container-high transition-all duration-300 relative overflow-hidden cursor-pointer ${className}`}
+      className={`bg-surface-container rounded-xl p-6 flex flex-col group hover:bg-surface-container-high transition-all duration-300 relative overflow-hidden ${className}`}
     >
       <header className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-2 text-on-surface-variant">

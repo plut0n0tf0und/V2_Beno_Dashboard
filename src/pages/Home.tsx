@@ -50,8 +50,11 @@ export default function Home({ onProjectClick }: HomeProps) {
               <Filter className="w-4 h-4" />
             </button>
 
-            <button className="bg-on-surface text-surface font-bold py-2 px-5 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-lg whitespace-nowrap text-sm">
-              <Plus className="w-4 h-4" />
+            <button 
+              onClick={() => onProjectClick(mockProjects[0])}
+              className="bg-on-surface text-surface font-bold py-2 px-5 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-lg whitespace-nowrap text-sm"
+            >
+              <Plus className="w-4 h-4" strokeWidth={3} />
               <span>New Project</span>
             </button>
           </div>
@@ -69,7 +72,7 @@ export default function Home({ onProjectClick }: HomeProps) {
             dashboardCount={project.dashboardCount}
             isActive={project.isActive}
             image={project.image}
-            onClick={() => onProjectClick(project)}
+            onClick={() => {}}
           />
         ))}
       </main>

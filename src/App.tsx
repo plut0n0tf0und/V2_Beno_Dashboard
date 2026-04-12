@@ -21,7 +21,7 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [charts, setCharts] = useState<ChartConfig[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  //say something
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -85,7 +85,7 @@ export default function App() {
     }
   };
 
-  const handleCreateChart = (name: string, data: any[], config: {chartType: string, label: string, value: string}) => {
+  const handleCreateChart = (name: string, data: any[], config: { chartType: string, label: string, value: string }) => {
     if (editingChartIdForMapping) {
       setCharts(prev => prev.map(c => c.id === editingChartIdForMapping ? {
         ...c,
@@ -136,31 +136,31 @@ export default function App() {
   return (
     <div className="min-h-screen bg-surface-container-low transition-colors duration-300">
       {showSidebar && <Sidebar activePage={currentPage} onNavigate={handleNavigate} isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />}
-      
+
       <div className={`${showSidebar ? 'lg:pl-64' : ''} flex flex-col min-h-screen`}>
         {currentPage === 'home' ? (
-          <HomeNavbar 
-            isDarkMode={isDarkMode} 
-            onToggleDarkMode={toggleDarkMode} 
+          <HomeNavbar
+            isDarkMode={isDarkMode}
+            onToggleDarkMode={toggleDarkMode}
             onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           />
         ) : (
-          <ProjectNavbar 
-            isDarkMode={isDarkMode} 
-            onToggleDarkMode={toggleDarkMode} 
-            onGoHome={() => handleNavigate('home')} 
+          <ProjectNavbar
+            isDarkMode={isDarkMode}
+            onToggleDarkMode={toggleDarkMode}
+            onGoHome={() => handleNavigate('home')}
             onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           />
         )}
-        
+
         <main className="flex-grow pt-20 px-4 sm:px-6 lg:px-8 max-w-[1600px] mx-auto w-full">
           {currentPage === 'home' && (
             <Home onProjectClick={handleProjectClick} />
           )}
-          
+
           {currentPage === 'project-details' && selectedProject && (
-            <ProjectDetails 
-              project={selectedProject} 
+            <ProjectDetails
+              project={selectedProject}
               onAddSource={handleAddSource}
               dataSources={dataSources}
               selectedSourceId={selectedSourceId}
@@ -178,14 +178,14 @@ export default function App() {
         </main>
       </div>
 
-      <PreviewDataSourceModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <PreviewDataSourceModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirmMapping}
         apiUrl={dataSources.find(s => s.id === selectedSourceId)?.url || ''}
       />
 
-      <EditNameModal 
+      <EditNameModal
         isOpen={isEditNameOpen}
         onClose={() => setIsEditNameOpen(false)}
         initialName={charts.find(c => c.id === editingChartId)?.name || ''}
