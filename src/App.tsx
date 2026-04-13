@@ -21,7 +21,7 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [charts, setCharts] = useState<ChartConfig[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  //who you
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -138,7 +138,7 @@ export default function App() {
       return chart;
     }));
   };
-  
+
   const handleDeleteChart = (id: string) => {
     setCharts(prev => prev.filter(c => c.id !== id));
   };
@@ -210,11 +210,11 @@ export default function App() {
 
       {/* Background Decoration - Optimized for smooth scroll */}
       <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden bg-surface-container-lowest">
-        <div 
+        <div
           className="absolute -top-1/4 -right-1/4 w-[800px] h-[800px] bg-tertiary/5 blur-[120px] rounded-full will-change-transform"
           style={{ transform: 'translateZ(0)' }}
         ></div>
-        <div 
+        <div
           className="absolute -bottom-1/4 -left-1/4 w-[600px] h-[600px] bg-primary/5 blur-[100px] rounded-full will-change-transform"
           style={{ transform: 'translateZ(0)' }}
         ></div>
