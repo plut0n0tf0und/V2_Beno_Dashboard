@@ -1,4 +1,5 @@
 import { Search, Bell, Globe, Sun, Moon, HelpCircle, ChevronDown, Menu } from 'lucide-react';
+import ProfilePopup from './ProfilePopup';
 
 interface HomeNavbarProps {
   isDarkMode: boolean;
@@ -18,8 +19,8 @@ export default function HomeNavbar({ isDarkMode, onToggleDarkMode, onToggleSideb
           <Menu className="w-6 h-6" />
         </button>
 
-        {/* Logo */}
-        <div className="text-on-surface">
+        {/* Logo — desktop only */}
+        <div className="hidden sm:block text-on-surface">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
           </svg>
@@ -59,14 +60,14 @@ export default function HomeNavbar({ isDarkMode, onToggleDarkMode, onToggleSideb
             <HelpCircle className="w-5 h-5" />
           </button>
           
-          <button className="p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-full hover:bg-surface-container relative">
+          <button className="hidden sm:flex p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-full hover:bg-surface-container relative">
             <Bell className="w-5 h-5" />
           </button>
 
           {/* Modern Theme Toggle */}
           <button 
             onClick={onToggleDarkMode}
-            className="flex items-center bg-surface-container p-1 rounded-full hover:bg-surface-container-high transition-all"
+            className="hidden sm:flex items-center bg-surface-container p-1 rounded-full hover:bg-surface-container-high transition-all"
           >
             <div className={`p-1 rounded-full transition-all ${!isDarkMode ? 'bg-tertiary text-surface' : 'text-on-surface-variant'}`}>
               <Sun className="w-3 h-3" />
@@ -78,14 +79,7 @@ export default function HomeNavbar({ isDarkMode, onToggleDarkMode, onToggleSideb
         </div>
 
         {/* Profile */}
-        <div className="w-8 h-8 rounded-full overflow-hidden border border-on-surface-variant/20 cursor-pointer hover:border-tertiary transition-colors">
-          <img 
-            src="https://picsum.photos/seed/user/100/100" 
-            alt="User" 
-            className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
-          />
-        </div>
+        <ProfilePopup isDarkMode={isDarkMode} onToggleDarkMode={onToggleDarkMode} />
       </div>
     </nav>
   );

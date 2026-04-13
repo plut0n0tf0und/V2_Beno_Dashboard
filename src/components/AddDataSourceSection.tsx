@@ -104,7 +104,7 @@ export default function AddDataSourceSection({
   };
 
   return (
-    <div className="w-full bg-surface-container rounded-[2rem] p-6 lg:p-10 flex flex-col gap-6 lg:gap-10 shadow-sm transition-all duration-500">
+    <div className="w-full bg-surface-container rounded-[2rem] p-4 lg:p-10 flex flex-col gap-4 lg:gap-10 shadow-sm transition-all duration-500">
       <div 
         className="flex items-center justify-between cursor-pointer group"
         onClick={() => setIsSourceOpen(!isSourceOpen)}
@@ -151,7 +151,7 @@ export default function AddDataSourceSection({
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
             className="overflow-visible pb-4"
           >
-            <div className="space-y-6 pt-4">
+            <div className="space-y-3 pt-3">
               {/* Added Data Source Container */}
               {dataSources.length > 0 && (
                 <div className="space-y-4">
@@ -245,69 +245,71 @@ export default function AddDataSourceSection({
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="space-y-4 pt-4 border-t border-on-surface-variant/5"
+                    className="space-y-3 pt-3 border-t border-on-surface-variant/5"
                   >
-                    <p className="font-body text-base font-bold text-on-surface tracking-tight">Connect New API</p>
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold uppercase tracking-widest text-on-surface-variant">
+                    <p className="font-body text-sm font-bold text-on-surface tracking-tight">Connect New API</p>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
                         Enter API URL *
                       </label>
-                      <div className="relative group">
-                        <input 
-                          type="text" 
-                          value={newUrl}
-                          onChange={(e) => setNewUrl(e.target.value)}
-                          placeholder="https://api.yoursite.com/v1/users" 
-                          className="w-full bg-surface-container-low border border-on-surface-variant/10 rounded-lg py-3 px-4 pr-28 text-base text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-tertiary/20 transition-all outline-none leading-normal"
-                        />
-                        <button
-                          onClick={handlePreviewData}
-                          disabled={!isUrlValid || isLoading}
-                          className={`absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 rounded-lg text-sm font-medium transition-all
-                            ${(isUrlValid && !isLoading)
-                              ? 'text-tertiary hover:bg-tertiary/10 active:bg-tertiary/20'
-                              : 'text-on-surface-variant/30 cursor-not-allowed'
-                            }`}
-                        >
-                          {isLoading ? (
-                            <span className="flex items-center gap-1.5">
-                              <span className="w-3.5 h-3.5 border-2 border-tertiary/30 border-t-tertiary rounded-full animate-spin" />
-                            </span>
-                          ) : (
-                            'Preview'
-                          )}
-                        </button>
-                      </div>
+                      <input 
+                        type="text" 
+                        value={newUrl}
+                        onChange={(e) => setNewUrl(e.target.value)}
+                        placeholder="https://api.yoursite.com/v1/users" 
+                        className="w-full bg-surface-container-low border border-on-surface-variant/10 rounded-xl py-2.5 px-3 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-tertiary/20 transition-all outline-none leading-normal"
+                      />
+                      <button
+                        onClick={handlePreviewData}
+                        disabled={!isUrlValid || isLoading}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border transition-all
+                          ${(isUrlValid && !isLoading)
+                            ? 'border-tertiary/40 text-tertiary hover:bg-tertiary/10 active:scale-95'
+                            : 'border-on-surface-variant/10 text-on-surface-variant/30 cursor-not-allowed'
+                          }`}
+                      >
+                        {isLoading ? (
+                          <>
+                            <span className="w-3.5 h-3.5 border-2 border-tertiary/30 border-t-tertiary rounded-full animate-spin" />
+                            Loading...
+                          </>
+                        ) : (
+                          <>
+                            <Search className="w-3.5 h-3.5" />
+                            Preview Data
+                          </>
+                        )}
+                      </button>
                     </div>
                     
                     {/* JSON Preview Container */}
                     {(previewData !== null || previewError !== null) && (
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold uppercase tracking-widest text-on-surface-variant">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
                           Data Preview
                         </label>
-                        <div className="bg-surface-container-highest border border-on-surface-variant/10 rounded-xl p-4 max-h-[200px] overflow-y-auto">
+                        <div className="bg-surface-container-highest border border-on-surface-variant/10 rounded-xl p-3 max-h-[160px] overflow-y-auto">
                           {previewError ? (
-                            <div className="text-red-400 text-sm font-mono">
-                              Error: {previewError}
-                            </div>
+                            <div className="text-red-400 text-xs font-mono">Error: {previewError}</div>
                           ) : (
-                            <pre className="text-sm text-on-surface font-mono whitespace-pre-wrap leading-normal">
+                            <pre className="text-xs text-on-surface font-mono whitespace-pre-wrap leading-normal">
                               {JSON.stringify(previewData, null, 2)}
                             </pre>
                           )}
                         </div>
                       </div>
                     )}
-                    
+
                     {/* Confirmation Checkbox */}
-                    <div className="pt-2 flex items-start gap-3">
+                    <div className="flex items-start gap-2.5">
                       <div 
-                        onClick={() => setIsConfirmed(!isConfirmed)}
-                        className={`w-5 h-5 rounded border-2 mt-0.5 cursor-pointer flex items-center justify-center transition-all flex-shrink-0 ${
-                          isConfirmed 
-                            ? 'bg-tertiary border-tertiary' 
-                            : 'border-on-surface-variant/30 hover:border-tertiary'
+                        onClick={() => previewData && setIsConfirmed(!isConfirmed)}
+                        className={`w-5 h-5 rounded border-2 mt-0.5 flex items-center justify-center transition-all flex-shrink-0 ${
+                          !previewData
+                            ? 'border-on-surface-variant/15 bg-on-surface-variant/5 cursor-not-allowed opacity-40'
+                            : isConfirmed
+                              ? 'bg-tertiary border-tertiary cursor-pointer'
+                              : 'border-on-surface-variant/30 hover:border-tertiary cursor-pointer'
                         }`}
                       >
                         {isConfirmed && (
@@ -317,32 +319,33 @@ export default function AddDataSourceSection({
                         )}
                       </div>
                       <label 
-                        onClick={() => setIsConfirmed(!isConfirmed)}
-                        className="text-base text-on-surface cursor-pointer select-none leading-normal"
+                        onClick={() => previewData && setIsConfirmed(!isConfirmed)}
+                        className={`text-sm select-none leading-normal transition-colors ${previewData ? 'text-on-surface cursor-pointer' : 'text-on-surface-variant/40 cursor-not-allowed'}`}
                       >
                         I am able to view the data from the Source.
                       </label>
                     </div>
-                    
-                    <button 
-                      onClick={() => {
-                        onAddSource(newUrl, extractSourceName(newUrl));
-                        setNewUrl('');
-                        setIsConfirmed(false);
-                        setPreviewData(null);
-                        setPreviewError(null);
-                        setIsAdding(false);
-                      }}
-                      disabled={!canAddSource}
-                      className={`w-full h-12 rounded-xl font-medium text-base transition-all duration-200 
-                        shadow-[0_2px_8px_rgba(0,0,0,0.12)] 
-                        ${canAddSource 
-                          ? 'bg-on-surface text-surface shadow-[0_4px_16px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.3)] hover:brightness-110 active:shadow-[0_2px_8px_rgba(0,0,0,0.2)] active:translate-y-[1px] focus:ring-2 focus:ring-tertiary/40 focus:ring-offset-2 focus:ring-offset-surface-container' 
-                          : 'bg-on-surface-variant/20 text-on-surface-variant/50 cursor-not-allowed shadow-none'
-                        }`}
-                    >
-                      Add Data Source
-                    </button>
+
+                    <div className="flex justify-end">
+                      <button 
+                        onClick={() => {
+                          onAddSource(newUrl, extractSourceName(newUrl));
+                          setNewUrl('');
+                          setIsConfirmed(false);
+                          setPreviewData(null);
+                          setPreviewError(null);
+                          setIsAdding(false);
+                        }}
+                        disabled={!canAddSource}
+                        className={`px-10 py-2.5 rounded-full font-bold text-sm uppercase tracking-widest transition-all shadow-lg
+                          ${canAddSource 
+                            ? 'bg-on-surface text-surface hover:opacity-90 hover:shadow-xl active:scale-[0.97]' 
+                            : 'bg-on-surface-variant/20 text-on-surface-variant/50 cursor-not-allowed shadow-none'
+                          }`}
+                      >
+                        Add Data Source
+                      </button>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>

@@ -153,27 +153,26 @@
 }
 .react-grid-item > .react-resizable-handle {
   position: absolute;
-  width: 30px;
-  height: 30px;
-  bottom: 0;
-  right: 0;
+  width: 20px;
+  height: 20px;
+  bottom: 4px;
+  right: 4px;
   cursor: se-resize;
-  z-index: 10;
+  z-index: 70;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.react-grid-item:hover > .react-resizable-handle {
+  opacity: 1;
 }
 .react-grid-item > .react-resizable-handle::after {
   content: "";
   position: absolute;
-  right: 12px;
-  bottom: 12px;
-  width: 8px;
-  height: 8px;
-  border-right: 2px solid var(--color-tertiary);
-  border-bottom: 2px solid var(--color-tertiary);
-  opacity: 0;
-  transition: all 0.3s;
-}
-.react-grid-item:hover > .react-resizable-handle::after {
-  opacity: 0.5;
-  right: 10px;
-  bottom: 10px;
+  right: 2px;
+  bottom: 2px;
+  width: 10px;
+  height: 10px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M9 1L1 9' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M9 5L5 9' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
 }

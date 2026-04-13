@@ -18,16 +18,14 @@ interface MappingSectionProps {
   isDataSelectionOpen: boolean;
   setIsDataSelectionOpen: (open: boolean) => void;
   isSelectionEnabled: boolean;
-  initialName?: string;
-  onConfirm: (chartName: string, selectedData: any[]) => void;
   editingChartId?: string;
   highlightMapping: boolean;
   chartTypes: string[];
   labelFields: string[];
   valueFields: string[];
-  paddingTop?: number;
   dataSelectionRef?: React.RefObject<HTMLDivElement | null>;
   onCancelEdit: () => void;
+  onContinue: (selectedData: any[]) => void;
 }
 
 export default function MappingSection({
@@ -44,33 +42,32 @@ export default function MappingSection({
   isDataSelectionOpen,
   setIsDataSelectionOpen,
   isSelectionEnabled,
-  initialName,
-  onConfirm,
   editingChartId,
   highlightMapping,
   chartTypes,
   labelFields,
   valueFields,
   dataSelectionRef,
-  onCancelEdit
+  onCancelEdit,
+  onContinue,
 }: MappingSectionProps) {
   return (
-    <motion.div 
-      animate={highlightMapping ? { 
-        scale: [1, 1.05, 1], 
+    <motion.div
+      animate={highlightMapping ? {
+        scale: [1, 1.05, 1],
         boxShadow: [
-          "0 0 0px rgba(var(--color-tertiary), 0)", 
-          "0 0 40px rgba(var(--color-tertiary), 0.4)", 
+          "0 0 0px rgba(var(--color-tertiary), 0)",
+          "0 0 40px rgba(var(--color-tertiary), 0.4)",
           "0 0 0px rgba(var(--color-tertiary), 0)"
-        ] 
+        ]
       } : {}}
       transition={{ duration: 1, repeat: highlightMapping ? Infinity : 0 }}
-      className={`w-full bg-surface-container rounded-[2rem] p-5 lg:p-8 flex flex-col gap-6 lg:gap-8 shadow-sm transition-all duration-500 relative z-[70] ${highlightMapping ? 'ring-4 ring-tertiary shadow-[0_0_50px_-12px_rgba(var(--color-tertiary),0.5)] bg-surface-container-high' : ''}`}
+      className={`w-full bg-surface-container rounded-[2rem] p-4 lg:p-8 flex flex-col gap-4 lg:gap-8 shadow-sm transition-all duration-500 relative z-[70] ${highlightMapping ? 'ring-4 ring-tertiary shadow-[0_0_50px_-12px_rgba(var(--color-tertiary),0.5)] bg-surface-container-high' : ''}`}
     >
       {highlightMapping && (
         <div className="absolute -inset-2 bg-tertiary/5 rounded-[22px] -z-10 animate-pulse" />
       )}
-      <div 
+      <div
         className="flex items-center justify-between cursor-pointer group"
         onClick={() => setIsMappingOpen(!isMappingOpen)}
       >
@@ -84,46 +81,44 @@ export default function MappingSection({
           <ChevronDown className="w-5 h-5 text-on-surface-variant" />
         )}
       </div>
-      
+
       <AnimatePresence initial={false}>
         {isMappingOpen && (
-          <motion.div 
+          <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
             className="overflow-visible pb-4"
           >
-            <div className="pt-4">
+            <div className="pt-2">
               {!isMappingEnabled ? (
                 <div className="h-24 flex items-center justify-center border-2 border-dashed border-on-surface-variant/10 rounded-xl">
                   <span className="text-sm text-on-surface-variant font-medium text-center px-4 leading-normal">Add data source first to start mapping</span>
                 </div>
               ) : (
-                <div className="space-y-8 border border-on-surface-variant/10 rounded-[2rem] p-6 lg:p-8 bg-surface-container-low pb-8">
+                <div className="flex flex-col gap-4 border border-on-surface-variant/10 rounded-2xl p-4 lg:p-8 bg-surface-container-low">
                   {/* Chart Type */}
-                  <div className="space-y-4">
-                    <CustomDropdown 
-                      headerLabel="1. CHART TYPE"
-                      options={chartTypes}
-                      value={selectedChart}
-                      onChange={setSelectedChart}
-                      placeholder="Select a type of chart"
-                    />
-                  </div>
+                  <CustomDropdown
+                    headerLabel="1. CHART TYPE"
+                    options={chartTypes}
+                    value={selectedChart}
+                    onChange={setSelectedChart}
+                    placeholder="Select a type of chart"
+                  />
 
-                  <div className="h-[1px] bg-on-surface-variant/10" />
+                  <div className="h-px bg-on-surface-variant/10" />
 
                   {/* Data Mapping */}
-                  <div className="space-y-4">
-                    <div className="space-y-1">
-                      <label className="text-sm font-bold uppercase tracking-widest text-on-surface-variant">2. DATA MAPPING</label>
-                      <p className="text-sm text-on-surface-variant leading-normal">
-                        TIP: Select type of label and value to see and select data that needs to come in the chart
+                  <div className="flex flex-col gap-3">
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">2. DATA MAPPING</label>
+                      <p className="text-xs text-on-surface-variant/60 leading-normal mt-0.5">
+                        Select label and value fields to map your data
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-10">
                       <CustomDropdown
                         headerLabel="Select type of label"
                         options={labelFields}
@@ -145,21 +140,20 @@ export default function MappingSection({
                   </div>
 
                   {selectedLabel && selectedValue && (
-                    <div ref={dataSelectionRef} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                      {/* Integrated Divider */}
-                      <div className="h-px bg-on-surface-variant/10 w-full my-4" />
-                      
-                      <DataSelectionSection
-                        isOpen={isDataSelectionOpen}
-                        setIsOpen={setIsDataSelectionOpen}
-                        isSelectionEnabled={isSelectionEnabled}
-                        chartType={selectedChart}
-                        labelField={selectedLabel}
-                        valueField={selectedValue}
-                        initialName={initialName}
-                        onConfirm={onConfirm}
-                      />
-                    </div>
+                    <>
+                      <div className="h-px bg-on-surface-variant/10" />
+                      <div ref={dataSelectionRef}>
+                        <DataSelectionSection
+                          isOpen={isDataSelectionOpen}
+                          setIsOpen={setIsDataSelectionOpen}
+                          isSelectionEnabled={isSelectionEnabled}
+                          chartType={selectedChart}
+                          labelField={selectedLabel}
+                          valueField={selectedValue}
+                          onContinue={onContinue}
+                        />
+                      </div>
+                    </>
                   )}
                 </div>
               )}

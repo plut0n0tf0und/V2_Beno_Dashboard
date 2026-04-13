@@ -120,3 +120,23 @@ export const mockJsonData = {
     "total_pages": 1
   }
 };
+
+export const mockStockData = {
+  "stocks": [
+    { "ticker": "AAPL",  "company": "Apple Inc.",          "price": 189.30, "change": 2.4,  "volume": 58200000, "marketCap": 2950, "sector": "Technology",    "peRatio": 29.1 },
+    { "ticker": "MSFT",  "company": "Microsoft Corp.",      "price": 415.20, "change": 1.8,  "volume": 22100000, "marketCap": 3080, "sector": "Technology",    "peRatio": 35.4 },
+    { "ticker": "GOOGL", "company": "Alphabet Inc.",        "price": 175.80, "change": -0.6, "volume": 19800000, "marketCap": 2180, "sector": "Technology",    "peRatio": 24.7 },
+    { "ticker": "AMZN",  "company": "Amazon.com Inc.",      "price": 198.50, "change": 3.1,  "volume": 31500000, "marketCap": 2070, "sector": "Consumer",      "peRatio": 42.3 },
+    { "ticker": "NVDA",  "company": "NVIDIA Corp.",         "price": 875.40, "change": 5.2,  "volume": 44700000, "marketCap": 2160, "sector": "Technology",    "peRatio": 68.9 },
+    { "ticker": "META",  "company": "Meta Platforms Inc.",  "price": 527.30, "change": 1.2,  "volume": 17300000, "marketCap": 1340, "sector": "Technology",    "peRatio": 27.8 },
+    { "ticker": "TSLA",  "company": "Tesla Inc.",           "price": 177.90, "change": -2.3, "volume": 89400000, "marketCap": 567,  "sector": "Automotive",    "peRatio": 48.2 },
+    { "ticker": "BRK",   "company": "Berkshire Hathaway",   "price": 412.60, "change": 0.4,  "volume": 3200000,  "marketCap": 895,  "sector": "Finance",       "peRatio": 21.5 },
+    { "ticker": "JPM",   "company": "JPMorgan Chase",       "price": 198.70, "change": 0.9,  "volume": 9800000,  "marketCap": 572,  "sector": "Finance",       "peRatio": 12.3 },
+    { "ticker": "V",     "company": "Visa Inc.",            "price": 278.40, "change": 0.7,  "volume": 6100000,  "marketCap": 568,  "sector": "Finance",       "peRatio": 30.6 },
+    { "ticker": "WMT",   "company": "Walmart Inc.",         "price": 68.90,  "change": 1.1,  "volume": 14200000, "marketCap": 554,  "sector": "Consumer",      "peRatio": 33.1 },
+    { "ticker": "JNJ",   "company": "Johnson & Johnson",    "price": 147.20, "change": -0.3, "volume": 7400000,  "marketCap": 354,  "sector": "Healthcare",    "peRatio": 15.8 },
+    { "ticker": "XOM",   "company": "Exxon Mobil Corp.",    "price": 112.50, "change": -1.4, "volume": 18600000, "marketCap": 449,  "sector": "Energy",        "peRatio": 13.9 },
+    { "ticker": "UNH",   "company": "UnitedHealth Group",   "price": 524.80, "change": 2.0,  "volume": 3100000,  "marketCap": 483,  "sector": "Healthcare",    "peRatio": 22.4 },
+    { "ticker": "PG",    "company": "Procter & Gamble",     "price": 162.30, "change": 0.5,  "volume": 5900000,  "marketCap": 382,  "sector": "Consumer",      "peRatio": 26.7 }
+  ]
+};

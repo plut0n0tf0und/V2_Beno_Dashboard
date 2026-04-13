@@ -5,23 +5,91 @@ import HomeNavbar from './components/HomeNavbar';
 import ProjectNavbar from './components/ProjectNavbar';
 import Home from './pages/Home';
 import ProjectDetails from './pages/ProjectDetails';
-import PreviewDataSourceModal from './components/PreviewDataSourceModal';
 import EditNameModal from './components/EditNameModal';
-import { Page, Project, ChartConfig, DataSource } from './types';
+import { Page, Project, ChartConfig, DataSource, ProjectState } from './types';
+import { mockStockData } from './data/mockData';
+
+// ── Pre-built stock data for "Existing Sample Prjt" (id: '1') ──────────────
+const STOCK_SOURCE: DataSource = {
+  id: 'stock-src-1',
+  name: 'Global Stock Market API',
+  url: 'https://api.example.com/stocks/market-data',
+  type: 'API',
+};
+
+const STOCK_CHARTS: ChartConfig[] = [
+  {
+    id: 'stock-1',
+    name: 'Stock Price Overview',
+    type: 'Bar Chart',
+    data: mockStockData.stocks,
+    labelField: 'ticker',
+    valueField: 'price',
+    layout: { x: 0, y: 0, w: 8, h: 4 },
+  },
+  {
+    id: 'stock-2',
+    name: 'Market Cap by Sector',
+    type: 'Pie Chart',
+    data: mockStockData.stocks,
+    labelField: 'sector',
+    valueField: 'marketCap',
+    layout: { x: 8, y: 0, w: 4, h: 4 },
+  },
+  {
+    id: 'stock-3',
+    name: 'Daily Volume',
+    type: 'Area Chart',
+    data: mockStockData.stocks,
+    labelField: 'ticker',
+    valueField: 'volume',
+    layout: { x: 0, y: 4, w: 6, h: 4 },
+  },
+  {
+    id: 'stock-4',
+    name: 'P/E Ratio Comparison',
+    type: 'Bar Chart',
+    data: mockStockData.stocks,
+    labelField: 'ticker',
+    valueField: 'peRatio',
+    layout: { x: 6, y: 4, w: 6, h: 4 },
+  },
+];
+
+const INITIAL_PROJECT_STATES: Record<string, ProjectState> = {
+  '1': {
+    charts: STOCK_CHARTS,
+    dataSources: [STOCK_SOURCE],
+    selectedSourceId: STOCK_SOURCE.id,
+  },
+};
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditNameOpen, setIsEditNameOpen] = useState(false);
   const [editingChartId, setEditingChartId] = useState<string | null>(null);
   const [editingChartIdForMapping, setEditingChartIdForMapping] = useState<string | null>(null);
-  const [dataSources, setDataSources] = useState<DataSource[]>([]);
-  const [selectedSourceId, setSelectedSourceId] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [charts, setCharts] = useState<ChartConfig[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  //who you
+
+  // Per-project state map
+  const [projectStates, setProjectStates] = useState<Record<string, ProjectState>>(INITIAL_PROJECT_STATES);
+
+  // Helpers to read/write current project state
+  const getProjectState = (id: string): ProjectState =>
+    projectStates[id] ?? { charts: [], dataSources: [], selectedSourceId: null };
+
+  const setProjectState = (id: string, updater: (prev: ProjectState) => ProjectState) => {
+    setProjectStates(prev => ({
+      ...prev,
+      [id]: updater(getProjectState(id)),
+    }));
+  };
+
+  const pid = selectedProject?.id ?? '';
+  const { charts, dataSources, selectedSourceId } = getProjectState(pid);
+
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -40,17 +108,9 @@ export default function App() {
       wheelMultiplier: 1,
       infinite: false,
     });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
+    function raf(time: number) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
+    return () => { lenis.destroy(); };
   }, []);
 
   const handleNavigate = (page: Page) => {
@@ -60,43 +120,52 @@ export default function App() {
 
   const handleProjectClick = (project: Project) => {
     setSelectedProject(project);
+    // Ensure new projects get an empty state entry
+    if (!projectStates[project.id]) {
+      setProjectStates(prev => ({
+        ...prev,
+        [project.id]: { charts: [], dataSources: [], selectedSourceId: null },
+      }));
+    }
     setCurrentPage('project-details');
   };
 
   const handleAddSource = (url: string, name: string) => {
     const newSource: DataSource = {
       id: Math.random().toString(36).substr(2, 9),
-      name,
-      url,
-      type: 'API'
+      name, url, type: 'API',
     };
-    setDataSources(prev => [...prev, newSource]);
-    setSelectedSourceId(newSource.id);
-  };
-
-  const handleConfirmMapping = () => {
-    setIsModalOpen(false);
+    setProjectState(pid, prev => ({
+      ...prev,
+      dataSources: [...prev.dataSources, newSource],
+      selectedSourceId: newSource.id,
+    }));
   };
 
   const handleDeleteSource = (id: string) => {
-    setDataSources(prev => prev.filter(s => s.id !== id));
-    if (selectedSourceId === id) {
-      setSelectedSourceId(null);
-    }
+    setProjectState(pid, prev => ({
+      ...prev,
+      dataSources: prev.dataSources.filter(s => s.id !== id),
+      selectedSourceId: prev.selectedSourceId === id ? null : prev.selectedSourceId,
+    }));
   };
 
-  const handleCreateChart = (name: string, data: any[], config: { chartType: string, label: string, value: string }) => {
-    if (editingChartIdForMapping) {
-      setCharts(prev => prev.map(c => c.id === editingChartIdForMapping ? {
-        ...c,
-        name,
-        type: config.chartType || c.type,
-        data,
-        labelField: config.label,
-        valueField: config.value
-      } : c));
-      setEditingChartIdForMapping(null);
-    } else {
+  const handleSelectSource = (id: string) => {
+    setProjectState(pid, prev => ({ ...prev, selectedSourceId: id }));
+  };
+
+  const handleCreateChart = (name: string, data: any[], config: { chartType: string; label: string; value: string }) => {
+    setProjectState(pid, prev => {
+      if (editingChartIdForMapping) {
+        return {
+          ...prev,
+          charts: prev.charts.map(c =>
+            c.id === editingChartIdForMapping
+              ? { ...c, name, type: config.chartType || c.type, data, labelField: config.label, valueField: config.value }
+              : c
+          ),
+        };
+      }
       const newChart: ChartConfig = {
         id: Math.random().toString(36).substr(2, 9),
         name,
@@ -104,10 +173,11 @@ export default function App() {
         data,
         labelField: config.label,
         valueField: config.value,
-        layout: { x: (charts.length * 2) % 12, y: Infinity, w: 6, h: 4 }
+        layout: { x: (prev.charts.length * 2) % 12, y: Infinity, w: 6, h: 4 },
       };
-      setCharts(prev => [...prev, newChart]);
-    }
+      return { ...prev, charts: [...prev.charts, newChart] };
+    });
+    if (editingChartIdForMapping) setEditingChartIdForMapping(null);
   };
 
   const handleEditName = (id: string) => {
@@ -117,7 +187,10 @@ export default function App() {
 
   const handleConfirmRename = (newName: string) => {
     if (editingChartId) {
-      setCharts(prev => prev.map(c => c.id === editingChartId ? { ...c, name: newName } : c));
+      setProjectState(pid, prev => ({
+        ...prev,
+        charts: prev.charts.map(c => c.id === editingChartId ? { ...c, name: newName } : c),
+      }));
     }
     setIsEditNameOpen(false);
   };
@@ -126,30 +199,40 @@ export default function App() {
     setEditingChartIdForMapping(id);
   };
 
+  const handleCancelEditMapping = () => {
+    setEditingChartIdForMapping(null);
+  };
+
   const handleLayoutChange = (newLayout: any[]) => {
-    setCharts(prev => prev.map(chart => {
-      const match = newLayout.find(l => l.i === chart.id);
-      if (match) {
-        return {
-          ...chart,
-          layout: { x: match.x, y: match.y, w: match.w, h: match.h }
-        };
-      }
-      return chart;
+    setProjectState(pid, prev => ({
+      ...prev,
+      charts: prev.charts.map(chart => {
+        const match = newLayout.find(l => l.i === chart.id);
+        return match ? { ...chart, layout: { x: match.x, y: match.y, w: match.w, h: match.h } } : chart;
+      }),
     }));
   };
 
   const handleDeleteChart = (id: string) => {
-    setCharts(prev => prev.filter(c => c.id !== id));
+    setProjectState(pid, prev => ({
+      ...prev,
+      charts: prev.charts.filter(c => c.id !== id),
+    }));
   };
 
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
-
   const showSidebar = currentPage === 'home';
 
   return (
     <div className="min-h-screen bg-surface-container-low transition-colors duration-300">
-      {showSidebar && <Sidebar activePage={currentPage} onNavigate={handleNavigate} isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />}
+      {showSidebar && (
+        <Sidebar
+          activePage={currentPage}
+          onNavigate={handleNavigate}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+      )}
 
       <div className={`${showSidebar ? 'lg:pl-64' : ''} flex flex-col min-h-screen`}>
         {currentPage === 'home' ? (
@@ -179,27 +262,20 @@ export default function App() {
               onAddSource={handleAddSource}
               dataSources={dataSources}
               selectedSourceId={selectedSourceId}
-              onSelectSource={setSelectedSourceId}
+              onSelectSource={handleSelectSource}
               onCreateChart={handleCreateChart}
               charts={charts}
               onEditName={handleEditName}
               onEditMapping={handleEditMapping}
+              onCancelEditMapping={handleCancelEditMapping}
               onLayoutChange={handleLayoutChange}
               editingChartId={editingChartIdForMapping || undefined}
               onDeleteSource={handleDeleteSource}
               onDeleteChart={handleDeleteChart}
             />
           )}
-
         </main>
       </div>
-
-      <PreviewDataSourceModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={handleConfirmMapping}
-        apiUrl={dataSources.find(s => s.id === selectedSourceId)?.url || ''}
-      />
 
       <EditNameModal
         isOpen={isEditNameOpen}
@@ -208,16 +284,16 @@ export default function App() {
         onConfirm={handleConfirmRename}
       />
 
-      {/* Background Decoration - Optimized for smooth scroll */}
+      {/* Background Decoration */}
       <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden bg-surface-container-lowest">
         <div
           className="absolute -top-1/4 -right-1/4 w-[800px] h-[800px] bg-tertiary/5 blur-[120px] rounded-full will-change-transform"
           style={{ transform: 'translateZ(0)' }}
-        ></div>
+        />
         <div
           className="absolute -bottom-1/4 -left-1/4 w-[600px] h-[600px] bg-primary/5 blur-[100px] rounded-full will-change-transform"
           style={{ transform: 'translateZ(0)' }}
-        ></div>
+        />
       </div>
     </div>
   );

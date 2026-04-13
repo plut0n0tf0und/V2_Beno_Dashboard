@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronDown, Check, Search } from 'lucide-react';
+import { ChevronDown, Check } from 'lucide-react';
 
 interface CustomDropdownProps {
   label?: string;
@@ -23,7 +23,6 @@ export default function CustomDropdown({
   headerLabel
 }: CustomDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -38,20 +37,17 @@ export default function CustomDropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filteredOptions = options.filter(option => 
-    option.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredOptions = options;
 
   const handleSelect = (option: string) => {
     onChange(option);
     setIsOpen(false);
-    setSearchQuery("");
   };
 
   return (
     <div className={`w-full ${className}`} ref={containerRef}>
       {headerLabel && (
-        <label className="text-sm font-bold uppercase tracking-widest text-on-surface mb-3 block">
+        <label className="text-xs font-bold uppercase tracking-widest text-on-surface mb-1.5 block">
           {headerLabel}
         </label>
       )}
@@ -60,7 +56,7 @@ export default function CustomDropdown({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`w-full flex items-center justify-between border border-on-surface-variant/10 rounded-2xl py-4 px-5 text-base font-medium transition-all duration-300 outline-none ${
+        className={`w-full flex items-center justify-between border border-on-surface-variant/10 rounded-xl py-2.5 px-4 text-sm font-medium transition-all duration-300 outline-none ${
           disabled 
             ? 'bg-on-surface-variant/5 text-on-surface-variant/40 cursor-not-allowed' 
             : 'bg-surface-container-highest text-on-surface hover:border-tertiary/50 focus:ring-4 focus:ring-tertiary/10 group'
@@ -81,24 +77,7 @@ export default function CustomDropdown({
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
             className="mt-3 bg-surface-container-low border border-on-surface-variant/10 rounded-2xl shadow-xl overflow-hidden"
           >
-            {options.length > 5 && (
-              <div className="p-3 border-b border-on-surface-variant/5 bg-surface-container">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
-                  <input
-                    autoFocus
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search options..."
-                    className="w-full bg-surface-container-highest/50 border-none rounded-xl py-2 pl-10 pr-4 text-sm text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-tertiary/20 outline-none"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </div>
-              </div>
-            )}
-            
-            <div className="max-h-[40vh] overflow-y-auto no-scrollbar py-2">
+            <div className="max-h-[40vh] overflow-y-auto minimal-scrollbar py-2">
               {filteredOptions.length === 0 ? (
                 <div className="px-5 py-8 text-center">
                   <span className="text-sm text-on-surface-variant">No options found</span>
@@ -109,13 +88,13 @@ export default function CustomDropdown({
                     key={option}
                     type="button"
                     onClick={() => handleSelect(option)}
-                    className={`w-full flex items-center justify-between px-5 py-4 text-left transition-all duration-200 group ${
+                    className={`w-full flex items-center justify-between px-4 py-2.5 text-left transition-all duration-200 group ${
                       value === option 
                         ? 'bg-tertiary/10 text-tertiary font-bold' 
                         : 'text-on-surface hover:bg-surface-container-high'
                     }`}
                   >
-                    <span className="text-base truncate">{option}</span>
+                    <span className="text-sm truncate">{option}</span>
                     {value === option && (
                       <motion.div
                         initial={{ scale: 0 }}

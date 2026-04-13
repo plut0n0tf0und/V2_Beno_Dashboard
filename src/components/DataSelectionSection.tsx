@@ -16,8 +16,7 @@ interface DataSelectionSectionProps {
   chartType: string;
   labelField: string;
   valueField: string;
-  initialName?: string;
-  onConfirm: (chartName: string, selectedData: any[]) => void;
+  onContinue: (selectedData: any[]) => void;
 }
 
 export default function DataSelectionSection({
@@ -27,11 +26,9 @@ export default function DataSelectionSection({
   chartType,
   labelField,
   valueField,
-  initialName = '',
-  onConfirm
+  onContinue
 }: DataSelectionSectionProps) {
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-  const [chartName, setChartName] = useState(initialName);
   const [filterText, setFilterText] = useState("");
 
   const columnHelper = createColumnHelper<any>();
@@ -81,18 +78,18 @@ export default function DataSelectionSection({
     }),
     columnHelper.accessor(labelField || 'label', {
       id: 'label',
-      header: () => <span className="text-sm font-bold text-on-surface uppercase tracking-wider">{labelField || 'LABEL'}</span>,
+      header: () => <span className="text-xs font-bold text-on-surface uppercase tracking-wider">{labelField || 'LABEL'}</span>,
       cell: info => (
-        <span className="text-base text-on-surface font-medium line-clamp-1 leading-normal">
+        <span className="text-sm text-on-surface font-medium line-clamp-1 leading-normal">
           {String(info.getValue() || '')}
         </span>
       ),
     }),
     columnHelper.accessor(valueField || 'value', {
       id: 'value',
-      header: () => <span className="text-sm font-bold text-on-surface uppercase tracking-wider text-right block w-full">{valueField || 'VALUES'}</span>,
+      header: () => <span className="text-xs font-bold text-on-surface uppercase tracking-wider text-right block w-full">{valueField || 'VALUES'}</span>,
       cell: info => (
-        <span className="text-sm font-mono text-on-surface-variant font-bold text-right leading-normal block w-full">
+        <span className="text-xs font-mono text-on-surface-variant font-bold text-right leading-normal block w-full">
           {String(info.getValue() || '')}
         </span>
       ),
@@ -123,21 +120,20 @@ export default function DataSelectionSection({
   useEffect(() => {
     if (isOpen) {
       setRowSelection({});
-      setChartName(initialName);
     }
-  }, [isOpen, initialName]);
+  }, [isOpen]);
 
-  const isConfirmed = Object.keys(rowSelection).length > 0 && chartName.trim().length > 0;
+  const hasSelection = Object.keys(rowSelection).length > 0;
 
-  const handleConfirm = () => {
-    if (isConfirmed) {
+  const handleContinue = () => {
+    if (hasSelection) {
       const selectedData = table.getSelectedRowModel().rows.map(row => row.original);
-      onConfirm(chartName, selectedData);
+      onContinue(selectedData);
     }
   };
 
   return (
-    <div className="flex flex-col gap-6 transition-all duration-500 relative z-[60]">
+    <div className="flex flex-col transition-all duration-500 relative z-[60]">
       <div 
         className="flex items-center justify-between cursor-pointer group px-1"
         onClick={() => {
@@ -165,35 +161,15 @@ export default function DataSelectionSection({
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
             className="overflow-visible pb-4"
           >
-            <div className="pt-4 flex flex-col gap-8">
+            <div className="pt-4 flex flex-col gap-3">
               {!isSelectionEnabled ? (
                 <div className="h-24 flex items-center justify-center border-2 border-dashed border-on-surface-variant/10 rounded-xl">
                   <span className="text-sm text-on-surface-variant font-medium text-center px-4 leading-normal">Complete mapping first to select data</span>
                 </div>
               ) : (
                 <>
-                  {/* Table Search */}
-                  <div className="relative group px-1">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant group-focus-within:text-tertiary transition-colors" />
-                    <input 
-                      type="text"
-                      value={filterText}
-                      onChange={(e) => setFilterText(e.target.value)}
-                      placeholder="Search and filter data rows..."
-                      className="w-full bg-surface-container-highest/30 border border-on-surface-variant/10 rounded-2xl py-3 pl-12 pr-10 text-base text-on-surface placeholder:text-on-surface-variant/40 focus:ring-4 focus:ring-tertiary/10 focus:border-tertiary/50 outline-none transition-all"
-                    />
-                    {filterText && (
-                      <button 
-                        onClick={() => setFilterText("")}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-on-surface-variant/10 text-on-surface-variant transition-all outline-none"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
-
                   <div className="overflow-hidden border border-on-surface-variant/10 rounded-[1.5rem] bg-surface-container-highest/10">
-                    <div className="max-h-[800px] lg:max-h-[80vh] overflow-y-auto minimal-scrollbar">
+                    <div className="max-h-[50vh] lg:max-h-[80vh] overflow-y-auto minimal-scrollbar">
                       <table className="w-full border-collapse table-fixed">
                         {table.getHeaderGroups().map(headerGroup => (
                           <thead key={headerGroup.id} className="sticky top-0 z-20 bg-surface-container/90 backdrop-blur-md border-b border-outline-variant/10">
@@ -201,7 +177,7 @@ export default function DataSelectionSection({
                               {headerGroup.headers.map((header, index) => (
                                 <th 
                                   key={header.id}
-                                  className={`px-4 lg:px-6 py-4 text-left ${index === 0 ? 'w-16' : index === 1 ? 'w-auto' : 'w-32'}`}
+                                  className={`px-3 lg:px-6 py-3 text-left ${index === 0 ? 'w-12' : index === 1 ? 'w-auto' : 'w-28'}`}
                                 >
                                   {header.isPlaceholder
                                     ? null
@@ -232,7 +208,7 @@ export default function DataSelectionSection({
                                 {row.getVisibleCells().map((cell, index) => (
                                   <td 
                                     key={cell.id}
-                                    className={`px-4 lg:px-6 py-5 uppercase ${index === 0 ? 'w-16' : index === 1 ? 'w-auto' : 'w-32'}`}
+                                    className={`px-3 lg:px-6 py-3 uppercase ${index === 0 ? 'w-12' : index === 1 ? 'w-auto' : 'w-28'}`}
                                   >
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                   </td>
@@ -245,34 +221,19 @@ export default function DataSelectionSection({
                     </div>
                   </div>
 
-                  {/* Form Section - Flattened */}
-                  <div className="pt-2 space-y-5">
-                    <div className="space-y-2 px-1">
-                      <label className="text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant/60">
-                        {initialName ? 'UPDATE CHART NAME' : 'Enter chart name'}
-                      </label>
-                      <input 
-                        type="text"
-                        value={chartName}
-                        onChange={(e) => setChartName(e.target.value)}
-                        placeholder={`e.g. Dashboard ${chartType || 'Chart'}`}
-                        className="w-full bg-surface-container border-b border-on-surface-variant/10 hover:border-tertiary/50 focus:border-tertiary px-0 py-2.5 text-base text-on-surface placeholder:text-on-surface-variant/30 outline-none transition-all leading-normal bg-transparent"
-                      />
-                    </div>
-
-                    <div className="flex justify-end pt-4">
-                      <button 
-                        onClick={handleConfirm}
-                        disabled={!isConfirmed}
-                        className={`px-12 py-3 rounded-full font-bold text-sm uppercase tracking-widest transition-all shadow-lg hover:shadow-tertiary/20 ${
-                          isConfirmed 
-                            ? 'bg-tertiary text-surface hover:opacity-95 active:scale-[0.97]' 
-                            : 'bg-on-surface-variant/20 text-on-surface-variant cursor-not-allowed opacity-50'
-                        }`}
-                      >
-                        {initialName ? 'Update mapping' : 'Show selected data in new chart'}
-                      </button>
-                    </div>
+                  {/* Continue CTA */}
+                  <div className="flex justify-end pt-2 pb-1">
+                    <button 
+                      onClick={handleContinue}
+                      disabled={!hasSelection}
+                      className={`px-12 py-3 rounded-full font-bold text-sm uppercase tracking-widest transition-all shadow-lg hover:shadow-tertiary/20 ${
+                        hasSelection
+                          ? 'bg-tertiary text-surface hover:opacity-95 active:scale-[0.97]' 
+                          : 'bg-on-surface-variant/20 text-on-surface-variant cursor-not-allowed opacity-50'
+                      }`}
+                    >
+                      Continue
+                    </button>
                   </div>
                 </>
               )}

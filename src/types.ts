@@ -38,4 +38,10 @@ export interface ChartConfig {
   };
 }
 
+export interface ProjectState {
+  charts: ChartConfig[];
+  dataSources: DataSource[];
+  selectedSourceId: string | null;
+}
+
 export type Page = 'home' | 'project-details' | 'dashboard';

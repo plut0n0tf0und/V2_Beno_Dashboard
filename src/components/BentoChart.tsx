@@ -24,25 +24,35 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
   const renderChartContent = () => {
     switch (config.type) {
       case 'Bar Chart':
+        const barCount = config.data.length;
+        // Skip labels when too many bars to keep readable
+        const showEveryNth = barCount > 20 ? 4 : barCount > 12 ? 2 : 1;
         return (
-          <div className="absolute inset-0 flex items-end gap-2 w-full px-4 pb-6">
-            {config.data.map((d, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-2 group/bar h-full justify-end">
-                <motion.div 
-                  initial={{ height: 0 }}
-                  animate={{ height: `${((Number(getValue(d, config.valueField)) || 0) / maxValue) * 85}%` }}
-                  transition={{ delay: i * 0.1, duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
-                  className="w-full bg-gradient-to-t from-tertiary to-tertiary/60 rounded-t-lg relative group-hover/bar:from-tertiary group-hover/bar:to-white/40 transition-colors shadow-[0_0_15px_rgba(var(--color-tertiary),0.2)] min-h-[4px]"
-                >
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-sm font-bold px-2 py-1.5 rounded-lg opacity-0 group-hover/bar:opacity-100 transition-all z-20 shadow-2xl whitespace-nowrap pointer-events-none scale-90 group-hover/bar:scale-100">
-                    {getValue(d, config.valueField)}
-                  </div>
-                </motion.div>
-                <span className="text-xs font-bold text-on-surface-variant/40 uppercase truncate w-full text-center group-hover/bar:text-on-surface transition-colors">
-                  {getValue(d, config.labelField).toString().substring(0, 10)}
-                </span>
-              </div>
-            ))}
+          <div className="absolute inset-0 flex items-end gap-1 w-full px-3 pb-7 pt-2">
+            {config.data.map((d, i) => {
+              const label = getValue(d, config.labelField)?.toString() ?? '';
+              const showLabel = i % showEveryNth === 0;
+              return (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1 group/bar h-full justify-end min-w-0">
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: `${((Number(getValue(d, config.valueField)) || 0) / maxValue) * 82}%` }}
+                    transition={{ delay: i * 0.05, duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
+                    className="w-full bg-gradient-to-t from-tertiary to-tertiary/60 rounded-t-md relative group-hover/bar:to-white/40 transition-colors shadow-[0_0_10px_rgba(var(--color-tertiary),0.15)] min-h-[3px]"
+                  >
+                    <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-xs font-bold px-2 py-1 rounded-lg opacity-0 group-hover/bar:opacity-100 transition-all z-20 shadow-2xl whitespace-nowrap pointer-events-none">
+                      {getValue(d, config.valueField)}
+                    </div>
+                  </motion.div>
+                  {showLabel && (
+                    <span className="text-[10px] font-bold text-on-surface-variant/50 uppercase truncate w-full text-center group-hover/bar:text-on-surface transition-colors leading-tight" title={label}>
+                      {label.substring(0, barCount > 10 ? 5 : 8)}
+                    </span>
+                  )}
+                  {!showLabel && <span className="h-3" />}
+                </div>
+              );
+            })}
           </div>
         );
       case 'Line Chart':
@@ -148,25 +158,34 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
         );
 
       case 'Histogram':
+        const histCount = config.data.length;
+        const histEveryNth = histCount > 20 ? 4 : histCount > 12 ? 2 : 1;
         return (
-          <div className="absolute inset-0 flex items-end w-full px-4 pb-6">
-            {config.data.map((d, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center group/bar h-full justify-end border-r border-surface last:border-r-0">
-                <motion.div 
-                  initial={{ height: 0 }}
-                  animate={{ height: `${((Number(getValue(d, config.valueField)) || 0) / maxValue) * 85}%` }}
-                  transition={{ delay: i * 0.05, duration: 0.8 }}
-                  className="w-full bg-tertiary relative group-hover/bar:bg-tertiary/80 transition-colors"
-                >
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-sm font-bold px-2 py-1.5 rounded-lg opacity-0 group-hover/bar:opacity-100 transition-all z-20 shadow-2xl whitespace-nowrap pointer-events-none scale-90 group-hover/bar:scale-100">
-                    {getValue(d, config.valueField)}
-                  </div>
-                </motion.div>
-                <div className="w-full text-xs font-bold text-on-surface-variant/40 truncate text-center mt-1">
-                  {getValue(d, config.labelField).toString().substring(0, 5)}
+          <div className="absolute inset-0 flex items-end w-full px-3 pb-7 pt-2">
+            {config.data.map((d, i) => {
+              const label = getValue(d, config.labelField)?.toString() ?? '';
+              const showLabel = i % histEveryNth === 0;
+              return (
+                <div key={i} className="flex-1 flex flex-col items-center group/bar h-full justify-end border-r border-surface last:border-r-0 min-w-0">
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: `${((Number(getValue(d, config.valueField)) || 0) / maxValue) * 82}%` }}
+                    transition={{ delay: i * 0.05, duration: 0.8 }}
+                    className="w-full bg-tertiary relative group-hover/bar:bg-tertiary/80 transition-colors min-h-[3px]"
+                  >
+                    <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-xs font-bold px-2 py-1 rounded-lg opacity-0 group-hover/bar:opacity-100 transition-all z-20 shadow-2xl whitespace-nowrap pointer-events-none">
+                      {getValue(d, config.valueField)}
+                    </div>
+                  </motion.div>
+                  {showLabel && (
+                    <div className="w-full text-[10px] font-bold text-on-surface-variant/40 truncate text-center mt-1" title={label}>
+                      {label.substring(0, histCount > 10 ? 4 : 6)}
+                    </div>
+                  )}
+                  {!showLabel && <div className="h-3" />}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         );
       
@@ -316,7 +335,7 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
         <div className="absolute inset-0 bg-tertiary/5 rounded-2xl pointer-events-none animate-pulse" />
       )}
       {/* Header */}
-      <div className="flex items-center justify-between p-5 pb-2 relative z-50">
+      <div className="flex items-center justify-between p-5 pb-2 relative z-[65]">
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(103,156,255,0.6)]" />
           <h3 className="font-headline text-base font-bold text-on-surface uppercase tracking-wider truncate max-w-[200px]">
