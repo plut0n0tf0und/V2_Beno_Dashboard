@@ -370,10 +370,7 @@ export default function ProjectDetails({
                         <Layout className="w-5 h-5 text-tertiary" />
                       </div>
                       <div className="flex flex-col items-center gap-2 text-center">
-                        <h3 className="text-lg font-black text-on-surface tracking-tight">Your dashboard is empty</h3>
-                        <p className="text-on-surface-variant font-medium opacity-60 text-sm leading-relaxed max-w-[220px]">
-                          Add your first chart to get started
-                        </p>
+                        <h3 className="text-lg font-black text-on-surface tracking-tight">No charts to display</h3>
                       </div>
                       <button
                         onClick={handleStartOnboarding}
@@ -390,9 +387,9 @@ export default function ProjectDetails({
                         <div className="w-20 h-20 rounded-full bg-surface-container-highest flex items-center justify-center mb-1 shadow-inner group-hover/empty:scale-110 transition-transform duration-500">
                           <Layout className="w-8 h-8 text-tertiary" />
                         </div>
-                        <h3 className="text-2xl font-black text-on-surface tracking-tight">Your Dashboard is Empty</h3>
+                        <h3 className="text-2xl font-black text-on-surface tracking-tight">No charts to display</h3>
                         <p className="text-on-surface-variant text-center max-w-xs px-6 font-medium leading-relaxed opacity-60 text-sm">
-                          Start visualizing your project by adding your first dynamic chart.
+                          No charts to display.
                         </p>
                       </div>
                       <button
@@ -401,7 +398,7 @@ export default function ProjectDetails({
                       >
                         <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
                         <Plus className="w-6 h-6 text-surface relative z-10" strokeWidth={4} />
-                        <span className="relative z-10">Add Your First Chart</span>
+                        <span className="relative z-10">Add New Chart</span>
                       </button>
                     </div>
                   </>
