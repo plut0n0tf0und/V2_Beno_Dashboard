@@ -79,7 +79,7 @@ export default function ChartNameSection({
                       : 'bg-on-surface-variant/20 text-on-surface-variant cursor-not-allowed opacity-50'
                   }`}
                 >
-                  {initialName ? 'Update mapping' : 'Show selected data in new chart'}
+                  {initialName ? 'Update mapping' : 'Create chart'}
                 </button>
               </div>
             </div>

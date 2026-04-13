@@ -276,7 +276,7 @@ export default function AddDataSourceSection({
                         ) : (
                           <>
                             <Search className="w-3.5 h-3.5" />
-                            Preview Data
+                          Check if data is fetched
                           </>
                         )}
                       </button>
@@ -322,7 +322,7 @@ export default function AddDataSourceSection({
                         onClick={() => previewData && setIsConfirmed(!isConfirmed)}
                         className={`text-sm select-none leading-normal transition-colors ${previewData ? 'text-on-surface cursor-pointer' : 'text-on-surface-variant/40 cursor-not-allowed'}`}
                       >
-                        I am able to view the data from the Source.
+                        I can view the data fetched from the Source
                       </label>
                     </div>
 

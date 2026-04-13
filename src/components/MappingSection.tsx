@@ -100,7 +100,7 @@ export default function MappingSection({
                 <div className="flex flex-col gap-4 border border-on-surface-variant/10 rounded-2xl p-4 lg:p-8 bg-surface-container-low">
                   {/* Chart Type */}
                   <CustomDropdown
-                    headerLabel="1. CHART TYPE"
+                    headerLabel="1. REQUIRED CHART"
                     options={chartTypes}
                     value={selectedChart}
                     onChange={setSelectedChart}
@@ -114,7 +114,7 @@ export default function MappingSection({
                     <div>
                       <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">2. DATA MAPPING</label>
                       <p className="text-xs text-on-surface-variant/60 leading-normal mt-0.5">
-                        Select label and value fields to map your data
+                        Match the required data for the chart with the data fetched
                       </p>
                     </div>
 

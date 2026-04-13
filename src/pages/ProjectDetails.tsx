@@ -388,9 +388,6 @@ export default function ProjectDetails({
                           <Layout className="w-8 h-8 text-tertiary" />
                         </div>
                         <h3 className="text-2xl font-black text-on-surface tracking-tight">No charts to display</h3>
-                        <p className="text-on-surface-variant text-center max-w-xs px-6 font-medium leading-relaxed opacity-60 text-sm">
-                          No charts to display.
-                        </p>
                       </div>
                       <button
                         onClick={handleStartOnboarding}

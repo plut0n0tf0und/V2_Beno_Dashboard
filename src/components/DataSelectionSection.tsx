@@ -142,7 +142,7 @@ export default function DataSelectionSection({
       >
         <div className="flex items-center gap-4">
           <h3 className={`font-headline text-lg font-bold tracking-tight transition-colors leading-tight ${isSelectionEnabled ? 'text-on-surface group-hover:text-tertiary' : 'text-on-surface-variant/40'}`}>
-            Select Data
+            Select the required data from the fetched data
           </h3>
         </div>
         {isOpen ? (
@@ -208,7 +208,7 @@ export default function DataSelectionSection({
                                 {row.getVisibleCells().map((cell, index) => (
                                   <td 
                                     key={cell.id}
-                                    className={`px-3 lg:px-6 py-3 uppercase ${index === 0 ? 'w-12' : index === 1 ? 'w-auto' : 'w-28'}`}
+                                    className={`px-3 lg:px-6 py-3 ${index === 0 ? 'w-12' : index === 1 ? 'w-auto' : 'w-28'}`}
                                   >
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                   </td>
@@ -232,7 +232,7 @@ export default function DataSelectionSection({
                           : 'bg-on-surface-variant/20 text-on-surface-variant cursor-not-allowed opacity-50'
                       }`}
                     >
-                      Continue
+                      Show selected data in new chart
                     </button>
                   </div>
                 </>
