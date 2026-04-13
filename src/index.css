@@ -9,12 +9,44 @@
   scrollbar-width: none;
 }
 
+@utility minimal-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(172, 171, 170, 0.2);
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(172, 171, 170, 0.4);
+  }
+  scrollbar-width: thin;
+  scrollbar-color: rgba(172, 171, 170, 0.2) transparent;
+}
+
 @import "./components/DataSourceMapping.css";
 
 @theme {
   --font-headline: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Precise Font Scale */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 36px;
+
+  /* Line Heights */
+  --leading-normal: 1.5;
+  --leading-tight: 1.2;
 
   /* Design System Tokens - Dynamic */
   --color-surface: var(--surface);
@@ -58,11 +90,90 @@
 }
 
 @layer base {
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
+
+  html {
+    font-size: 16px;
+  }
+  
   body {
-    @apply bg-surface-container-low text-on-surface font-body antialiased transition-colors duration-300;
+    @apply bg-surface-container-low text-on-surface font-body text-base leading-normal antialiased transition-colors duration-300;
   }
 }
 
 .glass-nav {
   @apply bg-surface/80 backdrop-blur-xl border-b border-white/5;
+}
+
+/* React Grid Layout Styling */
+.react-grid-layout {
+  position: relative;
+  transition: height 200ms ease;
+}
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top;
+}
+.react-grid-item.cssTransforms {
+  transition-property: transform;
+}
+.react-grid-item.resizing {
+  z-index: 1;
+  will-change: width, height;
+}
+.react-grid-item.react-draggable-dragging {
+  transition: none;
+  z-index: 3;
+  will-change: transform;
+}
+.react-grid-placeholder {
+  background: rgba(103, 156, 255, 0.05) !important;
+  border-radius: 2rem !important;
+  opacity: 0.5 !important;
+  z-index: 2 !important;
+}
+.react-grid-item > .react-resizable-handle {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+  z-index: 10;
+}
+.react-grid-item > .react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--color-tertiary);
+  border-bottom: 2px solid var(--color-tertiary);
+  opacity: 0;
+  transition: all 0.3s;
+}
+.react-grid-item:hover > .react-resizable-handle::after {
+  opacity: 0.5;
+  right: 10px;
+  bottom: 10px;
 }

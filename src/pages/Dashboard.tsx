@@ -53,7 +53,7 @@ export default function Dashboard({ chartName }: DashboardProps) {
                 <div className={`absolute inset-0 ${item.color} rounded-t-lg`}></div>
                 <div className="absolute bottom-0 inset-x-0 bg-tertiary h-1 rounded-full"></div>
               </motion.div>
-              <span className="text-[10px] text-on-surface-variant text-center rotate-[-45deg] origin-top-right translate-y-4 whitespace-nowrap">
+              <span className="text-xs text-on-surface-variant text-center rotate-[-45deg] origin-top-right translate-y-4 whitespace-nowrap">
                 {item.label}
               </span>
             </div>

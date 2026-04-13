@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronDown, ChevronUp, Database, Plus, MoreVertical, ExternalLink, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Database, Plus, MoreVertical, ExternalLink, Trash2, Search } from 'lucide-react';
 import { DataSource } from '../types';
 
 const extractSourceName = (url: string) => {
@@ -73,13 +73,38 @@ export default function AddDataSourceSection({
   const [newUrl, setNewUrl] = useState('');
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [previewData, setPreviewData] = useState<any>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const isUrlValid = newUrl.trim().length > 0;
   const selectedSource = dataSources.find(s => s.id === selectedSourceId);
   const sourceNameHint = selectedSource ? selectedSource.name : "None selected";
+  const canAddSource = isUrlValid && isConfirmed && previewData !== null && previewError === null;
+
+  const handlePreviewData = async () => {
+    if (!isUrlValid) return;
+    
+    setIsLoading(true);
+    setPreviewError(null);
+    setPreviewData(null);
+    
+    try {
+      const response = await fetch(newUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      const data = await response.json();
+      setPreviewData(data);
+    } catch (error) {
+      setPreviewError(error instanceof Error ? error.message : 'Failed to fetch data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="bg-surface-container rounded-2xl p-4 lg:p-6 flex flex-col gap-4 lg:gap-6 shadow-sm transition-all duration-500">
+    <div className="w-full bg-surface-container rounded-[2rem] p-6 lg:p-10 flex flex-col gap-6 lg:gap-10 shadow-sm transition-all duration-500">
       <div 
         className="flex items-center justify-between cursor-pointer group"
         onClick={() => setIsSourceOpen(!isSourceOpen)}
@@ -87,9 +112,9 @@ export default function AddDataSourceSection({
         <div className="flex items-center gap-4">
           <div className="w-8 h-8 rounded-full bg-on-surface-variant/20 flex items-center justify-center font-bold text-sm text-on-surface">1</div>
           <div className="flex flex-col">
-            <h3 className="font-headline text-lg font-bold text-on-surface group-hover:text-tertiary transition-colors">Add Data Source</h3>
+            <h3 className="font-headline text-xl font-extrabold text-on-surface group-hover:text-tertiary transition-colors leading-tight">Add Data Source</h3>
             {!isSourceOpen && selectedSource && (
-              <p className="text-[10px] font-medium text-on-surface-variant/40 uppercase tracking-wider">
+              <p className="text-sm font-medium text-on-surface-variant/40 uppercase tracking-wider">
                 Selected: {selectedSource.name}
               </p>
             )}
@@ -103,10 +128,10 @@ export default function AddDataSourceSection({
                 e.stopPropagation();
                 setIsAdding(!isAdding);
               }}
-              className={`${isAdding ? 'bg-tertiary text-surface' : 'bg-on-surface-variant/10 text-on-surface hover:bg-on-surface-variant/20'} px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest flex items-center gap-1.5 transition-all outline-none`}
+              className={`${isAdding ? 'bg-tertiary text-surface' : 'bg-on-surface-variant/10 text-on-surface hover:bg-on-surface-variant/20'} px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all outline-none`}
             >
               <Plus className={`w-3.5 h-3.5 transition-transform duration-300 ${isAdding ? 'rotate-45' : ''}`} />
-              {isAdding ? 'Cancel' : 'Add'}
+              {isAdding ? 'Cancel' : 'Add Source'}
             </button>
           )}
           {isSourceOpen ? (
@@ -124,13 +149,13 @@ export default function AddDataSourceSection({
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
-            className="overflow-hidden"
+            className="overflow-visible pb-4"
           >
-            <div className="space-y-6 pt-2">
+            <div className="space-y-6 pt-4">
               {/* Added Data Source Container */}
               {dataSources.length > 0 && (
                 <div className="space-y-4">
-                  <p className="font-body text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Added Data Source</p>
+                  <p className="font-body text-sm font-bold text-on-surface-variant uppercase tracking-widest">Added Data Source</p>
                   <div className="max-h-[300px] overflow-y-auto pr-1 no-scrollbar space-y-3">
                     {dataSources.map((source) => (
                       <div 
@@ -156,8 +181,8 @@ export default function AddDataSourceSection({
                               <Database className="w-4 h-4 text-tertiary" />
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-sm font-bold text-on-surface">{source.name}</span>
-                              <span className="text-[10px] text-on-surface-variant font-mono truncate max-w-[150px]">
+                              <span className="text-base font-bold text-on-surface">{source.name}</span>
+                              <span className="text-sm text-on-surface-variant font-mono truncate max-w-[150px]">
                                 {source.url}
                               </span>
                             </div>
@@ -170,9 +195,9 @@ export default function AddDataSourceSection({
                               const jsonUrl = URL.createObjectURL(blob);
                               window.open(jsonUrl, '_blank');
                             }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-container hover:bg-surface-container-high border border-outline-variant/20 rounded-lg text-xs font-bold text-on-surface-variant hover:text-on-surface transition-colors outline-none"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-container hover:bg-surface-container-high border border-outline-variant/20 rounded-lg text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors outline-none"
                           >
-                            <ExternalLink className="w-3.5 h-3.5" />
+                            <ExternalLink className="w-4 h-4" />
                             View data
                           </button>
                           <div className="relative">
@@ -197,7 +222,7 @@ export default function AddDataSourceSection({
                                       setOpenMenuId(null);
                                       onDeleteSource(source.id);
                                     }}
-                                    className="w-full flex items-center gap-2 px-4 py-3 text-xs font-bold text-red-400 hover:bg-red-400/10 transition-colors text-left"
+                                    className="w-full flex items-center gap-2 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-400/10 transition-colors text-left"
                                   >
                                     <Trash2 className="w-4 h-4" />
                                     Delete
@@ -222,9 +247,9 @@ export default function AddDataSourceSection({
                     exit={{ height: 0, opacity: 0 }}
                     className="space-y-4 pt-4 border-t border-on-surface-variant/5"
                   >
-                    <p className="font-body text-sm font-semibold text-on-surface tracking-tight">Connect New API</p>
+                    <p className="font-body text-base font-bold text-on-surface tracking-tight">Connect New API</p>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+                      <label className="text-sm font-bold uppercase tracking-widest text-on-surface-variant">
                         Enter API URL *
                       </label>
                       <div className="relative group">
@@ -233,10 +258,47 @@ export default function AddDataSourceSection({
                           value={newUrl}
                           onChange={(e) => setNewUrl(e.target.value)}
                           placeholder="https://api.yoursite.com/v1/users" 
-                          className="w-full bg-surface-container-low border border-on-surface-variant/10 rounded-lg py-2.5 px-4 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-tertiary/20 transition-all outline-none"
+                          className="w-full bg-surface-container-low border border-on-surface-variant/10 rounded-lg py-3 px-4 pr-28 text-base text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-tertiary/20 transition-all outline-none leading-normal"
                         />
+                        <button
+                          onClick={handlePreviewData}
+                          disabled={!isUrlValid || isLoading}
+                          className={`absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 rounded-lg text-sm font-medium transition-all
+                            ${(isUrlValid && !isLoading)
+                              ? 'text-tertiary hover:bg-tertiary/10 active:bg-tertiary/20'
+                              : 'text-on-surface-variant/30 cursor-not-allowed'
+                            }`}
+                        >
+                          {isLoading ? (
+                            <span className="flex items-center gap-1.5">
+                              <span className="w-3.5 h-3.5 border-2 border-tertiary/30 border-t-tertiary rounded-full animate-spin" />
+                            </span>
+                          ) : (
+                            'Preview'
+                          )}
+                        </button>
                       </div>
                     </div>
+                    
+                    {/* JSON Preview Container */}
+                    {(previewData !== null || previewError !== null) && (
+                      <div className="space-y-2">
+                        <label className="text-sm font-bold uppercase tracking-widest text-on-surface-variant">
+                          Data Preview
+                        </label>
+                        <div className="bg-surface-container-highest border border-on-surface-variant/10 rounded-xl p-4 max-h-[200px] overflow-y-auto">
+                          {previewError ? (
+                            <div className="text-red-400 text-sm font-mono">
+                              Error: {previewError}
+                            </div>
+                          ) : (
+                            <pre className="text-sm text-on-surface font-mono whitespace-pre-wrap leading-normal">
+                              {JSON.stringify(previewData, null, 2)}
+                            </pre>
+                          )}
+                        </div>
+                      </div>
+                    )}
                     
                     {/* Confirmation Checkbox */}
                     <div className="pt-2 flex items-start gap-3">
@@ -256,7 +318,7 @@ export default function AddDataSourceSection({
                       </div>
                       <label 
                         onClick={() => setIsConfirmed(!isConfirmed)}
-                        className="text-[13px] text-on-surface cursor-pointer select-none leading-relaxed"
+                        className="text-base text-on-surface cursor-pointer select-none leading-normal"
                       >
                         I am able to view the data from the Source.
                       </label>
@@ -267,14 +329,17 @@ export default function AddDataSourceSection({
                         onAddSource(newUrl, extractSourceName(newUrl));
                         setNewUrl('');
                         setIsConfirmed(false);
+                        setPreviewData(null);
+                        setPreviewError(null);
                         setIsAdding(false);
                       }}
-                      disabled={!isUrlValid || !isConfirmed}
-                      className={`w-full py-2.5 rounded-lg font-bold text-sm transition-all shadow-sm ${
-                        (isUrlValid && isConfirmed) 
-                          ? 'bg-on-surface text-surface hover:opacity-90 active:scale-[0.98]' 
-                          : 'bg-on-surface-variant/20 text-on-surface-variant cursor-not-allowed'
-                      }`}
+                      disabled={!canAddSource}
+                      className={`w-full h-12 rounded-xl font-medium text-base transition-all duration-200 
+                        shadow-[0_2px_8px_rgba(0,0,0,0.12)] 
+                        ${canAddSource 
+                          ? 'bg-on-surface text-surface shadow-[0_4px_16px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.3)] hover:brightness-110 active:shadow-[0_2px_8px_rgba(0,0,0,0.2)] active:translate-y-[1px] focus:ring-2 focus:ring-tertiary/40 focus:ring-offset-2 focus:ring-offset-surface-container' 
+                          : 'bg-on-surface-variant/20 text-on-surface-variant/50 cursor-not-allowed shadow-none'
+                        }`}
                     >
                       Add Data Source
                     </button>

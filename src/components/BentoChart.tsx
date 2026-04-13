@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MoreVertical, Maximize2, Edit2, Layout } from 'lucide-react';
+import { MoreVertical, Maximize2, Edit2, Layout, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChartConfig } from '../types';
 
@@ -8,10 +8,11 @@ interface BentoChartProps {
   onEditName: (id: string) => void;
   onEditMapping: (id: string) => void;
   onMaximize: (id: string) => void;
+  onDeleteChart: (id: string) => void;
   isEditing?: boolean;
 }
 
-export default function BentoChart({ config, onEditName, onEditMapping, onMaximize, isEditing }: BentoChartProps) {
+export default function BentoChart({ config, onEditName, onEditMapping, onMaximize, onDeleteChart, isEditing }: BentoChartProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const getValue = (obj: any, path: string) => {
@@ -33,11 +34,11 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
                   transition={{ delay: i * 0.1, duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
                   className="w-full bg-gradient-to-t from-tertiary to-tertiary/60 rounded-t-lg relative group-hover/bar:from-tertiary group-hover/bar:to-white/40 transition-colors shadow-[0_0_15px_rgba(var(--color-tertiary),0.2)] min-h-[4px]"
                 >
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-[10px] font-bold px-2 py-1.5 rounded-lg opacity-0 group-hover/bar:opacity-100 transition-all z-20 shadow-2xl whitespace-nowrap pointer-events-none scale-90 group-hover/bar:scale-100">
+                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-sm font-bold px-2 py-1.5 rounded-lg opacity-0 group-hover/bar:opacity-100 transition-all z-20 shadow-2xl whitespace-nowrap pointer-events-none scale-90 group-hover/bar:scale-100">
                     {getValue(d, config.valueField)}
                   </div>
                 </motion.div>
-                <span className="text-[8px] font-bold text-on-surface-variant/40 uppercase truncate w-full text-center group-hover/bar:text-on-surface transition-colors">
+                <span className="text-xs font-bold text-on-surface-variant/40 uppercase truncate w-full text-center group-hover/bar:text-on-surface transition-colors">
                   {getValue(d, config.labelField).toString().substring(0, 10)}
                 </span>
               </div>
@@ -137,7 +138,9 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
                   <div className="w-2 h-2 rounded-full" style={{ 
                     backgroundColor: ['#679CFF', '#89B3FF', '#4A85FF', '#A6C9FF', '#3D72E5'][i % 5] 
                   }} />
-                  <span className="text-[9px] font-bold text-on-surface-variant truncate w-20">{getValue(d, config.labelField)}</span>
+                  <span className="text-xs font-bold text-on-surface-variant truncate w-24">
+                    {getValue(d, config.labelField)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -155,11 +158,11 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
                   transition={{ delay: i * 0.05, duration: 0.8 }}
                   className="w-full bg-tertiary relative group-hover/bar:bg-tertiary/80 transition-colors"
                 >
-                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover/bar:opacity-100 transition-all z-20 whitespace-nowrap pointer-events-none scale-90 group-hover/bar:scale-100 shadow-lg">
+                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-sm font-bold px-2 py-1.5 rounded-lg opacity-0 group-hover/bar:opacity-100 transition-all z-20 shadow-2xl whitespace-nowrap pointer-events-none scale-90 group-hover/bar:scale-100">
                     {getValue(d, config.valueField)}
                   </div>
                 </motion.div>
-                <div className="w-full text-[8px] font-bold text-on-surface-variant/40 truncate text-center mt-1">
+                <div className="w-full text-xs font-bold text-on-surface-variant/40 truncate text-center mt-1">
                   {getValue(d, config.labelField).toString().substring(0, 5)}
                 </div>
               </div>
@@ -190,7 +193,7 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
                      style={{ left: `${xPercent}%`, top: `${yPercent}%` }}
                    >
                      <div className="absolute w-[6px] h-[6px] bg-surface rounded-full pointer-events-none" />
-                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-on-surface text-surface text-[10px] font-bold px-2 py-1.5 rounded opacity-0 group-hover/dot:opacity-100 transition-all z-20 whitespace-nowrap pointer-events-none scale-95 group-hover/dot:scale-100 shadow-lg">
+                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-on-surface text-surface text-sm font-bold px-2 py-1.5 rounded opacity-0 group-hover/dot:opacity-100 transition-all z-20 whitespace-nowrap pointer-events-none scale-95 group-hover/dot:scale-100 shadow-lg">
                        {getValue(d, config.labelField)}: {getValue(d, config.valueField)}
                      </div>
                    </motion.div>
@@ -279,7 +282,7 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
                       textAnchor="middle" 
                       dominantBaseline="middle" 
                       fill="var(--color-on-surface-variant)" 
-                      className="text-[11px] font-bold tracking-wider group-hover/radar:fill-tertiary transition-colors"
+                      className="text-[12px] font-bold tracking-wider group-hover/radar:fill-tertiary transition-colors"
                     >
                       {getValue(d, config.labelField).toString().substring(0,10)}
                     </text>
@@ -287,7 +290,7 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
                       x={x} y={y - 12} 
                       textAnchor="middle" 
                       fill="var(--color-on-surface)" 
-                      className="text-[12px] font-black opacity-0 group-hover/radar:opacity-100 transition-opacity"
+                      className="text-[14px] font-black opacity-0 group-hover/radar:opacity-100 transition-opacity"
                     >
                       {value}
                     </text>
@@ -300,7 +303,7 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
 
       default:
         return (
-          <div className="absolute inset-0 flex items-center justify-center opacity-30 italic text-xs">
+          <div className="absolute inset-0 flex items-center justify-center opacity-30 italic text-sm">
             {config.type} Preview
           </div>
         );
@@ -308,7 +311,7 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
   };
 
   return (
-    <div className={`group relative w-full h-full min-h-[300px] lg:min-h-[400px] bg-surface-container-low rounded-2xl flex flex-col shadow-lg transition-all border ${isEditing ? 'border-tertiary ring-2 ring-tertiary/20' : 'border-tertiary/5'}`}>
+    <div className={`group relative w-full h-full bg-surface-container-low rounded-2xl flex flex-col shadow-lg transition-all border ${isEditing ? 'border-tertiary ring-2 ring-tertiary/20' : 'border-tertiary/5'}`}>
       {isEditing && (
         <div className="absolute inset-0 bg-tertiary/5 rounded-2xl pointer-events-none animate-pulse" />
       )}
@@ -316,7 +319,7 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
       <div className="flex items-center justify-between p-5 pb-2 relative z-50">
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(103,156,255,0.6)]" />
-          <h3 className="font-headline text-sm font-bold text-on-surface uppercase tracking-wider truncate max-w-[150px]">
+          <h3 className="font-headline text-base font-bold text-on-surface uppercase tracking-wider truncate max-w-[200px]">
             {config.name}
           </h3>
         </div>
@@ -344,15 +347,22 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
                       onClick={() => { onEditMapping(config.id); setIsMenuOpen(false); }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-on-surface hover:bg-tertiary/10 hover:text-tertiary rounded-lg transition-all"
                     >
-                      <Layout className="w-4 h-4" />
+                      <Layout className="w-5 h-5" />
                       Edit Mapping
                     </button>
                     <button 
                       onClick={() => { onEditName(config.id); setIsMenuOpen(false); }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-on-surface hover:bg-tertiary/10 hover:text-tertiary rounded-lg transition-all"
                     >
-                      <Edit2 className="w-4 h-4" />
+                      <Edit2 className="w-5 h-5" />
                       Edit Name
+                    </button>
+                    <button 
+                      onClick={() => { onDeleteChart(config.id); setIsMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                      Delete Chart
                     </button>
                   </motion.div>
                 </>

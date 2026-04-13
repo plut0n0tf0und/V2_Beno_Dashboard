@@ -18,7 +18,7 @@ export default function Sidebar({ activePage, onNavigate, isOpen, onClose }: Sid
   const sidebarContent = (
     <div className="flex flex-col h-full w-full bg-surface p-6 gap-6 transition-colors duration-300">
       <div className="flex items-center justify-between lg:hidden mb-2">
-        <span className="font-headline font-bold text-lg text-tertiary">Menu</span>
+        <span className="font-headline font-bold text-xl text-tertiary">Menu</span>
         <button onClick={onClose} className="p-2 text-on-surface-variant">
           <X className="w-5 h-5" />
         </button>
@@ -35,8 +35,7 @@ export default function Sidebar({ activePage, onNavigate, isOpen, onClose }: Sid
                 : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low'
             }`}
           >
-            <item.icon className={`w-5 h-5 ${activePage === item.id ? 'text-tertiary' : ''}`} />
-            <span className="font-body text-sm font-medium tracking-tight">{item.label}</span>
+            <span className="font-body text-base font-semibold tracking-tight">{item.label}</span>
           </button>
         ))}
       </nav>

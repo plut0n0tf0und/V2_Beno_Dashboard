@@ -14,7 +14,7 @@
 }
 
 .dsm-header-title {
-  @apply font-headline text-lg font-bold text-on-surface;
+  @apply font-headline text-xl font-bold text-on-surface leading-tight;
 }
 
 .dsm-close-btn {
@@ -43,15 +43,15 @@
 }
 
 .dsm-section-title {
-  @apply font-headline text-base sm:text-lg font-bold text-on-surface group-hover:text-tertiary transition-colors;
+  @apply font-headline text-lg font-bold text-on-surface group-hover:text-tertiary transition-colors leading-tight;
 }
 
 .dsm-section-add-btn {
-  @apply bg-on-surface-variant/10 hover:bg-on-surface-variant/20 text-on-surface px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 transition-all;
+  @apply bg-on-surface-variant/10 hover:bg-on-surface-variant/20 text-on-surface px-2.5 py-1 rounded-lg text-sm font-bold uppercase tracking-widest flex items-center gap-1 transition-all;
 }
 
 .dsm-section-subtitle {
-  @apply text-[10px] font-medium text-on-surface-variant/40 uppercase tracking-wider;
+  @apply text-sm font-medium text-on-surface-variant/40 uppercase tracking-wider;
 }
 
 .dsm-section-content {
@@ -64,7 +64,7 @@
 }
 
 .dsm-datasource-saved-label {
-  @apply font-body text-[10px] font-bold text-on-surface-variant uppercase tracking-widest;
+  @apply font-body text-sm font-bold text-on-surface-variant uppercase tracking-widest;
 }
 
 .dsm-datasource-saved-item {
@@ -80,11 +80,11 @@
 }
 
 .dsm-datasource-input-sublabel {
-  @apply text-[10px] font-bold uppercase tracking-widest text-on-surface-variant;
+  @apply text-sm font-bold uppercase tracking-widest text-on-surface-variant;
 }
 
 .dsm-datasource-input {
-  @apply w-full bg-surface-container-low border border-on-surface-variant/10 rounded-lg py-2.5 px-4 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-tertiary/20 transition-all outline-none;
+  @apply w-full bg-surface-container-low border border-on-surface-variant/10 rounded-lg py-2.5 px-4 text-base text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-tertiary/20 transition-all outline-none leading-normal;
 }
 
 .dsm-button-primary {
@@ -113,7 +113,7 @@
 }
 
 .dsm-mapping-field-label {
-  @apply text-[10px] font-bold uppercase tracking-widest text-on-surface;
+  @apply text-sm font-bold uppercase tracking-widest text-on-surface;
 }
 
 .dsm-mapping-select-wrapper {
@@ -121,7 +121,7 @@
 }
 
 .dsm-mapping-select {
-  @apply w-full border border-on-surface-variant/10 rounded-xl py-3 px-4 text-sm appearance-none outline-none focus:ring-2 focus:ring-tertiary/20 font-medium transition-all;
+  @apply w-full border border-on-surface-variant/10 rounded-xl py-3 px-4 text-base appearance-none outline-none focus:ring-2 focus:ring-tertiary/20 font-medium transition-all;
 }
 
 .dsm-mapping-select-enabled {
@@ -137,15 +137,15 @@
 }
 
 .dsm-mapping-tip {
-  @apply text-[10px] text-on-surface-variant leading-relaxed;
+  @apply text-sm text-on-surface-variant leading-normal;
 }
 
 .dsm-mapping-subfield-label {
-  @apply text-sm font-semibold text-on-surface;
+  @apply text-base font-semibold text-on-surface;
 }
 
 .dsm-mapping-submit-btn {
-  @apply w-full py-3 rounded-xl bg-on-surface text-surface font-bold text-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-lg;
+  @apply w-full py-3 rounded-xl bg-on-surface text-surface font-bold text-base hover:opacity-90 active:scale-[0.98] transition-all shadow-lg;
 }
 
 .dsm-mapping-cancel-btn {

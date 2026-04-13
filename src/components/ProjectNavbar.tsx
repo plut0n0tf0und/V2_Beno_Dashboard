@@ -1,62 +1,68 @@
-import { Search, Bell, Globe, Sun, Moon, HelpCircle, ChevronDown, Menu } from 'lucide-react';
+import { Search, Bell, Globe, Sun, Moon, HelpCircle, ChevronDown, Menu, Layout, Folder, Briefcase, Package, Layers, FolderKanban } from 'lucide-react';
 
 interface ProjectNavbarProps {
   isDarkMode: boolean;
+  projectName?: string;
   onToggleDarkMode: () => void;
   onGoHome: () => void;
   onToggleSidebar: () => void;
 }
 
-export default function ProjectNavbar({ isDarkMode, onToggleDarkMode, onGoHome, onToggleSidebar }: ProjectNavbarProps) {
+export default function ProjectNavbar({ isDarkMode, projectName, onToggleDarkMode, onGoHome, onToggleSidebar }: ProjectNavbarProps) {
   return (
     <nav className="fixed top-0 right-0 left-0 h-16 bg-surface/80 backdrop-blur-xl z-[80] px-3 sm:px-6 flex items-center justify-between transition-colors duration-300">
-      <div className="flex items-center gap-3 shrink-0">
-        {/* Mobile Menu Toggle */}
-        <button 
-          onClick={onToggleSidebar}
-          className="lg:hidden p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container"
-        >
-          <Menu className="w-6 h-6" />
-        </button>
+      <div className="flex items-center gap-6 shrink-0">
+        <div className="flex items-center gap-3">
+          {/* Mobile Menu Toggle */}
+          <button 
+            onClick={onToggleSidebar}
+            className="lg:hidden p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
 
-        {/* Left Logo */}
-        <div 
-          onClick={onGoHome}
-          className="text-on-surface cursor-pointer hover:opacity-80 transition-opacity"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
-          </svg>
+          {/* Left Logo */}
+          <div 
+            onClick={onGoHome}
+            className="text-tertiary cursor-pointer hover:opacity-80 transition-all active:scale-95"
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+            </svg>
+          </div>
         </div>
+
+        {projectName && (
+          <div className="flex items-center gap-2.5 bg-surface-container-high/50 px-3.5 py-1.5 rounded-xl border border-on-surface-variant/5 shadow-sm">
+            <Folder className="w-3.5 h-3.5 text-on-surface/50" strokeWidth={2.5} />
+            <span className="text-sm font-bold text-on-surface uppercase tracking-wider">
+              {projectName}
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Center Search Bar */}
-      <div className="hidden md:block absolute left-1/2 -translate-x-1/2 min-w-[300px] lg:min-w-[400px]">
-        <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant group-focus-within:text-tertiary transition-colors" />
-          <input 
-            type="text" 
-            placeholder="Search" 
-            className="w-full bg-surface-container border border-on-surface-variant/20 rounded-full py-1.5 pl-12 pr-4 text-sm text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-tertiary/20 transition-all outline-none"
-          />
-        </div>
-      </div>
+
 
       <div className="flex items-center gap-2 sm:gap-6 shrink-0">
         {/* Metadata Date Tag */}
-        <div className="hidden lg:flex items-center bg-surface-container-high px-4 py-1.5 rounded-full text-xs font-semibold text-on-surface-variant shadow-sm border border-on-surface-variant/5">
-          Firday, 16 Feb 2026
+        <div className="hidden lg:flex items-center bg-surface-container-high px-4 py-1.5 rounded-full text-sm font-bold text-on-surface-variant shadow-sm border border-on-surface-variant/5 leading-tight">
+          Friday, 16 Feb 2026
         </div>
 
         {/* English Toggle */}
         <div className="hidden sm:flex items-center gap-2 px-2 py-1.5 cursor-pointer text-on-surface-variant hover:text-on-surface transition-colors group">
           <Globe className="w-4 h-4" />
-          <span className="text-xs font-semibold">English</span>
-          <ChevronDown className="w-3 h-3 group-hover:translate-y-0.5 transition-transform" />
+          <span className="text-sm font-bold">English</span>
+          <ChevronDown className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" />
         </div>
 
         {/* Action Icons */}
         <div className="flex items-center gap-2">
+          <button className="hidden sm:flex p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-full hover:bg-surface-container group">
+            <Search className="w-5 h-5" />
+          </button>
+          
           <button className="p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-full hover:bg-surface-container relative">
             <Bell className="w-5 h-5" />
           </button>

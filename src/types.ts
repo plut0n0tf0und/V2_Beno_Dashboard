@@ -30,6 +30,12 @@ export interface ChartConfig {
   data: any[];
   labelField: string;
   valueField: string;
+  layout?: {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  };
 }
 
 export type Page = 'home' | 'project-details' | 'dashboard';

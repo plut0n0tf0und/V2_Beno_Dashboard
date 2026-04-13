@@ -21,7 +21,7 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [charts, setCharts] = useState<ChartConfig[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  //say something
+
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -103,7 +103,8 @@ export default function App() {
         type: config.chartType || 'Bar Chart',
         data,
         labelField: config.label,
-        valueField: config.value
+        valueField: config.value,
+        layout: { x: (charts.length * 2) % 12, y: Infinity, w: 6, h: 4 }
       };
       setCharts(prev => [...prev, newChart]);
     }
@@ -125,8 +126,21 @@ export default function App() {
     setEditingChartIdForMapping(id);
   };
 
-  const handleReorderCharts = (newOrder: ChartConfig[]) => {
-    setCharts(newOrder);
+  const handleLayoutChange = (newLayout: any[]) => {
+    setCharts(prev => prev.map(chart => {
+      const match = newLayout.find(l => l.i === chart.id);
+      if (match) {
+        return {
+          ...chart,
+          layout: { x: match.x, y: match.y, w: match.w, h: match.h }
+        };
+      }
+      return chart;
+    }));
+  };
+  
+  const handleDeleteChart = (id: string) => {
+    setCharts(prev => prev.filter(c => c.id !== id));
   };
 
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
@@ -147,13 +161,14 @@ export default function App() {
         ) : (
           <ProjectNavbar
             isDarkMode={isDarkMode}
+            projectName={selectedProject?.name}
             onToggleDarkMode={toggleDarkMode}
             onGoHome={() => handleNavigate('home')}
             onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           />
         )}
 
-        <main className="flex-grow pt-20 px-4 sm:px-6 lg:px-8 max-w-[1600px] mx-auto w-full">
+        <main className="flex-grow pt-20 pb-20 px-4 sm:px-8 lg:px-12 max-w-[1600px] mx-auto w-full">
           {currentPage === 'home' && (
             <Home onProjectClick={handleProjectClick} />
           )}
@@ -169,9 +184,10 @@ export default function App() {
               charts={charts}
               onEditName={handleEditName}
               onEditMapping={handleEditMapping}
-              onReorder={handleReorderCharts}
+              onLayoutChange={handleLayoutChange}
               editingChartId={editingChartIdForMapping || undefined}
               onDeleteSource={handleDeleteSource}
+              onDeleteChart={handleDeleteChart}
             />
           )}
 
@@ -192,10 +208,16 @@ export default function App() {
         onConfirm={handleConfirmRename}
       />
 
-      {/* Background Decoration */}
-      <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
-        <div className="absolute -top-1/4 -right-1/4 w-[800px] h-[800px] bg-tertiary/5 blur-[120px] rounded-full"></div>
-        <div className="absolute -bottom-1/4 -left-1/4 w-[600px] h-[600px] bg-primary/5 blur-[100px] rounded-full"></div>
+      {/* Background Decoration - Optimized for smooth scroll */}
+      <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden bg-surface-container-lowest">
+        <div 
+          className="absolute -top-1/4 -right-1/4 w-[800px] h-[800px] bg-tertiary/5 blur-[120px] rounded-full will-change-transform"
+          style={{ transform: 'translateZ(0)' }}
+        ></div>
+        <div 
+          className="absolute -bottom-1/4 -left-1/4 w-[600px] h-[600px] bg-primary/5 blur-[100px] rounded-full will-change-transform"
+          style={{ transform: 'translateZ(0)' }}
+        ></div>
       </div>
     </div>
   );

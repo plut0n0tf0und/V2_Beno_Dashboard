@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, Reorder, useDragControls } from 'motion/react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, ChevronUp, Database, Plus, MoreVertical, Layout, Edit2, Share2 } from 'lucide-react';
+import { Responsive, WidthProvider } from 'react-grid-layout/legacy';
 import { Project, ChartConfig, DataSource } from '../types';
 import BentoChart from '../components/BentoChart';
+import AddDataSourceSection from '../components/AddDataSourceSection';
+import MappingSection from '../components/MappingSection';
+import HorizontalStepper from '../components/HorizontalStepper';
+
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 interface ProjectDetailsProps {
   project: Project;
@@ -14,57 +20,15 @@ interface ProjectDetailsProps {
   charts: ChartConfig[];
   onEditName: (id: string) => void;
   onEditMapping: (id: string) => void;
-  onReorder: (newOrder: ChartConfig[]) => void;
+  onLayoutChange: (newLayout: any[]) => void;
   editingChartId?: string;
   onDeleteSource: (id: string) => void;
+  onDeleteChart: (id: string) => void;
 }
 
 const chartTypes = ["Bar Chart", "Line Chart", "Pie Chart", "Area Chart", "Histogram", "Scatter Plot", "Radar Chart"];
 const labelFields = ["name", "slug", "description", "metadata.lastUpdated"];
 const valueFields = ["id", "parent", "count", "metadata.popularityScore"];
-
-const ChartReorderItem = ({ chart, onEditName, onEditMapping, editingChartId }: any) => {
-  const controls = useDragControls();
-  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
-
-  const startDrag = (event: React.PointerEvent) => {
-    timerRef.current = setTimeout(() => {
-      controls.start(event);
-    }, 2000);
-  };
-
-  const cancelDrag = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-  };
-
-  return (
-    <Reorder.Item 
-      value={chart}
-      dragListener={false}
-      dragControls={controls}
-      onPointerDown={startDrag}
-      onPointerUp={cancelDrag}
-      onPointerLeave={cancelDrag}
-      onPointerCancel={cancelDrag}
-      className="relative group/reorder"
-    >
-      <div className="rounded-2xl transition-all duration-300 overflow-visible relative min-h-[300px] lg:min-h-[400px] hover:shadow-[0_0_20px_rgba(var(--color-tertiary),0.1)] cursor-auto focus-within:cursor-auto flex flex-col items-stretch justify-start">
-        <BentoChart 
-          config={chart} 
-          onEditName={onEditName} 
-          onEditMapping={onEditMapping}
-          onMaximize={() => {}}
-          isEditing={editingChartId === chart.id}
-        />
-      </div>
-    </Reorder.Item>
-  );
-};
-
-import DataSourceMappingModal from '../components/DataSourceMappingModal';
 
 export default function ProjectDetails({ 
   project, 
@@ -76,15 +40,43 @@ export default function ProjectDetails({
   charts,
   onEditName,
   onEditMapping,
-  onReorder,
+  onLayoutChange,
   editingChartId,
-  onDeleteSource
+  onDeleteSource,
+  onDeleteChart
 }: ProjectDetailsProps) {
+  const [activeStep, setActiveStep] = useState(4); // Default to Dashboard view
+  const [direction, setDirection] = useState<1 | -1>(1); // 1 = left-to-right, -1 = right-to-left
   const [isSourceOpen, setIsSourceOpen] = useState(dataSources.length === 0);
   const [isMappingOpen, setIsMappingOpen] = useState(dataSources.length > 0 && selectedSourceId !== null);
   const [isDataSelectionOpen, setIsDataSelectionOpen] = useState(false);
   const [highlightMapping, setHighlightMapping] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(charts.length === 0);
+  const dataSelectionRef = React.useRef<HTMLDivElement>(null);
+  const skipAutoScrollRef = React.useRef(false);
+
+  // Layout conversion for react-grid-layout
+  const layouts = useMemo(() => ({
+    lg: charts.map(c => ({
+      i: c.id,
+      x: c.layout?.x ?? 0,
+      y: c.layout?.y ?? Infinity,
+      w: c.layout?.w ?? 6,
+      h: c.layout?.h ?? 4,
+      minW: 4, // Approx 390px on 12 col
+      minH: 3,
+    }))
+  }), [charts]);
+
+  const handleStartOnboarding = () => {
+    setSelectedChart('');
+    setSelectedLabel('');
+    setSelectedValue('');
+    setDirection(1);
+    setActiveStep(1);
+    setIsSourceOpen(true);
+    setIsMappingOpen(false);
+    setIsDataSelectionOpen(false);
+  };
 
   // Automatically collapse source section and open mapping when a source is selected
   useEffect(() => {
@@ -94,12 +86,6 @@ export default function ProjectDetails({
     }
   }, [selectedSourceId]);
 
-  // Force modal open if no charts exist
-  useEffect(() => {
-    if (charts.length === 0) {
-      setIsModalOpen(true);
-    }
-  }, [charts.length]);
 
   // Sync mapping panel with editing chart
   useEffect(() => {
@@ -109,9 +95,10 @@ export default function ProjectDetails({
         setSelectedChart(chart.type);
         setSelectedLabel(chart.labelField);
         setSelectedValue(chart.valueField);
+        setActiveStep(2); // Step 2 is Mapping
+        setIsSourceOpen(false);
         setIsMappingOpen(true);
         setIsDataSelectionOpen(false);
-        setIsModalOpen(true);
       }
     }
   }, [editingChartId, charts]);
@@ -124,11 +111,38 @@ export default function ProjectDetails({
   const isMappingEnabled = selectedSourceId !== null;
   const isSubFieldsEnabled = isMappingEnabled && selectedChart !== '';
 
+  // Stepper configuration
+  const stepperSteps = [
+    { id: 1, label: 'Configuration', isActive: activeStep < 4, isCompleted: selectedSourceId !== null && selectedChart !== '' && selectedLabel !== '' && selectedValue !== '' && charts.length > 0 },
+    { id: 2, label: 'Dashboard', isActive: activeStep === 4, isCompleted: charts.length > 0 }
+  ];
+
+  const handleStepClick = (stepId: number) => {
+    // If we're already in the Dashboard view (step 4), prevent navigating back to step 1
+    if (activeStep === 4 && stepId === 1) return;
+
+    if (stepId === 1) {
+      setDirection(-1); // going back = right-to-left exit, left-to-right enter
+      setActiveStep(1);
+      setIsSourceOpen(true);
+      setIsMappingOpen(false);
+      setIsDataSelectionOpen(false);
+    } else if (stepId === 2) {
+      setDirection(1); // going forward = left-to-right exit, right-to-left enter
+      setActiveStep(4);
+      setIsSourceOpen(false);
+      setIsMappingOpen(false);
+      setIsDataSelectionOpen(false);
+    }
+  };
+
   const handleEditMappingInternal = (id: string) => {
+    setActiveStep(2); // Step 2 is the Mapping phase
+    setIsSourceOpen(false);
     setIsMappingOpen(true);
     setIsDataSelectionOpen(false);
-    setIsModalOpen(true);
     setHighlightMapping(true);
+    skipAutoScrollRef.current = true;
     setTimeout(() => setHighlightMapping(false), 2000);
     onEditMapping(id);
   };
@@ -137,119 +151,200 @@ export default function ProjectDetails({
     setSelectedChart('');
     setSelectedLabel('');
     setSelectedValue('');
-    setIsModalOpen(false);
     setIsDataSelectionOpen(false);
   };
 
-  const handleOpenDataSelection = () => {
-    setIsMappingOpen(false);
-    setIsDataSelectionOpen(true);
-  };
+  useEffect(() => {
+    // Only auto-advance to step 3 if we are currently in the config phase (steps 1, 2, or 3)
+    // This prevents the UI from snapping back to step 3 when we try to move to step 4 (Dashboard)
+    if (selectedLabel && selectedValue && activeStep < 4) {
+      if (!isDataSelectionOpen) {
+        setIsDataSelectionOpen(true);
+        setActiveStep(3);
+        
+        // Skip scroll if we are just entering "Edit" mode
+        if (skipAutoScrollRef.current) {
+          skipAutoScrollRef.current = false;
+          return;
+        }
+
+        // Small delay to allow the animation/layout to start before scrolling
+        setTimeout(() => {
+          dataSelectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 400);
+      }
+    } else {
+      setIsDataSelectionOpen(false);
+    }
+  }, [selectedLabel, selectedValue, isDataSelectionOpen]);
 
   return (
-    <div className={`flex flex-col lg:flex-row gap-4 lg:gap-6 min-h-screen transition-all duration-500 pb-10 lg:pb-0 ${highlightMapping ? 'bg-black/20' : ''}`}>
-      <DataSourceMappingModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        // Props for AddDataSourceSection
-        isSourceOpen={isSourceOpen}
-        setIsSourceOpen={setIsSourceOpen}
-        dataSources={dataSources}
-        selectedSourceId={selectedSourceId}
-        onSelectSource={(id) => {
-          onSelectSource(id);
-          setIsSourceOpen(false);
-          setIsMappingOpen(true);
-        }}
-        onAddSource={onAddSource}
-        onDeleteSource={onDeleteSource}
-        // Props for MappingSection
-        isMappingOpen={isMappingOpen}
-        setIsMappingOpen={setIsMappingOpen}
-        isMappingEnabled={isMappingEnabled}
-        selectedChart={selectedChart}
-        setSelectedChart={setSelectedChart}
-        selectedLabel={selectedLabel}
-        setSelectedLabel={setSelectedLabel}
-        selectedValue={selectedValue}
-        setSelectedValue={setSelectedValue}
-        isSubFieldsEnabled={isSubFieldsEnabled}
-        onOpenDataSelection={handleOpenDataSelection}
-        editingChartId={editingChartId}
-        highlightMapping={highlightMapping}
-        chartTypes={chartTypes}
-        labelFields={labelFields}
-        valueFields={valueFields}
-        onCancelEdit={handleCancelEdit}
-        isClosable={charts.length > 0}
-        // Section 3
-        isDataSelectionOpen={isDataSelectionOpen}
-        setIsDataSelectionOpen={setIsDataSelectionOpen}
-        initialName={editingChartId ? charts.find(c => c.id === editingChartId)?.name : ''}
-        onCreateChart={(name, data) => {
-          onCreateChart(name, data, { chartType: selectedChart, label: selectedLabel, value: selectedValue });
-          setIsDataSelectionOpen(false);
-          setIsModalOpen(false);
-          if (editingChartId) {
-            handleCancelEdit(); // reset mapping state
-          }
-        }}
-      />
+    <div className={`min-h-[calc(100vh-80px)] transition-all duration-500 ${highlightMapping ? 'bg-black/20' : ''}`}>
+      {/* Horizontal Stepper */}
+      <div className="bg-surface-container-low border-b border-on-surface-variant/10">
+        <HorizontalStepper 
+          steps={stepperSteps} 
+          onStepClick={handleStepClick}
+        />
+      </div>
 
-      {/* Right Column: Dashboard */}
-      <div 
-        className={`flex-grow bg-surface-container rounded-2xl p-4 flex flex-col gap-4 shadow-sm transition-all duration-500 ${highlightMapping ? 'opacity-20 blur-[4px] scale-98' : 'opacity-100'}`}
-      >
-        <div className="flex flex-col gap-4 w-full h-max">
-          <div className="flex items-center justify-between">
-          <h2 className="font-headline text-xl lg:text-2xl font-bold text-on-surface tracking-tight">Dashboard</h2>
-          <div className="flex items-center gap-2">
-            {charts.length > 0 && (
-              <>
-                <button 
-                  onClick={() => {
-                    setSelectedChart('');
-                    setSelectedLabel('');
-                    setSelectedValue('');
-                    setIsSourceOpen(true);
-                    setIsMappingOpen(false);
-                    setIsModalOpen(true);
+      {/* Content Area with Slider Animation */}
+      <div className="relative">
+        <AnimatePresence mode="wait">
+          {activeStep < 4 ? (
+            // Configuration Screen (Full Page)
+            <motion.div
+              key="configuration"
+              initial={{ x: direction * -60, opacity: 0, scale: 0.98 }}
+              animate={{ x: 0, opacity: 1, scale: 1 }}
+              exit={{ x: direction * 60, opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="relative w-full"
+            >
+              <div className="flex flex-col gap-4 lg:gap-8 p-4 lg:p-10 max-w-4xl mx-auto pb-12">
+                <AddDataSourceSection 
+                  isSourceOpen={isSourceOpen}
+                  setIsSourceOpen={(open) => {
+                    setIsSourceOpen(open);
+                    if (open) setActiveStep(1);
                   }}
-                  className="flex items-center gap-2 bg-on-surface text-surface px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-sm hover:opacity-90 active:scale-95 transition-all"
-                >
-                  <div className="w-4 h-4 rounded-full border-[1.5px] border-surface flex items-center justify-center">
-                    <Plus className="w-3 h-3 text-surface" strokeWidth={3} />
+                  dataSources={dataSources}
+                  selectedSourceId={selectedSourceId}
+                  onSelectSource={(id) => {
+                    onSelectSource(id);
+                    setActiveStep(2);
+                    setIsSourceOpen(false);
+                    setIsMappingOpen(true);
+                  }}
+                  onAddSource={(url, name) => {
+                    onAddSource(url, name);
+                    setActiveStep(2);
+                    setIsSourceOpen(false);
+                    setIsMappingOpen(true);
+                  }}
+                  onDeleteSource={onDeleteSource}
+                />
+                <MappingSection 
+                  isMappingOpen={isMappingOpen && (activeStep === 2 || activeStep === 3)}
+                  setIsMappingOpen={setIsMappingOpen}
+                  isMappingEnabled={isMappingEnabled}
+                  selectedChart={selectedChart}
+                  setSelectedChart={setSelectedChart}
+                  selectedLabel={selectedLabel}
+                  setSelectedLabel={setSelectedLabel}
+                  selectedValue={selectedValue}
+                  setSelectedValue={setSelectedValue}
+                  isSubFieldsEnabled={isSubFieldsEnabled}
+                  isDataSelectionOpen={isDataSelectionOpen}
+                  setIsDataSelectionOpen={setIsDataSelectionOpen}
+                  isSelectionEnabled={selectedChart !== '' && selectedLabel !== '' && selectedValue !== ''}
+                  initialName={editingChartId ? charts.find(c => c.id === editingChartId)?.name : ''}
+                  onConfirm={(name, data) => {
+                    onCreateChart(name, data, { chartType: selectedChart, label: selectedLabel, value: selectedValue });
+                    setDirection(1);
+                    setActiveStep(4);
+                    setIsDataSelectionOpen(false);
+                    if (editingChartId) {
+                      handleCancelEdit();
+                    }
+                  }}
+                  editingChartId={editingChartId}
+                  highlightMapping={highlightMapping}
+                  chartTypes={chartTypes}
+                  labelFields={labelFields}
+                  valueFields={valueFields}
+                  dataSelectionRef={dataSelectionRef}
+                  onCancelEdit={handleCancelEdit}
+                />
+              </div>
+            </motion.div>
+          ) : (
+            // Dashboard Screen (Full Page)
+            <motion.div
+              key="dashboard"
+              initial={{ x: direction * 60, opacity: 0, scale: 0.98 }}
+              animate={{ x: 0, opacity: 1, scale: 1 }}
+              exit={{ x: direction * -60, opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className={`relative w-full bg-surface-container ${highlightMapping ? 'opacity-20 blur-[4px] scale-98' : 'opacity-100'}`}
+            >
+              <div className="flex flex-col gap-4 lg:gap-8 p-4 lg:p-10 max-w-7xl mx-auto pb-12">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-headline text-xl lg:text-3xl font-bold text-on-surface tracking-tighter">Dashboard</h2>
+                  <div className="flex items-center gap-2">
+                    {charts.length > 0 && (
+                      <>
+                        <button 
+                          onClick={handleStartOnboarding}
+                          className="flex items-center gap-2 bg-on-surface text-surface px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-lg hover:opacity-95 active:scale-95 transition-all"
+                        >
+                          <Plus className="w-5 h-5 text-surface" strokeWidth={3} />
+                          <span>Add New Chart</span>
+                        </button>
+                        <button className="flex items-center justify-center w-10 h-10 text-on-surface hover:text-on-surface border border-outline-variant/20 rounded-xl hover:bg-surface-container-high active:scale-95 transition-all outline-none">
+                          <Share2 className="w-5 h-5" />
+                        </button>
+                      </>
+                    )}
                   </div>
-                  <span>Add New Chart</span>
-                </button>
-                <button className="flex items-center justify-center w-9 h-9 text-on-surface hover:text-on-surface border border-outline-variant/20 rounded-xl hover:bg-surface-container-high active:scale-95 transition-all outline-none">
-                  <Share2 className="w-4 h-4" />
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-        
-        <Reorder.Group 
-          axis="y" 
-          values={charts} 
-          onReorder={onReorder}
-          className="flex flex-col gap-4"
-        >
-          {charts.map((chart) => (
-            <ChartReorderItem 
-              key={chart.id} 
-              chart={chart}
-              onEditName={onEditName}
-              onEditMapping={handleEditMappingInternal}
-              editingChartId={editingChartId}
-            />
-          ))}
-        </Reorder.Group>
-        
-        {/* Spacer for bottom of right scroll */}
-        <div className="h-4 lg:h-12 flex-shrink-0" />
-        </div>
+                </div>
+                
+                <ResponsiveGridLayout
+                  className="layout"
+                  layouts={layouts}
+                  breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+                  cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+                  rowHeight={100}
+                  draggableHandle=".drag-handle"
+                  onLayoutChange={(currentLayout) => onLayoutChange(currentLayout)}
+                  margin={[20, 20]}
+                >
+                  {charts.map((chart) => (
+                    <div key={chart.id} className="relative group/grid-item">
+                      <div className="w-full h-full bg-surface-container-low rounded-2xl border border-tertiary/5 hover:border-tertiary/20 transition-all duration-300 shadow-xl overflow-hidden pointer-events-auto">
+                        <div className="drag-handle absolute top-0 left-0 right-0 h-10 cursor-grab active:cursor-grabbing z-[60]" />
+                        <BentoChart 
+                          config={chart} 
+                          onEditName={onEditName} 
+                          onEditMapping={handleEditMappingInternal}
+                          onMaximize={() => {}}
+                          onDeleteChart={onDeleteChart}
+                          isEditing={editingChartId === chart.id}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </ResponsiveGridLayout>
+                
+                {charts.length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-12 lg:py-20 gap-6 bg-surface-container-high/20 rounded-[2.5rem] border-2 border-dashed border-on-surface-variant/10 group/empty">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-20 h-20 rounded-full bg-surface-container-highest flex items-center justify-center mb-1 shadow-inner group-hover/empty:scale-110 transition-transform duration-500">
+                        <Layout className="w-8 h-8 text-tertiary" />
+                      </div>
+                      <h3 className="text-xl lg:text-2xl font-black text-on-surface tracking-tight">Your Dashboard is Empty</h3>
+                      <p className="text-on-surface-variant text-center max-w-xs px-6 font-medium leading-relaxed opacity-60 text-sm">
+                        Start visualizing your project by adding your first dynamic chart.
+                      </p>
+                    </div>
+
+                    <button 
+                      onClick={handleStartOnboarding}
+                      className="group/btn flex items-center gap-4 bg-tertiary text-surface px-8 py-3.5 rounded-2xl text-base lg:text-lg font-black shadow-[0_20px_40px_-15px_rgba(var(--color-tertiary),0.4)] hover:shadow-[0_25px_50px_-12px_rgba(var(--color-tertiary),0.5)] active:scale-95 transition-all duration-300 relative overflow-hidden"
+                    >
+                      <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
+                      <Plus className="w-6 h-6 text-surface relative z-10" strokeWidth={4} />
+                      <span className="relative z-10">Add Your First Chart</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Spacer for bottom of right scroll */}
+                <div className="h-4 lg:h-12 flex-shrink-0" />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

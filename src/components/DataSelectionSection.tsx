@@ -1,6 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
+import { 
+  useReactTable, 
+  getCoreRowModel, 
+  flexRender, 
+  createColumnHelper 
+} from '@tanstack/react-table';
 import { mockJsonData } from '../data/mockData';
 
 interface DataSelectionSectionProps {
@@ -24,55 +30,122 @@ export default function DataSelectionSection({
   initialName = '',
   onConfirm
 }: DataSelectionSectionProps) {
-  const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
+  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [chartName, setChartName] = useState(initialName);
+  const [filterText, setFilterText] = useState("");
+
+  const columnHelper = createColumnHelper<any>();
+
+  const getNestedValue = (obj: any, path: string) => {
+    if (!path) return "";
+    return path.split('.').reduce((acc, part) => acc && acc[part], obj) || "";
+  };
+
+  const columns = [
+    columnHelper.display({
+      id: 'select',
+      header: ({ table }) => (
+        <div 
+          onClick={table.getToggleAllRowsSelectedHandler()}
+          className={`w-5 h-5 rounded border-2 cursor-pointer flex items-center justify-center transition-all flex-shrink-0 ${
+            table.getIsAllRowsSelected() 
+              ? 'bg-tertiary border-tertiary' 
+              : table.getIsSomeRowsSelected()
+                ? 'bg-tertiary/20 border-tertiary'
+                : 'border-on-surface-variant/30 hover:border-tertiary'
+          }`}
+        >
+          {(table.getIsAllRowsSelected() || table.getIsSomeRowsSelected()) && (
+            <svg className="w-3 h-3 text-surface" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+          )}
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div 
+          onClick={row.getToggleSelectedHandler()}
+          className={`w-5 h-5 rounded border-2 cursor-pointer flex items-center justify-center transition-all flex-shrink-0 ${
+            row.getIsSelected()
+              ? 'bg-tertiary border-tertiary'
+              : 'border-on-surface-variant/30 group-hover:border-tertiary'
+          }`}
+        >
+          {row.getIsSelected() && (
+            <svg className="w-3 h-3 text-surface" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+          )}
+        </div>
+      ),
+    }),
+    columnHelper.accessor(labelField || 'label', {
+      id: 'label',
+      header: () => <span className="text-sm font-bold text-on-surface uppercase tracking-wider">{labelField || 'LABEL'}</span>,
+      cell: info => (
+        <span className="text-base text-on-surface font-medium line-clamp-1 leading-normal">
+          {String(info.getValue() || '')}
+        </span>
+      ),
+    }),
+    columnHelper.accessor(valueField || 'value', {
+      id: 'value',
+      header: () => <span className="text-sm font-bold text-on-surface uppercase tracking-wider text-right block w-full">{valueField || 'VALUES'}</span>,
+      cell: info => (
+        <span className="text-sm font-mono text-on-surface-variant font-bold text-right leading-normal block w-full">
+          {String(info.getValue() || '')}
+        </span>
+      ),
+    }),
+  ];
+
+  const filteredData = useMemo(() => {
+    return mockJsonData.products.filter(item => {
+      const labelVal = String(getNestedValue(item, labelField));
+      const valueVal = String(getNestedValue(item, valueField));
+      return labelVal.toLowerCase().includes(filterText.toLowerCase()) ||
+             valueVal.toLowerCase().includes(filterText.toLowerCase());
+    });
+  }, [filterText, labelField, valueField]);
+
+  const table = useReactTable({
+    data: filteredData,
+    columns,
+    state: {
+      rowSelection,
+    },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   // Reset state when opening
   useEffect(() => {
     if (isOpen) {
-      setSelectedIndices([]);
+      setRowSelection({});
       setChartName(initialName);
     }
   }, [isOpen, initialName]);
 
-  const toggleIndex = (index: number) => {
-    setSelectedIndices(prev => 
-      prev.includes(index) 
-        ? prev.filter(i => i !== index) 
-        : [...prev, index]
-    );
-  };
-
-  const toggleAll = () => {
-    if (selectedIndices.length === mockJsonData.products.length) {
-      setSelectedIndices([]);
-    } else {
-      setSelectedIndices(mockJsonData.products.map((_, i) => i));
-    }
-  };
-
-  const isConfirmed = selectedIndices.length > 0 && chartName.trim().length > 0;
+  const isConfirmed = Object.keys(rowSelection).length > 0 && chartName.trim().length > 0;
 
   const handleConfirm = () => {
     if (isConfirmed) {
-      const selectedData = selectedIndices.map(i => mockJsonData.products[i]);
+      const selectedData = table.getSelectedRowModel().rows.map(row => row.original);
       onConfirm(chartName, selectedData);
     }
   };
 
   return (
-    <div className="bg-surface-container rounded-2xl p-4 lg:p-6 flex flex-col gap-4 lg:gap-6 shadow-sm transition-all duration-500 relative z-[60]">
+    <div className="flex flex-col gap-6 transition-all duration-500 relative z-[60]">
       <div 
-        className="flex items-center justify-between cursor-pointer group"
+        className="flex items-center justify-between cursor-pointer group px-1"
         onClick={() => {
           if (isSelectionEnabled) setIsOpen(!isOpen);
         }}
       >
         <div className="flex items-center gap-4">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-colors ${isSelectionEnabled ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-on-surface-variant/40'}`}>
-            3
-          </div>
-          <h3 className={`font-headline text-lg font-bold transition-colors ${isSelectionEnabled ? 'text-on-surface group-hover:text-tertiary' : 'text-on-surface-variant/40'}`}>
+          <h3 className={`font-headline text-lg font-bold tracking-tight transition-colors leading-tight ${isSelectionEnabled ? 'text-on-surface group-hover:text-tertiary' : 'text-on-surface-variant/40'}`}>
             Select Data
           </h3>
         </div>
@@ -90,87 +163,92 @@ export default function DataSelectionSection({
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
-            className="overflow-hidden"
+            className="overflow-visible pb-4"
           >
-            <div className="pt-2 flex flex-col gap-6">
+            <div className="pt-4 flex flex-col gap-8">
               {!isSelectionEnabled ? (
                 <div className="h-24 flex items-center justify-center border-2 border-dashed border-on-surface-variant/10 rounded-xl">
-                  <span className="text-xs text-on-surface-variant font-medium text-center px-4">Complete mapping first to select data</span>
+                  <span className="text-sm text-on-surface-variant font-medium text-center px-4 leading-normal">Complete mapping first to select data</span>
                 </div>
               ) : (
                 <>
-                  <div className="bg-surface-container-low rounded-xl border border-outline-variant/10 overflow-hidden flex flex-col">
-                    {/* Table Header */}
-                    <div className="flex items-center bg-surface-container-high/40 px-4 lg:px-6 py-3 border-b border-outline-variant/10">
-                      <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center w-1/2 pr-4">
-                          <div className="flex items-center gap-3">
-                            {/* Check-All Box */}
-                            <div 
-                              onClick={toggleAll}
-                              className={`w-5 h-5 rounded border-2 cursor-pointer flex items-center justify-center transition-all flex-shrink-0 ${
-                                selectedIndices.length === mockJsonData.products.length 
-                                  ? 'bg-tertiary border-tertiary' 
-                                  : selectedIndices.length > 0
-                                    ? 'bg-tertiary/20 border-tertiary'
-                                    : 'border-on-surface-variant/30 hover:border-tertiary'
-                              }`}
-                            >
-                              {selectedIndices.length > 0 && (
-                                <svg className="w-3 h-3 text-surface" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                </svg>
-                              )}
-                            </div>
-                            <span className="text-sm font-bold text-on-surface uppercase tracking-wider">
-                              {labelField || 'LABEL'}
-                            </span>
-                          </div>
-                        </div>
-                        <span className="text-sm font-bold text-on-surface uppercase tracking-wider text-right">
-                          {valueField || 'VALUES'}
-                        </span>
-                      </div>
-                    </div>
+                  {/* Table Search */}
+                  <div className="relative group px-1">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant group-focus-within:text-tertiary transition-colors" />
+                    <input 
+                      type="text"
+                      value={filterText}
+                      onChange={(e) => setFilterText(e.target.value)}
+                      placeholder="Search and filter data rows..."
+                      className="w-full bg-surface-container-highest/30 border border-on-surface-variant/10 rounded-2xl py-3 pl-12 pr-10 text-base text-on-surface placeholder:text-on-surface-variant/40 focus:ring-4 focus:ring-tertiary/10 focus:border-tertiary/50 outline-none transition-all"
+                    />
+                    {filterText && (
+                      <button 
+                        onClick={() => setFilterText("")}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-on-surface-variant/10 text-on-surface-variant transition-all outline-none"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
 
-                    {/* Scrollable Body */}
-                    <div className="max-h-[250px] lg:max-h-[300px] overflow-y-auto min-[100px]:scrollbar-default divide-y divide-on-surface-variant/5">
-                      {mockJsonData.products.map((item: any, index: number) => (
-                        <div 
-                          key={index}
-                          onClick={() => toggleIndex(index)}
-                          className="flex items-center px-4 lg:px-6 py-3 hover:bg-surface-container transition-all cursor-pointer group"
-                        >
-                          <div className="flex items-center justify-between w-full">
-                            <div className="flex items-center gap-3 w-1/2 pr-4">
-                              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${
-                                selectedIndices.includes(index)
-                                  ? 'bg-tertiary border-tertiary'
-                                  : 'border-on-surface-variant/30 group-hover:border-tertiary'
-                              }`}>
-                                {selectedIndices.includes(index) && (
-                                  <svg className="w-3 h-3 text-surface" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                  </svg>
-                                )}
-                              </div>
-                              <span className="text-sm text-on-surface font-medium line-clamp-1">
-                                {labelField ? String(item[labelField] || '') : ''}
-                              </span>
-                            </div>
-                            <span className="text-sm font-mono text-on-surface-variant font-bold text-right">
-                              {valueField ? String(item[valueField] || '') : ''}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
+                  <div className="overflow-hidden border border-on-surface-variant/10 rounded-[1.5rem] bg-surface-container-highest/10">
+                    <div className="max-h-[800px] lg:max-h-[80vh] overflow-y-auto minimal-scrollbar">
+                      <table className="w-full border-collapse table-fixed">
+                        {table.getHeaderGroups().map(headerGroup => (
+                          <thead key={headerGroup.id} className="sticky top-0 z-20 bg-surface-container/90 backdrop-blur-md border-b border-outline-variant/10">
+                            <tr>
+                              {headerGroup.headers.map((header, index) => (
+                                <th 
+                                  key={header.id}
+                                  className={`px-4 lg:px-6 py-4 text-left ${index === 0 ? 'w-16' : index === 1 ? 'w-auto' : 'w-32'}`}
+                                >
+                                  {header.isPlaceholder
+                                    ? null
+                                    : flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext()
+                                      )}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                        ))}
+                        
+                        <tbody className="divide-y divide-on-surface-variant/5">
+                          {table.getRowModel().rows.length === 0 ? (
+                            <tr>
+                              <td colSpan={3} className="py-20 text-center">
+                                <span className="text-sm text-on-surface-variant/50">No matching data found</span>
+                              </td>
+                            </tr>
+                          ) : (
+                            table.getRowModel().rows.map(row => (
+                              <tr 
+                                key={row.id}
+                                className={`hover:bg-surface-container transition-all cursor-pointer group ${row.getIsSelected() ? 'bg-tertiary/10' : ''}`}
+                                onClick={row.getToggleSelectedHandler()}
+                              >
+                                {row.getVisibleCells().map((cell, index) => (
+                                  <td 
+                                    key={cell.id}
+                                    className={`px-4 lg:px-6 py-5 uppercase ${index === 0 ? 'w-16' : index === 1 ? 'w-auto' : 'w-32'}`}
+                                  >
+                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
 
-                  {/* Form Section */}
-                  <div className="bg-surface-container-low rounded-2xl p-4 lg:p-6 border border-outline-variant/10 space-y-4">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface">
+                  {/* Form Section - Flattened */}
+                  <div className="pt-2 space-y-5">
+                    <div className="space-y-2 px-1">
+                      <label className="text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant/60">
                         {initialName ? 'UPDATE CHART NAME' : 'Enter chart name'}
                       </label>
                       <input 
@@ -178,21 +256,21 @@ export default function DataSelectionSection({
                         value={chartName}
                         onChange={(e) => setChartName(e.target.value)}
                         placeholder={`e.g. Dashboard ${chartType || 'Chart'}`}
-                        className="w-full bg-surface-container-highest border border-on-surface-variant/10 rounded-xl py-2.5 px-4 text-sm text-on-surface placeholder:text-on-surface-variant/40 focus:ring-2 focus:ring-tertiary/20 outline-none transition-all"
+                        className="w-full bg-surface-container border-b border-on-surface-variant/10 hover:border-tertiary/50 focus:border-tertiary px-0 py-2.5 text-base text-on-surface placeholder:text-on-surface-variant/30 outline-none transition-all leading-normal bg-transparent"
                       />
                     </div>
 
-                    <div className="flex flex-col gap-2 pt-2">
+                    <div className="flex justify-end pt-4">
                       <button 
                         onClick={handleConfirm}
                         disabled={!isConfirmed}
-                        className={`w-full py-2.5 rounded-xl font-bold text-sm transition-all shadow-sm ${
+                        className={`px-12 py-3 rounded-full font-bold text-sm uppercase tracking-widest transition-all shadow-lg hover:shadow-tertiary/20 ${
                           isConfirmed 
-                            ? 'bg-on-surface text-surface hover:opacity-90 active:scale-[0.98]' 
+                            ? 'bg-tertiary text-surface hover:opacity-95 active:scale-[0.97]' 
                             : 'bg-on-surface-variant/20 text-on-surface-variant cursor-not-allowed opacity-50'
                         }`}
                       >
-                        {initialName ? 'Update existing chart' : 'Show selected data in new chart'}
+                        {initialName ? 'Update mapping' : 'Show selected data in new chart'}
                       </button>
                     </div>
                   </div>

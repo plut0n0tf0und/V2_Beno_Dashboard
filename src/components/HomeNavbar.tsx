@@ -32,7 +32,7 @@ export default function HomeNavbar({ isDarkMode, onToggleDarkMode, onToggleSideb
               <path d="M6 3v12"/><path d="M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M12 12h3"/>
             </svg>
           </div>
-          <span className="hidden sm:inline-block font-headline text-sm font-bold text-on-surface whitespace-nowrap">WOOOYS's Org</span>
+          <span className="hidden sm:inline-block font-headline text-base font-bold text-on-surface whitespace-nowrap leading-tight">WOOOYS's Org</span>
           <div className="flex flex-col ml-1">
             <ChevronDown className="w-3 h-3 text-on-surface-variant group-hover:text-on-surface" />
           </div>
@@ -40,25 +40,21 @@ export default function HomeNavbar({ isDarkMode, onToggleDarkMode, onToggleSideb
       </div>
 
       <div className="flex items-center gap-3 sm:gap-6 shrink-0">
-        {/* Search */}
-        <div className="relative group hidden md:block min-w-[200px] lg:min-w-[300px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant group-focus-within:text-tertiary transition-colors" />
-          <input 
-            type="text" 
-            placeholder="Search..." 
-            className="w-full bg-surface-container border border-on-surface-variant/10 rounded-full py-1.5 pl-10 pr-4 text-sm text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-tertiary/20 transition-all outline-none"
-          />
-        </div>
+
 
         {/* English Toggle */}
         <div className="hidden sm:flex items-center gap-2 px-2 py-1.5 cursor-pointer text-on-surface-variant hover:text-on-surface transition-colors group">
           <Globe className="w-4 h-4" />
-          <span className="text-xs font-semibold">English</span>
-          <ChevronDown className="w-3 h-3 group-hover:translate-y-0.5 transition-transform" />
+          <span className="text-sm font-bold">English</span>
+          <ChevronDown className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" />
         </div>
 
         {/* Action Icons */}
         <div className="flex items-center gap-1.5 sm:gap-2">
+          <button className="hidden sm:flex p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-full hover:bg-surface-container group">
+            <Search className="w-5 h-5" />
+          </button>
+
           <button className="hidden sm:flex p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-full hover:bg-surface-container group">
             <HelpCircle className="w-5 h-5" />
           </button>

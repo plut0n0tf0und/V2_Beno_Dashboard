@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import DataSelectionSection from './DataSelectionSection';
+import CustomDropdown from './CustomDropdown';
 
 interface MappingSectionProps {
   isMappingOpen: boolean;
@@ -13,12 +15,18 @@ interface MappingSectionProps {
   selectedValue: string;
   setSelectedValue: (val: string) => void;
   isSubFieldsEnabled: boolean;
-  onOpenDataSelection: () => void;
+  isDataSelectionOpen: boolean;
+  setIsDataSelectionOpen: (open: boolean) => void;
+  isSelectionEnabled: boolean;
+  initialName?: string;
+  onConfirm: (chartName: string, selectedData: any[]) => void;
   editingChartId?: string;
   highlightMapping: boolean;
   chartTypes: string[];
   labelFields: string[];
   valueFields: string[];
+  paddingTop?: number;
+  dataSelectionRef?: React.RefObject<HTMLDivElement | null>;
   onCancelEdit: () => void;
 }
 
@@ -33,12 +41,17 @@ export default function MappingSection({
   selectedValue,
   setSelectedValue,
   isSubFieldsEnabled,
-  onOpenDataSelection,
+  isDataSelectionOpen,
+  setIsDataSelectionOpen,
+  isSelectionEnabled,
+  initialName,
+  onConfirm,
   editingChartId,
   highlightMapping,
   chartTypes,
   labelFields,
   valueFields,
+  dataSelectionRef,
   onCancelEdit
 }: MappingSectionProps) {
   return (
@@ -52,7 +65,7 @@ export default function MappingSection({
         ] 
       } : {}}
       transition={{ duration: 1, repeat: highlightMapping ? Infinity : 0 }}
-      className={`bg-surface-container rounded-2xl p-4 lg:p-6 flex flex-col gap-4 lg:gap-6 shadow-sm transition-all duration-500 relative z-[70] ${highlightMapping ? 'ring-4 ring-tertiary shadow-[0_0_50px_-12px_rgba(var(--color-tertiary),0.5)] bg-surface-container-high' : ''}`}
+      className={`w-full bg-surface-container rounded-[2rem] p-5 lg:p-8 flex flex-col gap-6 lg:gap-8 shadow-sm transition-all duration-500 relative z-[70] ${highlightMapping ? 'ring-4 ring-tertiary shadow-[0_0_50px_-12px_rgba(var(--color-tertiary),0.5)] bg-surface-container-high' : ''}`}
     >
       {highlightMapping && (
         <div className="absolute -inset-2 bg-tertiary/5 rounded-[22px] -z-10 animate-pulse" />
@@ -62,8 +75,8 @@ export default function MappingSection({
         onClick={() => setIsMappingOpen(!isMappingOpen)}
       >
         <div className="flex items-center gap-4">
-          <div className="w-8 h-8 rounded-full bg-on-surface-variant/20 flex items-center justify-center font-bold text-sm text-on-surface">2</div>
-          <h3 className="font-headline text-lg font-bold text-on-surface group-hover:text-tertiary transition-colors">Mapping</h3>
+          <div className="w-8 h-8 rounded-full bg-on-surface-variant/20 flex items-center justify-center font-bold text-sm text-on-surface leading-normal">2</div>
+          <h3 className="font-headline text-xl font-extrabold text-on-surface group-hover:text-tertiary transition-colors leading-tight">Mapping</h3>
         </div>
         {isMappingOpen ? (
           <ChevronUp className="w-5 h-5 text-on-surface-variant" />
@@ -79,29 +92,24 @@ export default function MappingSection({
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
-            className="overflow-hidden"
+            className="overflow-visible pb-4"
           >
-            <div className="pt-2">
+            <div className="pt-4">
               {!isMappingEnabled ? (
                 <div className="h-24 flex items-center justify-center border-2 border-dashed border-on-surface-variant/10 rounded-xl">
-                  <span className="text-xs text-on-surface-variant font-medium text-center px-4">Add data source first to start mapping</span>
+                  <span className="text-sm text-on-surface-variant font-medium text-center px-4 leading-normal">Add data source first to start mapping</span>
                 </div>
               ) : (
-                <div className="space-y-6 border border-on-surface-variant/10 rounded-2xl p-5 bg-surface-container-low">
+                <div className="space-y-8 border border-on-surface-variant/10 rounded-[2rem] p-6 lg:p-8 bg-surface-container-low pb-8">
                   {/* Chart Type */}
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface">1. CHART TYPE</label>
-                    <div className="relative">
-                      <select 
-                        value={selectedChart}
-                        onChange={(e) => setSelectedChart(e.target.value)}
-                        className="w-full bg-surface-container-highest border border-on-surface-variant/10 rounded-xl py-3 px-4 text-sm text-on-surface appearance-none outline-none focus:ring-2 focus:ring-tertiary/20 font-medium"
-                      >
-                        <option value="" disabled>Select a type of chart</option>
-                        {chartTypes.map(t => <option key={t} value={t}>{t}</option>)}
-                      </select>
-                      <ChevronDown className="absolute right-4 top-3.5 w-4 h-4 text-on-surface-variant pointer-events-none" />
-                    </div>
+                  <div className="space-y-4">
+                    <CustomDropdown 
+                      headerLabel="1. CHART TYPE"
+                      options={chartTypes}
+                      value={selectedChart}
+                      onChange={setSelectedChart}
+                      placeholder="Select a type of chart"
+                    />
                   </div>
 
                   <div className="h-[1px] bg-on-surface-variant/10" />
@@ -109,58 +117,49 @@ export default function MappingSection({
                   {/* Data Mapping */}
                   <div className="space-y-4">
                     <div className="space-y-1">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface">2. DATA MAPPING</label>
-                      <p className="text-[10px] text-on-surface-variant leading-relaxed">
+                      <label className="text-sm font-bold uppercase tracking-widest text-on-surface-variant">2. DATA MAPPING</label>
+                      <p className="text-sm text-on-surface-variant leading-normal">
                         TIP: Select type of label and value to see and select data that needs to come in the chart
                       </p>
                     </div>
 
-                    <div className="space-y-3">
-                      <div className="space-y-1.5">
-                        <label className="text-sm font-semibold text-on-surface">Select type of label</label>
-                        <div className="relative">
-                          <select 
-                            value={selectedLabel}
-                            onChange={(e) => setSelectedLabel(e.target.value)}
-                            disabled={!isSubFieldsEnabled}
-                            className={`w-full border border-on-surface-variant/10 rounded-xl py-3 px-4 text-sm appearance-none outline-none focus:ring-2 focus:ring-tertiary/20 font-medium transition-all ${
-                              isSubFieldsEnabled ? 'bg-surface-container-highest text-on-surface' : 'bg-on-surface-variant/5 text-on-surface-variant/40 cursor-not-allowed'
-                            }`}
-                          >
-                            <option value="" disabled>Select field</option>
-                            {labelFields.map(f => <option key={f} value={f}>{f}</option>)}
-                          </select>
-                          <ChevronDown className={`absolute right-4 top-3.5 w-4 h-4 pointer-events-none ${isSubFieldsEnabled ? 'text-on-surface-variant' : 'text-on-surface-variant/20'}`} />
-                        </div>
-                      </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
+                      <CustomDropdown
+                        headerLabel="Select type of label"
+                        options={labelFields}
+                        value={selectedLabel}
+                        onChange={setSelectedLabel}
+                        disabled={!isSubFieldsEnabled}
+                        placeholder="Select field"
+                      />
 
-                      <div className="space-y-1.5">
-                        <label className="text-sm font-semibold text-on-surface">Select type of value</label>
-                        <div className="relative">
-                          <select 
-                            value={selectedValue}
-                            onChange={(e) => setSelectedValue(e.target.value)}
-                            disabled={!isSubFieldsEnabled}
-                            className={`w-full border border-on-surface-variant/10 rounded-xl py-3 px-4 text-sm appearance-none outline-none focus:ring-2 focus:ring-tertiary/20 font-medium transition-all ${
-                              isSubFieldsEnabled ? 'bg-surface-container-highest text-on-surface' : 'bg-on-surface-variant/5 text-on-surface-variant/40 cursor-not-allowed'
-                            }`}
-                          >
-                            <option value="" disabled>Select field</option>
-                            {valueFields.map(f => <option key={f} value={f}>{f}</option>)}
-                          </select>
-                          <ChevronDown className={`absolute right-4 top-3.5 w-4 h-4 pointer-events-none ${isSubFieldsEnabled ? 'text-on-surface-variant' : 'text-on-surface-variant/20'}`} />
-                        </div>
-                      </div>
+                      <CustomDropdown
+                        headerLabel="Select type of value"
+                        options={valueFields}
+                        value={selectedValue}
+                        onChange={setSelectedValue}
+                        disabled={!isSubFieldsEnabled}
+                        placeholder="Select field"
+                      />
                     </div>
                   </div>
 
                   {selectedLabel && selectedValue && (
-                    <button 
-                      onClick={onOpenDataSelection}
-                      className="w-full py-3 rounded-xl bg-on-surface text-surface font-bold text-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-lg animate-in fade-in slide-in-from-bottom-2 duration-300"
-                    >
-                      {editingChartId ? 'Update Mapping' : 'Select Label & Value'}
-                    </button>
+                    <div ref={dataSelectionRef} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                      {/* Integrated Divider */}
+                      <div className="h-px bg-on-surface-variant/10 w-full my-4" />
+                      
+                      <DataSelectionSection
+                        isOpen={isDataSelectionOpen}
+                        setIsOpen={setIsDataSelectionOpen}
+                        isSelectionEnabled={isSelectionEnabled}
+                        chartType={selectedChart}
+                        labelField={selectedLabel}
+                        valueField={selectedValue}
+                        initialName={initialName}
+                        onConfirm={onConfirm}
+                      />
+                    </div>
                   )}
                 </div>
               )}

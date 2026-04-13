@@ -39,7 +39,7 @@ export default function EditNameModal({ isOpen, onClose, onConfirm, initialName 
 
           <div className="p-6 space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+              <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
                 Chart Name
               </label>
               <input 

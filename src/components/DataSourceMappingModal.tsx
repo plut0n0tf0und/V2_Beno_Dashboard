@@ -5,7 +5,6 @@ import Lenis from 'lenis';
 import { DataSource } from '../types';
 import AddDataSourceSection from './AddDataSourceSection';
 import MappingSection from './MappingSection';
-import DataSelectionSection from './DataSelectionSection';
 
 interface DataSourceMappingModalProps {
   isOpen: boolean;
@@ -29,7 +28,6 @@ interface DataSourceMappingModalProps {
   selectedValue: string;
   setSelectedValue: (val: string) => void;
   isSubFieldsEnabled: boolean;
-  onOpenDataSelection: () => void;
   editingChartId?: string;
   highlightMapping: boolean;
   chartTypes: string[];
@@ -64,7 +62,6 @@ export default function DataSourceMappingModal({
   selectedValue,
   setSelectedValue,
   isSubFieldsEnabled,
-  onOpenDataSelection,
   editingChartId,
   highlightMapping,
   chartTypes,
@@ -146,23 +143,17 @@ export default function DataSourceMappingModal({
               selectedValue={selectedValue}
               setSelectedValue={setSelectedValue}
               isSubFieldsEnabled={isSubFieldsEnabled}
-              onOpenDataSelection={onOpenDataSelection}
+              isDataSelectionOpen={isDataSelectionOpen}
+              setIsDataSelectionOpen={setIsDataSelectionOpen}
+              isSelectionEnabled={selectedChart !== '' && selectedLabel !== '' && selectedValue !== ''}
+              initialName={initialName}
+              onConfirm={onCreateChart}
               editingChartId={editingChartId}
               highlightMapping={highlightMapping}
               chartTypes={chartTypes}
               labelFields={labelFields}
               valueFields={valueFields}
               onCancelEdit={onCancelEdit}
-            />
-            <DataSelectionSection
-              isOpen={isDataSelectionOpen}
-              setIsOpen={setIsDataSelectionOpen}
-              isSelectionEnabled={selectedChart !== '' && selectedLabel !== '' && selectedValue !== ''}
-              chartType={selectedChart}
-              labelField={selectedLabel}
-              valueField={selectedValue}
-              initialName={initialName}
-              onConfirm={onCreateChart}
             />
           </div>
         </div>

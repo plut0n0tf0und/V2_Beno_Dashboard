@@ -33,7 +33,7 @@ const BentoCard: React.FC<BentoCardProps> = ({
       <header className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-2 text-on-surface-variant">
           <Calendar className="w-4 h-4" />
-          <span className="font-body text-[10px] font-medium tracking-tight uppercase">{editedAt}</span>
+          <span className="font-body text-sm font-semibold tracking-tight uppercase">{editedAt}</span>
         </div>
         <button className="text-on-surface-variant hover:text-on-surface p-1 transition-colors rounded-md hover:bg-surface-container-highest">
           <MoreVertical className="w-4 h-4" />
@@ -41,8 +41,8 @@ const BentoCard: React.FC<BentoCardProps> = ({
       </header>
 
       <div className="mb-8">
-        <h3 className="font-headline text-2xl font-bold text-on-surface mb-1 tracking-tight">{title}</h3>
-        <p className="font-body text-sm text-on-surface-variant leading-relaxed">
+        <h3 className="font-headline text-2xl font-extrabold text-on-surface mb-1 tracking-tight leading-tight">{title}</h3>
+        <p className="font-body text-base text-on-surface-variant leading-normal">
           {description}
         </p>
       </div>
@@ -51,13 +51,13 @@ const BentoCard: React.FC<BentoCardProps> = ({
         {dataCount !== undefined && (
           <div className="flex items-center gap-2 bg-surface-container-lowest border border-on-surface-variant/10 px-3 py-1.5 rounded-md">
             <Database className="w-3.5 h-3.5 text-on-surface" />
-            <span className="text-xs font-bold text-on-surface">{dataCount} Data</span>
+            <span className="text-sm font-bold text-on-surface">{dataCount} Data</span>
           </div>
         )}
         {dashboardCount !== undefined && (
           <div className="flex items-center gap-2 bg-surface-container-lowest border border-on-surface-variant/10 px-3 py-1.5 rounded-md">
             <Layout className="w-3.5 h-3.5 text-on-surface" />
-            <span className="text-xs font-bold text-on-surface">{dashboardCount} Dashboard</span>
+            <span className="text-sm font-bold text-on-surface">{dashboardCount} Dashboard</span>
           </div>
         )}
       </div>

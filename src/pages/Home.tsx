@@ -22,7 +22,7 @@ export default function Home({ onProjectClick }: HomeProps) {
   return (
     <div className="space-y-6">
       <header className="flex flex-col gap-6">
-        <h2 className="font-headline text-3xl font-extrabold tracking-tighter text-on-surface">Projects</h2>
+        <h2 className="font-headline text-3xl font-extrabold tracking-tighter text-on-surface leading-tight">Projects</h2>
         
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4 flex-grow max-w-md w-full">
@@ -31,7 +31,7 @@ export default function Home({ onProjectClick }: HomeProps) {
               <input 
                 type="text" 
                 placeholder="Search for a project" 
-                className="w-full bg-surface-container-highest/50 border-none rounded-lg py-2 pl-12 pr-4 text-sm text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-tertiary/20 transition-all outline-none"
+                className="w-full bg-surface-container-highest/50 border-none rounded-lg py-2.5 pl-12 pr-4 text-base text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-tertiary/20 transition-all outline-none"
               />
             </div>
           </div>
@@ -52,9 +52,9 @@ export default function Home({ onProjectClick }: HomeProps) {
 
             <button 
               onClick={() => onProjectClick(mockProjects[0])}
-              className="bg-on-surface text-surface font-bold py-2 px-5 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-lg whitespace-nowrap text-sm"
+              className="bg-on-surface text-surface font-bold py-2.5 px-6 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-lg whitespace-nowrap text-base"
             >
-              <Plus className="w-4 h-4" strokeWidth={3} />
+              <Plus className="w-5 h-5" strokeWidth={3} />
               <span>New Project</span>
             </button>
           </div>
@@ -72,7 +72,7 @@ export default function Home({ onProjectClick }: HomeProps) {
             dashboardCount={project.dashboardCount}
             isActive={project.isActive}
             image={project.image}
-            onClick={() => {}}
+            onClick={() => onProjectClick(project)}
           />
         ))}
       </main>
