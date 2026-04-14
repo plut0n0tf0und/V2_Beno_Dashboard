@@ -215,13 +215,13 @@ export default function ProjectDetails({
 
   return (
     <div className={`min-h-[calc(100vh-80px)] transition-all duration-500 ${highlightMapping ? 'bg-black/20' : ''}`}>
-      {/* Horizontal Stepper */}
-      <div className="bg-surface-container-low border-b border-on-surface-variant/10">
+      {/* Horizontal Stepper — hidden, kept for reference */}
+      {/* <div className="bg-surface-container-low border-b border-on-surface-variant/10">
         <HorizontalStepper 
           steps={stepperSteps} 
           onStepClick={handleStepClick}
         />
-      </div>
+      </div> */}
 
       {/* Content Area with Slider Animation */}
       <div className="relative">
