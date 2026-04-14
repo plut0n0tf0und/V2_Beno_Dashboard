@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronDown, ChevronUp, Database, Plus, MoreVertical, Layout, Edit2, Share2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Database, Plus, MoreVertical, Layout, Edit2, Share2, ChevronRight } from 'lucide-react';
 import { Responsive, WidthProvider } from 'react-grid-layout/legacy';
 import { Project, ChartConfig, DataSource } from '../types';
 import BentoChart from '../components/BentoChart';
@@ -66,8 +66,11 @@ export default function ProjectDetails({
   const [highlightMapping, setHighlightMapping] = useState(false);
   const [selectedData, setSelectedData] = useState<any[]>([]);
   const [isChartNameOpen, setIsChartNameOpen] = useState(false);
+  const [editMode, setEditMode] = useState<'mapping' | 'name' | null>(null);
   const dataSelectionRef = React.useRef<HTMLDivElement>(null);
   const skipAutoScrollRef = React.useRef(false);
+  const skipMappingOpenRef = React.useRef(false);
+  const chartNameRef = React.useRef<HTMLDivElement>(null);
 
   // Layout conversion for react-grid-layout
   const layouts = useMemo(() => ({
@@ -100,6 +103,7 @@ export default function ProjectDetails({
     setIsMappingOpen(false);
     setIsDataSelectionOpen(false);
     setIsChartConfigOpen(false);
+    setEditMode(null);
     onCancelEditMapping();
   };
 
@@ -121,9 +125,12 @@ export default function ProjectDetails({
         setSelectedChart(chart.type);
         setSelectedLabel(chart.labelField);
         setSelectedValue(chart.valueField);
-        setActiveStep(2); // Step 2 is Mapping
+        setActiveStep(2);
         setIsSourceOpen(false);
-        setIsMappingOpen(true);
+        if (!skipMappingOpenRef.current) {
+          setIsMappingOpen(true);
+        }
+        skipMappingOpenRef.current = false;
         setIsDataSelectionOpen(false);
       }
     }
@@ -174,14 +181,39 @@ export default function ProjectDetails({
   };
 
   const handleEditMappingInternal = (id: string) => {
-    setActiveStep(2); // Step 2 is the Mapping phase
+    setEditMode('mapping');
+    setActiveStep(2);
     setIsSourceOpen(false);
+    setIsChartConfigOpen(false);
     setIsMappingOpen(true);
+    setIsChartNameOpen(false);
     setIsDataSelectionOpen(false);
     setHighlightMapping(true);
     skipAutoScrollRef.current = true;
     setTimeout(() => setHighlightMapping(false), 2000);
     onEditMapping(id);
+  };
+
+  const handleEditNameInternal = (id: string) => {
+    const chart = charts.find(c => c.id === id);
+    if (!chart) return;
+    setEditMode('name');
+    setActiveStep(2);
+    setSelectedChart(chart.type);
+    setSelectedLabel(chart.labelField);
+    setSelectedValue(chart.valueField);
+    setSelectedData(chart.data || []);
+    setIsSourceOpen(false);
+    setIsChartConfigOpen(false);
+    setIsMappingOpen(false);
+    setIsDataSelectionOpen(false);
+    setIsChartNameOpen(true);
+    skipMappingOpenRef.current = true;
+    onEditMapping(id);
+    // Scroll to chart name accordion after page transition
+    setTimeout(() => {
+      chartNameRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 500);
   };
 
   const handleCancelEdit = () => {
@@ -193,16 +225,19 @@ export default function ProjectDetails({
     setIsChartNameOpen(false);
     setIsChartConfigOpen(false);
     setIsDataSelectionOpen(false);
+    setEditMode(null);
   };
 
   useEffect(() => {
+    // In a restricted edit mode, never auto-advance the data selection step
+    if (editMode !== null) return;
     // Only auto-advance to step 3 if we are currently in the config phase (steps 1, 2, or 3)
     // This prevents the UI from snapping back to step 3 when we try to move to step 4 (Dashboard)
     if (selectedLabel && selectedValue && activeStep < 4) {
       if (!isDataSelectionOpen) {
         setIsDataSelectionOpen(true);
         setActiveStep(3);
-        
+
         // Skip scroll if we are just entering "Edit" mode
         if (skipAutoScrollRef.current) {
           skipAutoScrollRef.current = false;
@@ -217,7 +252,7 @@ export default function ProjectDetails({
     } else {
       setIsDataSelectionOpen(false);
     }
-  }, [selectedLabel, selectedValue, isDataSelectionOpen]);
+  }, [selectedLabel, selectedValue, isDataSelectionOpen, editMode]);
 
   return (
     <div className={`min-h-[calc(100vh-80px)] transition-all duration-500 ${highlightMapping ? 'bg-black/20' : ''}`}>
@@ -243,6 +278,16 @@ export default function ProjectDetails({
               className="relative w-full"
             >
               <div className="flex flex-col gap-3 lg:gap-8 px-0 lg:px-10 pt-3 lg:pt-10 max-w-4xl mx-auto pb-12">
+                {/* Back to Dashboard — M3 text button, low emphasis */}
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => handleStepClick(2)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-on-surface-variant/50 hover:text-on-surface-variant hover:bg-on-surface-variant/8 transition-all outline-none select-none"
+                  >
+                    Back to Dashboard
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
                 <AddDataSourceSection
                   isSourceOpen={isSourceOpen}
                   setIsSourceOpen={(open) => {
@@ -272,7 +317,7 @@ export default function ProjectDetails({
                   isOpen={isChartConfigOpen}
                   setIsOpen={setIsChartConfigOpen}
                   isEnabled={isMappingEnabled}
-                  canEdit={activeStep === 2 || activeStep === 3}
+                  canEdit={editMode === null && (activeStep === 2 || activeStep === 3)}
                   selectedChart={selectedChart}
                   setSelectedChart={setSelectedChart}
                   chartTypes={chartTypes}
@@ -285,7 +330,7 @@ export default function ProjectDetails({
                   isMappingOpen={isMappingOpen}
                   setIsMappingOpen={setIsMappingOpen}
                   isMappingEnabled={isMappingEnabled}
-                  canEdit={activeStep === 2 || activeStep === 3}
+                  canEdit={editMode === 'mapping' || (editMode === null && (activeStep === 2 || activeStep === 3))}
                   selectedChart={selectedChart}
                   selectedLabel={selectedLabel}
                   setSelectedLabel={setSelectedLabel}
@@ -307,28 +352,30 @@ export default function ProjectDetails({
                     setIsMappingOpen(false);
                   }}
                 />
-                <ChartNameSection
-                  isOpen={isChartNameOpen}
-                  setIsOpen={setIsChartNameOpen}
-                  isEnabled={selectedData.length > 0}
-                  canEdit={isChartNameOpen && selectedData.length > 0}
-                  chartType={selectedChart}
-                  initialName={editingChartId ? charts.find(c => c.id === editingChartId)?.name : ''}
-                  onConfirm={(name) => {
-                    onCreateChart(name, selectedData, { chartType: selectedChart, label: selectedLabel, value: selectedValue });
-                    setDirection(1);
-                    setActiveStep(4);
-                    setIsDataSelectionOpen(false);
-                    setIsChartNameOpen(false);
-                    setSelectedData([]);
-                    setChartName('');
-                    setSelectedChart('');
-                    setSelectedLabel('');
-                    setSelectedValue('');
-                    setIsChartConfigOpen(false);
-                    if (editingChartId) handleCancelEdit();
-                  }}
-                />
+                <div ref={chartNameRef}>
+                  <ChartNameSection
+                    isOpen={isChartNameOpen}
+                    setIsOpen={setIsChartNameOpen}
+                    isEnabled={editMode === 'name' || selectedData.length > 0}
+                    canEdit={editMode === 'name' || (editMode === null && isChartNameOpen && selectedData.length > 0)}
+                    chartType={selectedChart}
+                    initialName={editingChartId ? charts.find(c => c.id === editingChartId)?.name : ''}
+                    onConfirm={(name) => {
+                      onCreateChart(name, selectedData, { chartType: selectedChart, label: selectedLabel, value: selectedValue });
+                      setDirection(1);
+                      setActiveStep(4);
+                      setIsDataSelectionOpen(false);
+                      setIsChartNameOpen(false);
+                      setSelectedData([]);
+                      setChartName('');
+                      setSelectedChart('');
+                      setSelectedLabel('');
+                      setSelectedValue('');
+                      setIsChartConfigOpen(false);
+                      if (editingChartId) handleCancelEdit();
+                    }}
+                  />
+                </div>
               </div>
             </motion.div>
           ) : (
@@ -378,7 +425,7 @@ export default function ProjectDetails({
                         <div className="drag-handle absolute top-0 left-0 right-10 h-12 cursor-grab active:cursor-grabbing z-[55]" />
                         <BentoChart
                           config={chart}
-                          onEditName={onEditName}
+                          onEditName={handleEditNameInternal}
                           onEditMapping={handleEditMappingInternal}
                           onMaximize={() => {}}
                           onDeleteChart={onDeleteChart}

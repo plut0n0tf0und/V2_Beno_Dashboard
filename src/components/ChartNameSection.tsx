@@ -65,7 +65,7 @@ export default function ChartNameSection({
                   type="text"
                   value={chartName}
                   onChange={(e) => canEdit && setChartName(e.target.value)}
-                  placeholder={`e.g. Dashboard ${chartType || 'Chart'}`}
+                  placeholder="e.g. Top Products Bought"
                   disabled={!canEdit}
                   className="w-full bg-transparent border-b-2 border-tertiary/40 hover:border-tertiary/70 focus:border-tertiary px-1 py-2.5 text-base font-bold text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-all leading-normal disabled:opacity-50 disabled:cursor-not-allowed"
                 />

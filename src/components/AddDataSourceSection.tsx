@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronDown, ChevronUp, Database, Plus, MoreVertical, ExternalLink, Trash2, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp, Database, Plus, MoreVertical, ExternalLink, Trash2, Search, ArrowRight } from 'lucide-react';
 import { DataSource } from '../types';
 
 const extractSourceName = (url: string) => {
@@ -8,7 +8,9 @@ const extractSourceName = (url: string) => {
     const parts = new URL(url).pathname.split('/').filter(Boolean);
     const lastPart = parts.pop();
     if (lastPart) {
-      return lastPart.charAt(0).toUpperCase() + lastPart.slice(1);
+      const base = lastPart.charAt(0).toUpperCase() + lastPart.slice(1);
+      if (base.toLowerCase() === 'products') return 'WOOOYS Products';
+      return base;
     }
     return new URL(url).hostname;
   } catch (e) {
@@ -117,9 +119,14 @@ export default function AddDataSourceSection({
             <h3 className="font-headline text-xl font-extrabold text-on-surface group-hover:text-tertiary transition-colors leading-tight">Add Data Source</h3>
             <p className="text-xs text-on-surface-variant/60 font-medium mt-0.5">Get data to use in the chart</p>
             {!isSourceOpen && selectedSource && (
-              <p className="text-sm font-medium text-on-surface-variant/40 uppercase tracking-wider">
-                Selected: {selectedSource.name}
-              </p>
+              <div className="flex items-center gap-1.5 mt-1">
+                <div className="w-3.5 h-3.5 rounded-full bg-tertiary/20 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-2 h-2 text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-xs font-semibold text-on-surface-variant/70 tracking-wide">{selectedSource.name}</span>
+              </div>
             )}
           </div>
         </div>
