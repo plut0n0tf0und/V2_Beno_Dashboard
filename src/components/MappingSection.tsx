@@ -8,6 +8,7 @@ interface MappingSectionProps {
   isMappingOpen: boolean;
   setIsMappingOpen: (open: boolean) => void;
   isMappingEnabled: boolean;
+  canEdit: boolean;
   selectedChart: string;
   selectedLabel: string;
   setSelectedLabel: (label: string) => void;
@@ -30,6 +31,7 @@ export default function MappingSection({
   isMappingOpen,
   setIsMappingOpen,
   isMappingEnabled,
+  canEdit,
   selectedChart,
   selectedLabel,
   setSelectedLabel,
@@ -68,9 +70,9 @@ export default function MappingSection({
         onClick={() => setIsMappingOpen(!isMappingOpen)}
       >
         <div className="flex items-center gap-4">
-          <div className="w-8 h-8 rounded-full bg-on-surface-variant/20 flex items-center justify-center font-bold text-sm text-on-surface leading-normal">3</div>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm leading-normal transition-colors ${canEdit ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-on-surface-variant/40'}`}>3</div>
           <div className="flex flex-col">
-            <h3 className="font-headline text-xl font-extrabold text-on-surface group-hover:text-tertiary transition-colors leading-tight">Mapping</h3>
+            <h3 className={`font-headline text-xl font-extrabold transition-colors leading-tight ${canEdit ? 'text-on-surface group-hover:text-tertiary' : 'text-on-surface-variant/40'}`}>Mapping</h3>
             <p className="text-xs text-on-surface-variant/60 font-medium mt-0.5">Map your data fields to the chart</p>
           </div>
         </div>
@@ -91,41 +93,36 @@ export default function MappingSection({
             className="overflow-visible pb-4"
           >
             <div className="pt-2">
-              {!isMappingEnabled ? (
-                <div className="h-24 flex items-center justify-center border-2 border-dashed border-on-surface-variant/10 rounded-xl">
-                  <span className="text-sm text-on-surface-variant font-medium text-center px-4 leading-normal">Add data source first to start mapping</span>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-4 border border-on-surface-variant/10 rounded-2xl p-4 lg:p-8 bg-surface-container-low">
-                  {/* Data Mapping */}
-                  <div className="flex flex-col gap-3">
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">1. DATA MAPPING</label>
-                      <p className="text-xs text-on-surface-variant/60 leading-normal mt-0.5">
-                        Map your data fields to the chart
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-10">
-                      <CustomDropdown
-                        headerLabel="Select type of label"
-                        options={labelFields}
-                        value={selectedLabel}
-                        onChange={setSelectedLabel}
-                        disabled={!isSubFieldsEnabled}
-                        placeholder="Select field"
-                      />
-
-                      <CustomDropdown
-                        headerLabel="Select type of value"
-                        options={valueFields}
-                        value={selectedValue}
-                        onChange={setSelectedValue}
-                        disabled={!isSubFieldsEnabled}
-                        placeholder="Select field"
-                      />
-                    </div>
+              <div className={`flex flex-col gap-4 border border-on-surface-variant/10 rounded-2xl p-4 lg:p-8 bg-surface-container-low ${!isMappingEnabled ? 'opacity-50' : ''}`}>
+                {/* Data Mapping */}
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">1. DATA MAPPING</label>
+                    <p className="text-xs text-on-surface-variant/60 leading-normal mt-0.5">
+                      {!isMappingEnabled ? 'Select a data source first to enable mapping' : 'Map your data fields to the chart'}
+                    </p>
                   </div>
+
+                  <div className={`grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-10 ${!canEdit ? 'opacity-70' : ''}`}>
+                    <CustomDropdown
+                      headerLabel="Select type of label"
+                      options={isMappingEnabled ? labelFields : []}
+                      value={selectedLabel}
+                      onChange={canEdit ? setSelectedLabel : () => {}}
+                      disabled={!isSubFieldsEnabled || !canEdit || !isMappingEnabled}
+                      placeholder={isMappingEnabled ? "Select field" : "No data source selected"}
+                    />
+
+                    <CustomDropdown
+                      headerLabel="Select type of value"
+                      options={isMappingEnabled ? valueFields : []}
+                      value={selectedValue}
+                      onChange={canEdit ? setSelectedValue : () => {}}
+                      disabled={!isSubFieldsEnabled || !canEdit || !isMappingEnabled}
+                      placeholder={isMappingEnabled ? "Select field" : "No data source selected"}
+                    />
+                  </div>
+                </div>
 
                   {selectedLabel && selectedValue && (
                     <>
@@ -135,6 +132,7 @@ export default function MappingSection({
                           isOpen={isDataSelectionOpen}
                           setIsOpen={setIsDataSelectionOpen}
                           isSelectionEnabled={isSelectionEnabled}
+                          canEdit={canEdit}
                           chartType={selectedChart}
                           labelField={selectedLabel}
                           valueField={selectedValue}
@@ -144,8 +142,7 @@ export default function MappingSection({
                     </>
                   )}
                 </div>
-              )}
-            </div>
+              </div>
           </motion.div>
         )}
       </AnimatePresence>

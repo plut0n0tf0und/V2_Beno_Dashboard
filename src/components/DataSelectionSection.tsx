@@ -13,6 +13,7 @@ interface DataSelectionSectionProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   isSelectionEnabled: boolean;
+  canEdit: boolean;
   chartType: string;
   labelField: string;
   valueField: string;
@@ -23,6 +24,7 @@ export default function DataSelectionSection({
   isOpen,
   setIsOpen,
   isSelectionEnabled,
+  canEdit,
   chartType,
   labelField,
   valueField,
@@ -43,10 +45,12 @@ export default function DataSelectionSection({
       id: 'select',
       header: ({ table }) => (
         <div 
-          onClick={table.getToggleAllRowsSelectedHandler()}
-          className={`w-5 h-5 rounded border-2 cursor-pointer flex items-center justify-center transition-all flex-shrink-0 ${
-            table.getIsAllRowsSelected() 
-              ? 'bg-tertiary border-tertiary' 
+          onClick={canEdit ? table.getToggleAllRowsSelectedHandler() : undefined}
+          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${
+            canEdit ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
+          } ${
+            table.getIsAllRowsSelected()
+              ? 'bg-tertiary border-tertiary'
               : table.getIsSomeRowsSelected()
                 ? 'bg-tertiary/20 border-tertiary'
                 : 'border-on-surface-variant/30 hover:border-tertiary'
@@ -60,9 +64,11 @@ export default function DataSelectionSection({
         </div>
       ),
       cell: ({ row }) => (
-        <div 
-          onClick={row.getToggleSelectedHandler()}
-          className={`w-5 h-5 rounded border-2 cursor-pointer flex items-center justify-center transition-all flex-shrink-0 ${
+        <div
+          onClick={canEdit ? row.getToggleSelectedHandler() : undefined}
+          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${
+            canEdit ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
+          } ${
             row.getIsSelected()
               ? 'bg-tertiary border-tertiary'
               : 'border-on-surface-variant/30 group-hover:border-tertiary'
@@ -134,11 +140,9 @@ export default function DataSelectionSection({
 
   return (
     <div className="flex flex-col transition-all duration-500 relative z-[60]">
-      <div 
+      <div
         className="flex items-center justify-between cursor-pointer group px-1"
-        onClick={() => {
-          if (isSelectionEnabled) setIsOpen(!isOpen);
-        }}
+        onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center gap-4">
           <h3 className={`font-headline text-lg font-bold tracking-tight transition-colors leading-tight ${isSelectionEnabled ? 'text-on-surface group-hover:text-tertiary' : 'text-on-surface-variant/40'}`}>
@@ -200,10 +204,10 @@ export default function DataSelectionSection({
                             </tr>
                           ) : (
                             table.getRowModel().rows.map(row => (
-                              <tr 
+                              <tr
                                 key={row.id}
-                                className={`hover:bg-surface-container transition-all cursor-pointer group ${row.getIsSelected() ? 'bg-tertiary/10' : ''}`}
-                                onClick={row.getToggleSelectedHandler()}
+                                className={`transition-all group ${row.getIsSelected() ? 'bg-tertiary/10' : ''} ${canEdit ? 'hover:bg-surface-container cursor-pointer' : 'cursor-default'}`}
+                                onClick={canEdit ? row.getToggleSelectedHandler() : undefined}
                               >
                                 {row.getVisibleCells().map((cell, index) => (
                                   <td 
@@ -223,12 +227,12 @@ export default function DataSelectionSection({
 
                   {/* Continue CTA */}
                   <div className="flex justify-end pt-2 pb-1">
-                    <button 
+                    <button
                       onClick={handleContinue}
-                      disabled={!hasSelection}
+                      disabled={!hasSelection || !canEdit}
                       className={`px-12 py-3 rounded-full font-bold text-sm uppercase tracking-widest transition-all shadow-lg hover:shadow-tertiary/20 ${
-                        hasSelection
-                          ? 'bg-tertiary text-surface hover:opacity-95 active:scale-[0.97]' 
+                        hasSelection && canEdit
+                          ? 'bg-tertiary text-surface hover:opacity-95 active:scale-[0.97]'
                           : 'bg-on-surface-variant/20 text-on-surface-variant cursor-not-allowed opacity-50'
                       }`}
                     >

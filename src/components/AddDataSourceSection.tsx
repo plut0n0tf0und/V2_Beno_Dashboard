@@ -53,6 +53,7 @@ const mockJsonData = {
 interface AddDataSourceSectionProps {
   isSourceOpen: boolean;
   setIsSourceOpen: (open: boolean) => void;
+  canEdit: boolean;
   dataSources: DataSource[];
   selectedSourceId: string | null;
   onSelectSource: (id: string) => void;
@@ -63,6 +64,7 @@ interface AddDataSourceSectionProps {
 export default function AddDataSourceSection({
   isSourceOpen,
   setIsSourceOpen,
+  canEdit,
   dataSources,
   selectedSourceId,
   onSelectSource,
@@ -123,8 +125,8 @@ export default function AddDataSourceSection({
         </div>
         
         <div className="flex items-center gap-4">
-          {isSourceOpen && dataSources.length > 0 && (
-            <button 
+          {isSourceOpen && dataSources.length > 0 && canEdit && (
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 setIsAdding(!isAdding);
@@ -159,12 +161,14 @@ export default function AddDataSourceSection({
                   <p className="font-body text-sm font-bold text-on-surface-variant uppercase tracking-widest">Added Data Source</p>
                   <div className="max-h-[300px] overflow-y-auto pr-1 no-scrollbar space-y-3">
                     {dataSources.map((source) => (
-                      <div 
+                      <div
                         key={source.id}
-                        onClick={() => onSelectSource(source.id)}
-                        className={`flex items-center justify-between border rounded-xl p-4 group/item transition-all cursor-pointer ${
-                          selectedSourceId === source.id 
-                            ? 'bg-tertiary/10 border-tertiary ring-1 ring-tertiary/30' 
+                        onClick={() => canEdit && onSelectSource(source.id)}
+                        className={`flex items-center justify-between border rounded-xl p-4 group/item transition-all ${
+                          canEdit ? 'cursor-pointer' : 'cursor-default'
+                        } ${
+                          selectedSourceId === source.id
+                            ? 'bg-tertiary/10 border-tertiary ring-1 ring-tertiary/30'
                             : 'bg-surface-container-low border-on-surface-variant/10 hover:border-tertiary/30'
                         }`}
                       >
@@ -218,12 +222,13 @@ export default function AddDataSourceSection({
                                   transition={{ duration: 0.15 }}
                                   className="absolute right-0 top-full mt-2 w-36 bg-surface-container-high border border-outline-variant/20 rounded-xl shadow-xl overflow-hidden z-[100]"
                                 >
-                                  <button 
+                                  <button
                                     onClick={() => {
                                       setOpenMenuId(null);
-                                      onDeleteSource(source.id);
+                                      canEdit && onDeleteSource(source.id);
                                     }}
-                                    className="w-full flex items-center gap-2 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-400/10 transition-colors text-left"
+                                    disabled={!canEdit}
+                                    className="w-full flex items-center gap-2 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-400/10 transition-colors text-left disabled:opacity-50 disabled:cursor-not-allowed"
                                   >
                                     <Trash2 className="w-4 h-4" />
                                     Delete
@@ -253,18 +258,19 @@ export default function AddDataSourceSection({
                       <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
                         Enter API URL *
                       </label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={newUrl}
-                        onChange={(e) => setNewUrl(e.target.value)}
-                        placeholder="https://api.yoursite.com/v1/users" 
-                        className="w-full bg-surface-container-low border border-on-surface-variant/10 rounded-xl py-2.5 px-3 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-tertiary/20 transition-all outline-none leading-normal"
+                        onChange={(e) => canEdit && setNewUrl(e.target.value)}
+                        placeholder="https://api.yoursite.com/v1/users"
+                        disabled={!canEdit}
+                        className="w-full bg-surface-container-low border border-on-surface-variant/10 rounded-xl py-2.5 px-3 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-tertiary/20 transition-all outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                       <button
                         onClick={handlePreviewData}
-                        disabled={!isUrlValid || isLoading}
+                        disabled={!isUrlValid || isLoading || !canEdit}
                         className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border transition-all
-                          ${(isUrlValid && !isLoading)
+                          ${(isUrlValid && !isLoading && canEdit)
                             ? 'border-tertiary/40 text-tertiary hover:bg-tertiary/10 active:scale-95'
                             : 'border-on-surface-variant/10 text-on-surface-variant/30 cursor-not-allowed'
                           }`}
@@ -303,10 +309,10 @@ export default function AddDataSourceSection({
 
                     {/* Confirmation Checkbox */}
                     <div className="flex items-start gap-2.5">
-                      <div 
-                        onClick={() => previewData && setIsConfirmed(!isConfirmed)}
+                      <div
+                        onClick={() => canEdit && previewData && setIsConfirmed(!isConfirmed)}
                         className={`w-5 h-5 rounded border-2 mt-0.5 flex items-center justify-center transition-all flex-shrink-0 ${
-                          !previewData
+                          !previewData || !canEdit
                             ? 'border-on-surface-variant/15 bg-on-surface-variant/5 cursor-not-allowed opacity-40'
                             : isConfirmed
                               ? 'bg-tertiary border-tertiary cursor-pointer'
@@ -319,16 +325,16 @@ export default function AddDataSourceSection({
                           </svg>
                         )}
                       </div>
-                      <label 
-                        onClick={() => previewData && setIsConfirmed(!isConfirmed)}
-                        className={`text-sm select-none leading-normal transition-colors ${previewData ? 'text-on-surface cursor-pointer' : 'text-on-surface-variant/40 cursor-not-allowed'}`}
+                      <label
+                        onClick={() => canEdit && previewData && setIsConfirmed(!isConfirmed)}
+                        className={`text-sm select-none leading-normal transition-colors ${previewData && canEdit ? 'text-on-surface cursor-pointer' : 'text-on-surface-variant/40 cursor-not-allowed'}`}
                       >
                         I can view the data fetched from the Source
                       </label>
                     </div>
 
                     <div className="flex justify-end">
-                      <button 
+                      <button
                         onClick={() => {
                           onAddSource(newUrl, extractSourceName(newUrl));
                           setNewUrl('');
@@ -337,10 +343,10 @@ export default function AddDataSourceSection({
                           setPreviewError(null);
                           setIsAdding(false);
                         }}
-                        disabled={!canAddSource}
+                        disabled={!canAddSource || !canEdit}
                         className={`px-10 py-2.5 rounded-full font-bold text-sm uppercase tracking-widest transition-all shadow-lg
-                          ${canAddSource 
-                            ? 'bg-on-surface text-surface hover:opacity-90 hover:shadow-xl active:scale-[0.97]' 
+                          ${canAddSource && canEdit
+                            ? 'bg-on-surface text-surface hover:opacity-90 hover:shadow-xl active:scale-[0.97]'
                             : 'bg-on-surface-variant/20 text-on-surface-variant/50 cursor-not-allowed shadow-none'
                           }`}
                       >

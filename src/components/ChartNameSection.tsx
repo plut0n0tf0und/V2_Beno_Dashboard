@@ -6,6 +6,7 @@ interface ChartNameSectionProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   isEnabled: boolean;
+  canEdit: boolean;
   chartType: string;
   initialName?: string;
   onConfirm: (chartName: string) => void;
@@ -15,6 +16,7 @@ export default function ChartNameSection({
   isOpen,
   setIsOpen,
   isEnabled,
+  canEdit,
   chartType,
   initialName = '',
   onConfirm,
@@ -31,23 +33,22 @@ export default function ChartNameSection({
     <div className="w-full bg-surface-container rounded-[2rem] p-4 lg:p-8 flex flex-col gap-4 shadow-sm transition-all duration-500 relative z-[60]">
       <div
         className="flex items-center justify-between cursor-pointer group"
-        onClick={() => { if (isEnabled) setIsOpen(!isOpen); }}
+        onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center gap-4">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm leading-normal transition-colors ${isEnabled ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-on-surface-variant/40'}`}>3</div>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm leading-normal transition-colors ${isEnabled ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-on-surface-variant/40'}`}>4</div>
           <h3 className={`font-headline text-xl font-extrabold transition-colors leading-tight ${isEnabled ? 'text-on-surface group-hover:text-tertiary' : 'text-on-surface-variant/40'}`}>
             Chart Name
           </h3>
         </div>
-        {isEnabled && (
-          isOpen
-            ? <ChevronUp className="w-5 h-5 text-on-surface-variant" />
-            : <ChevronDown className="w-5 h-5 text-on-surface-variant" />
-        )}
+        {isOpen
+          ? <ChevronUp className="w-5 h-5 text-on-surface-variant" />
+          : <ChevronDown className="w-5 h-5 text-on-surface-variant" />
+        }
       </div>
 
       <AnimatePresence initial={false}>
-        {isOpen && isEnabled && (
+        {isOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
@@ -55,26 +56,27 @@ export default function ChartNameSection({
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
             className="overflow-hidden"
           >
-            <div className="pt-2 space-y-4 border border-on-surface-variant/10 rounded-[2rem] p-4 lg:p-8 bg-surface-container-low">
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant">
+            <div className={`flex flex-col gap-4 border border-on-surface-variant/10 rounded-2xl p-4 lg:p-8 bg-surface-container-low ${!canEdit ? 'opacity-70' : ''}`}>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold uppercase tracking-widest text-on-surface">
                   {initialName ? 'Update chart name' : 'Enter chart name'}
                 </label>
                 <input
                   type="text"
                   value={chartName}
-                  onChange={(e) => setChartName(e.target.value)}
+                  onChange={(e) => canEdit && setChartName(e.target.value)}
                   placeholder={`e.g. Dashboard ${chartType || 'Chart'}`}
-                  className="w-full bg-surface-container-highest border border-on-surface-variant/20 hover:border-tertiary/50 focus:border-tertiary rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-all leading-normal focus:ring-2 focus:ring-tertiary/10"
+                  disabled={!canEdit}
+                  className="w-full bg-transparent border-b-2 border-tertiary/40 hover:border-tertiary/70 focus:border-tertiary px-1 py-2.5 text-base font-bold text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-all leading-normal disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               </div>
 
               <div className="flex justify-end">
                 <button
-                  onClick={() => canConfirm && onConfirm(chartName)}
-                  disabled={!canConfirm}
-                  className={`px-12 py-3 rounded-full font-bold text-sm uppercase tracking-widest transition-all shadow-lg hover:shadow-tertiary/20 ${
-                    canConfirm
+                  onClick={() => canConfirm && canEdit && onConfirm(chartName)}
+                  disabled={!canConfirm || !canEdit}
+                  className={`px-10 py-2.5 rounded-full font-bold text-sm uppercase tracking-widest transition-all shadow-lg ${
+                    canConfirm && canEdit
                       ? 'bg-tertiary text-surface hover:opacity-95 active:scale-[0.97]'
                       : 'bg-on-surface-variant/20 text-on-surface-variant cursor-not-allowed opacity-50'
                   }`}

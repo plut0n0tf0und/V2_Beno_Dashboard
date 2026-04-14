@@ -7,6 +7,7 @@ import BentoChart from '../components/BentoChart';
 import AddDataSourceSection from '../components/AddDataSourceSection';
 import MappingSection from '../components/MappingSection';
 import ChartConfigSection from '../components/ChartConfigSection';
+import ChartNameSection from '../components/ChartNameSection';
 import HorizontalStepper from '../components/HorizontalStepper';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -270,8 +271,6 @@ export default function ProjectDetails({
                   isOpen={isChartConfigOpen}
                   setIsOpen={setIsChartConfigOpen}
                   isEnabled={isMappingEnabled}
-                  chartName={chartName}
-                  setChartName={setChartName}
                   selectedChart={selectedChart}
                   setSelectedChart={(chart) => {
                     setSelectedChart(chart);
@@ -279,8 +278,8 @@ export default function ProjectDetails({
                   }}
                   chartTypes={chartTypes}
                 />
-                <MappingSection 
-                  isMappingOpen={isMappingOpen && (activeStep === 2 || activeStep === 3)}
+                <MappingSection
+                  isMappingOpen={isMappingOpen}
                   setIsMappingOpen={setIsMappingOpen}
                   isMappingEnabled={isMappingEnabled}
                   selectedChart={selectedChart}
@@ -299,20 +298,30 @@ export default function ProjectDetails({
                   dataSelectionRef={dataSelectionRef}
                   onCancelEdit={handleCancelEdit}
                   onContinue={(data) => {
-                    const finalName = chartName.trim() || `Dashboard ${selectedChart || 'Chart'}`;
-                    onCreateChart(finalName, data, { chartType: selectedChart, label: selectedLabel, value: selectedValue });
+                    setSelectedData(data);
+                    setIsChartNameOpen(true);
+                    setIsMappingOpen(false);
+                  }}
+                />
+                <ChartNameSection
+                  isOpen={isChartNameOpen}
+                  setIsOpen={setIsChartNameOpen}
+                  isEnabled={selectedData.length > 0}
+                  chartType={selectedChart}
+                  initialName={editingChartId ? charts.find(c => c.id === editingChartId)?.name : ''}
+                  onConfirm={(name) => {
+                    onCreateChart(name, selectedData, { chartType: selectedChart, label: selectedLabel, value: selectedValue });
                     setDirection(1);
                     setActiveStep(4);
                     setIsDataSelectionOpen(false);
                     setIsChartNameOpen(false);
                     setSelectedData([]);
+                    setChartName('');
+                    setSelectedChart('');
+                    setSelectedLabel('');
+                    setSelectedValue('');
+                    setIsChartConfigOpen(false);
                     if (editingChartId) handleCancelEdit();
-                    else {
-                      setChartName('');
-                      setSelectedChart('');
-                      setSelectedLabel('');
-                      setSelectedValue('');
-                    }
                   }}
                 />
               </div>
