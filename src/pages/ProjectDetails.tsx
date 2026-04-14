@@ -243,12 +243,13 @@ export default function ProjectDetails({
               className="relative w-full"
             >
               <div className="flex flex-col gap-3 lg:gap-8 px-0 lg:px-10 pt-3 lg:pt-10 max-w-4xl mx-auto pb-12">
-                <AddDataSourceSection 
+                <AddDataSourceSection
                   isSourceOpen={isSourceOpen}
                   setIsSourceOpen={(open) => {
                     setIsSourceOpen(open);
                     if (open) setActiveStep(1);
                   }}
+                  canEdit={activeStep === 1}
                   dataSources={dataSources}
                   selectedSourceId={selectedSourceId}
                   onSelectSource={(id) => {
@@ -271,17 +272,20 @@ export default function ProjectDetails({
                   isOpen={isChartConfigOpen}
                   setIsOpen={setIsChartConfigOpen}
                   isEnabled={isMappingEnabled}
+                  canEdit={activeStep === 2 || activeStep === 3}
                   selectedChart={selectedChart}
-                  setSelectedChart={(chart) => {
-                    setSelectedChart(chart);
+                  setSelectedChart={setSelectedChart}
+                  chartTypes={chartTypes}
+                  onChartSelected={() => {
+                    setIsChartConfigOpen(false);
                     setIsMappingOpen(true);
                   }}
-                  chartTypes={chartTypes}
                 />
                 <MappingSection
                   isMappingOpen={isMappingOpen}
                   setIsMappingOpen={setIsMappingOpen}
                   isMappingEnabled={isMappingEnabled}
+                  canEdit={activeStep === 2 || activeStep === 3}
                   selectedChart={selectedChart}
                   selectedLabel={selectedLabel}
                   setSelectedLabel={setSelectedLabel}
@@ -307,6 +311,7 @@ export default function ProjectDetails({
                   isOpen={isChartNameOpen}
                   setIsOpen={setIsChartNameOpen}
                   isEnabled={selectedData.length > 0}
+                  canEdit={isChartNameOpen && selectedData.length > 0}
                   chartType={selectedChart}
                   initialName={editingChartId ? charts.find(c => c.id === editingChartId)?.name : ''}
                   onConfirm={(name) => {

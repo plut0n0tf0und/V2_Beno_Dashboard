@@ -106,7 +106,7 @@ export default function AddDataSourceSection({
   };
 
   return (
-    <div className="w-full bg-surface-container rounded-[2rem] p-4 lg:p-10 flex flex-col gap-4 lg:gap-10 shadow-sm transition-all duration-500">
+    <div className="w-full bg-surface-container rounded-[2rem] p-4 lg:p-10 flex flex-col gap-4 lg:gap-8 shadow-sm transition-all duration-500">
       <div 
         className="flex items-center justify-between cursor-pointer group"
         onClick={() => setIsSourceOpen(!isSourceOpen)}

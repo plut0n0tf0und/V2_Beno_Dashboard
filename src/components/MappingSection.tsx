@@ -73,7 +73,7 @@ export default function MappingSection({
           <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm leading-normal transition-colors ${canEdit ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-on-surface-variant/40'}`}>3</div>
           <div className="flex flex-col">
             <h3 className={`font-headline text-xl font-extrabold transition-colors leading-tight ${canEdit ? 'text-on-surface group-hover:text-tertiary' : 'text-on-surface-variant/40'}`}>Mapping</h3>
-            <p className="text-xs text-on-surface-variant/60 font-medium mt-0.5">Map your data fields to the chart</p>
+            <p className="text-xs text-on-surface-variant/60 font-medium mt-0.5">Select data for chart from the fetched data</p>
           </div>
         </div>
         {isMappingOpen ? (
@@ -99,7 +99,7 @@ export default function MappingSection({
                   <div>
                     <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">1. DATA MAPPING</label>
                     <p className="text-xs text-on-surface-variant/60 leading-normal mt-0.5">
-                      {!isMappingEnabled ? 'Select a data source first to enable mapping' : 'Map your data fields to the chart'}
+                      {!isMappingEnabled ? 'Select a data source first to enable mapping' : 'Select data for chart from the fetched data'}
                     </p>
                   </div>
 

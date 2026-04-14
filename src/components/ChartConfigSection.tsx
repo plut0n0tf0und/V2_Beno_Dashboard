@@ -11,6 +11,7 @@ interface ChartConfigSectionProps {
   selectedChart: string;
   setSelectedChart: (chart: string) => void;
   chartTypes: string[];
+  onChartSelected?: () => void;
 }
 
 export default function ChartConfigSection({
@@ -21,6 +22,7 @@ export default function ChartConfigSection({
   selectedChart,
   setSelectedChart,
   chartTypes,
+  onChartSelected,
 }: ChartConfigSectionProps) {
   return (
     <div className="w-full bg-surface-container rounded-[2rem] p-4 lg:p-8 flex flex-col gap-4 shadow-sm transition-all duration-500 relative z-[65]">
@@ -57,7 +59,7 @@ export default function ChartConfigSection({
                 headerLabel="REQUIRED CHART"
                 options={chartTypes}
                 value={selectedChart}
-                onChange={canEdit ? setSelectedChart : () => {}}
+                onChange={canEdit ? (val) => { setSelectedChart(val); onChartSelected?.(); } : () => {}}
                 placeholder="Select a type of chart"
                 disabled={!canEdit}
               />
