@@ -6,6 +6,7 @@ import { Project, ChartConfig, DataSource } from '../types';
 import BentoChart from '../components/BentoChart';
 import AddDataSourceSection from '../components/AddDataSourceSection';
 import MappingSection from '../components/MappingSection';
+import ChartConfigSection from '../components/ChartConfigSection';
 import HorizontalStepper from '../components/HorizontalStepper';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -59,6 +60,7 @@ export default function ProjectDetails({
   const [direction, setDirection] = useState<1 | -1>(1); // 1 = left-to-right, -1 = right-to-left
   const [isSourceOpen, setIsSourceOpen] = useState(dataSources.length === 0);
   const [isMappingOpen, setIsMappingOpen] = useState(dataSources.length > 0 && selectedSourceId !== null);
+  const [isChartConfigOpen, setIsChartConfigOpen] = useState(false);
   const [isDataSelectionOpen, setIsDataSelectionOpen] = useState(false);
   const [highlightMapping, setHighlightMapping] = useState(false);
   const [selectedData, setSelectedData] = useState<any[]>([]);
@@ -96,6 +98,7 @@ export default function ProjectDetails({
     setIsSourceOpen(true);
     setIsMappingOpen(false);
     setIsDataSelectionOpen(false);
+    setIsChartConfigOpen(false);
     onCancelEditMapping();
   };
 
@@ -104,6 +107,7 @@ export default function ProjectDetails({
     if (selectedSourceId) {
       setIsSourceOpen(false);
       setIsMappingOpen(true);
+      setIsChartConfigOpen(true);
     }
   }, [selectedSourceId]);
 
@@ -186,6 +190,7 @@ export default function ProjectDetails({
     setSelectedValue('');
     setSelectedData([]);
     setIsChartNameOpen(false);
+    setIsChartConfigOpen(false);
     setIsDataSelectionOpen(false);
   };
 
@@ -249,24 +254,36 @@ export default function ProjectDetails({
                     onSelectSource(id);
                     setActiveStep(2);
                     setIsSourceOpen(false);
-                    setIsMappingOpen(true);
+                    setIsChartConfigOpen(true);
+                    setIsMappingOpen(false);
                   }}
                   onAddSource={(url, name) => {
                     onAddSource(url, name);
                     setActiveStep(2);
                     setIsSourceOpen(false);
-                    setIsMappingOpen(true);
+                    setIsChartConfigOpen(true);
+                    setIsMappingOpen(false);
                   }}
                   onDeleteSource={onDeleteSource}
+                />
+                <ChartConfigSection
+                  isOpen={isChartConfigOpen}
+                  setIsOpen={setIsChartConfigOpen}
+                  isEnabled={isMappingEnabled}
+                  chartName={chartName}
+                  setChartName={setChartName}
+                  selectedChart={selectedChart}
+                  setSelectedChart={(chart) => {
+                    setSelectedChart(chart);
+                    setIsMappingOpen(true);
+                  }}
+                  chartTypes={chartTypes}
                 />
                 <MappingSection 
                   isMappingOpen={isMappingOpen && (activeStep === 2 || activeStep === 3)}
                   setIsMappingOpen={setIsMappingOpen}
                   isMappingEnabled={isMappingEnabled}
-                  chartName={chartName}
-                  setChartName={setChartName}
                   selectedChart={selectedChart}
-                  setSelectedChart={setSelectedChart}
                   selectedLabel={selectedLabel}
                   setSelectedLabel={setSelectedLabel}
                   selectedValue={selectedValue}
@@ -277,7 +294,6 @@ export default function ProjectDetails({
                   isSelectionEnabled={selectedChart !== '' && selectedLabel !== '' && selectedValue !== ''}
                   editingChartId={editingChartId}
                   highlightMapping={highlightMapping}
-                  chartTypes={chartTypes}
                   labelFields={labelFields}
                   valueFields={valueFields}
                   dataSelectionRef={dataSelectionRef}

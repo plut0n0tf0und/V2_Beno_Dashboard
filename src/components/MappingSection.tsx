@@ -8,10 +8,7 @@ interface MappingSectionProps {
   isMappingOpen: boolean;
   setIsMappingOpen: (open: boolean) => void;
   isMappingEnabled: boolean;
-  chartName: string;
-  setChartName: (name: string) => void;
   selectedChart: string;
-  setSelectedChart: (chart: string) => void;
   selectedLabel: string;
   setSelectedLabel: (label: string) => void;
   selectedValue: string;
@@ -22,7 +19,6 @@ interface MappingSectionProps {
   isSelectionEnabled: boolean;
   editingChartId?: string;
   highlightMapping: boolean;
-  chartTypes: string[];
   labelFields: string[];
   valueFields: string[];
   dataSelectionRef?: React.RefObject<HTMLDivElement | null>;
@@ -34,10 +30,7 @@ export default function MappingSection({
   isMappingOpen,
   setIsMappingOpen,
   isMappingEnabled,
-  chartName,
-  setChartName,
   selectedChart,
-  setSelectedChart,
   selectedLabel,
   setSelectedLabel,
   selectedValue,
@@ -48,7 +41,6 @@ export default function MappingSection({
   isSelectionEnabled,
   editingChartId,
   highlightMapping,
-  chartTypes,
   labelFields,
   valueFields,
   dataSelectionRef,
@@ -76,7 +68,7 @@ export default function MappingSection({
         onClick={() => setIsMappingOpen(!isMappingOpen)}
       >
         <div className="flex items-center gap-4">
-          <div className="w-8 h-8 rounded-full bg-on-surface-variant/20 flex items-center justify-center font-bold text-sm text-on-surface leading-normal">2</div>
+          <div className="w-8 h-8 rounded-full bg-on-surface-variant/20 flex items-center justify-center font-bold text-sm text-on-surface leading-normal">3</div>
           <div className="flex flex-col">
             <h3 className="font-headline text-xl font-extrabold text-on-surface group-hover:text-tertiary transition-colors leading-tight">Mapping</h3>
             <p className="text-xs text-on-surface-variant/60 font-medium mt-0.5">Map your data fields to the chart</p>
@@ -105,39 +97,12 @@ export default function MappingSection({
                 </div>
               ) : (
                 <div className="flex flex-col gap-4 border border-on-surface-variant/10 rounded-2xl p-4 lg:p-8 bg-surface-container-low">
-                  {/* Chart Name */}
-                  <div className="space-y-1.5 pt-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-on-surface">
-                      1. CHART NAME
-                    </label>
-                    <input
-                      type="text"
-                      value={chartName}
-                      onChange={(e) => setChartName(e.target.value)}
-                      placeholder={`e.g. Dashboard ${selectedChart || 'Chart'}`}
-                      className="w-full bg-transparent border-b-2 border-tertiary/40 hover:border-tertiary/70 focus:border-tertiary px-1 py-2.5 text-base font-bold text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-all leading-normal"
-                    />
-                  </div>
-
-                  <div className="h-px bg-on-surface-variant/10" />
-
-                  {/* Chart Type */}
-                  <CustomDropdown
-                    headerLabel="2. REQUIRED CHART"
-                    options={chartTypes}
-                    value={selectedChart}
-                    onChange={setSelectedChart}
-                    placeholder="Select a type of chart"
-                  />
-
-                  <div className="h-px bg-on-surface-variant/10" />
-
                   {/* Data Mapping */}
                   <div className="flex flex-col gap-3">
                     <div>
-                      <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">3. DATA MAPPING</label>
+                      <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">1. DATA MAPPING</label>
                       <p className="text-xs text-on-surface-variant/60 leading-normal mt-0.5">
-                        Match the required data for the chart with the data fetched
+                        Map your data fields to the chart
                       </p>
                     </div>
 
