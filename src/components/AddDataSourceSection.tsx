@@ -113,6 +113,7 @@ export default function AddDataSourceSection({
           <div className="w-8 h-8 rounded-full bg-on-surface-variant/20 flex items-center justify-center font-bold text-sm text-on-surface">1</div>
           <div className="flex flex-col">
             <h3 className="font-headline text-xl font-extrabold text-on-surface group-hover:text-tertiary transition-colors leading-tight">Add Data Source</h3>
+            <p className="text-xs text-on-surface-variant/60 font-medium mt-0.5">Get data to use in the chart</p>
             {!isSourceOpen && selectedSource && (
               <p className="text-sm font-medium text-on-surface-variant/40 uppercase tracking-wider">
                 Selected: {selectedSource.name}
@@ -247,7 +248,7 @@ export default function AddDataSourceSection({
                     exit={{ height: 0, opacity: 0 }}
                     className="space-y-3 pt-3 border-t border-on-surface-variant/5"
                   >
-                    <p className="font-body text-sm font-bold text-on-surface tracking-tight">Connect New API</p>
+                    <p className="font-body text-sm font-bold text-on-surface tracking-tight">Fetch Data in API link</p>
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
                         Enter API URL *

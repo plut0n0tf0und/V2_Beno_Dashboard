@@ -57,7 +57,7 @@ export default function ChartNameSection({
           >
             <div className="pt-2 space-y-4 border border-on-surface-variant/10 rounded-[2rem] p-4 lg:p-8 bg-surface-container-low">
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant/60">
+                <label className="text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant">
                   {initialName ? 'Update chart name' : 'Enter chart name'}
                 </label>
                 <input
@@ -65,7 +65,7 @@ export default function ChartNameSection({
                   value={chartName}
                   onChange={(e) => setChartName(e.target.value)}
                   placeholder={`e.g. Dashboard ${chartType || 'Chart'}`}
-                  className="w-full bg-transparent border-b border-on-surface-variant/10 hover:border-tertiary/50 focus:border-tertiary px-0 py-2.5 text-base text-on-surface placeholder:text-on-surface-variant/30 outline-none transition-all leading-normal"
+                  className="w-full bg-surface-container-highest border border-on-surface-variant/20 hover:border-tertiary/50 focus:border-tertiary rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-all leading-normal focus:ring-2 focus:ring-tertiary/10"
                 />
               </div>
 

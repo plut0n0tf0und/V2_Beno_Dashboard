@@ -6,7 +6,6 @@ import { Project, ChartConfig, DataSource } from '../types';
 import BentoChart from '../components/BentoChart';
 import AddDataSourceSection from '../components/AddDataSourceSection';
 import MappingSection from '../components/MappingSection';
-import ChartNameSection from '../components/ChartNameSection';
 import HorizontalStepper from '../components/HorizontalStepper';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -126,6 +125,7 @@ export default function ProjectDetails({
   }, [editingChartId, charts]);
   
   // Mapping State
+  const [chartName, setChartName] = useState('');
   const [selectedChart, setSelectedChart] = useState('');
   const [selectedLabel, setSelectedLabel] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
@@ -180,6 +180,7 @@ export default function ProjectDetails({
   };
 
   const handleCancelEdit = () => {
+    setChartName('');
     setSelectedChart('');
     setSelectedLabel('');
     setSelectedValue('');
@@ -262,6 +263,8 @@ export default function ProjectDetails({
                   isMappingOpen={isMappingOpen && (activeStep === 2 || activeStep === 3)}
                   setIsMappingOpen={setIsMappingOpen}
                   isMappingEnabled={isMappingEnabled}
+                  chartName={chartName}
+                  setChartName={setChartName}
                   selectedChart={selectedChart}
                   setSelectedChart={setSelectedChart}
                   selectedLabel={selectedLabel}
@@ -280,26 +283,20 @@ export default function ProjectDetails({
                   dataSelectionRef={dataSelectionRef}
                   onCancelEdit={handleCancelEdit}
                   onContinue={(data) => {
-                    setSelectedData(data);
-                    setIsChartNameOpen(true);
-                    setIsMappingOpen(false);
-                    setActiveStep(3);
-                  }}
-                />
-                <ChartNameSection
-                  isOpen={isChartNameOpen}
-                  setIsOpen={setIsChartNameOpen}
-                  isEnabled={selectedData.length > 0}
-                  chartType={selectedChart}
-                  initialName={editingChartId ? charts.find(c => c.id === editingChartId)?.name : ''}
-                  onConfirm={(name) => {
-                    onCreateChart(name, selectedData, { chartType: selectedChart, label: selectedLabel, value: selectedValue });
+                    const finalName = chartName.trim() || `Dashboard ${selectedChart || 'Chart'}`;
+                    onCreateChart(finalName, data, { chartType: selectedChart, label: selectedLabel, value: selectedValue });
                     setDirection(1);
                     setActiveStep(4);
                     setIsDataSelectionOpen(false);
                     setIsChartNameOpen(false);
                     setSelectedData([]);
                     if (editingChartId) handleCancelEdit();
+                    else {
+                      setChartName('');
+                      setSelectedChart('');
+                      setSelectedLabel('');
+                      setSelectedValue('');
+                    }
                   }}
                 />
               </div>
@@ -382,7 +379,7 @@ export default function ProjectDetails({
                     </div>
 
                     {/* Desktop empty state — unchanged */}
-                    <div className="hidden lg:flex flex-col items-center justify-center py-20 gap-6 bg-surface-container-high/20 rounded-[2.5rem] border-2 border-dashed border-on-surface-variant/10 group/empty">
+                    <div className="hidden lg:flex flex-col items-center justify-center py-20 gap-6 bg-surface-container-high/20 border-2 border-dashed border-on-surface-variant/10 group/empty">
                       <div className="flex flex-col items-center gap-1">
                         <div className="w-20 h-20 rounded-full bg-surface-container-highest flex items-center justify-center mb-1 shadow-inner group-hover/empty:scale-110 transition-transform duration-500">
                           <Layout className="w-8 h-8 text-tertiary" />
