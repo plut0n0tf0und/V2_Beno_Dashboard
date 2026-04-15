@@ -338,9 +338,9 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
       {isEditing && (
         <div className="absolute inset-0 bg-tertiary/5 rounded-2xl pointer-events-none animate-pulse" />
       )}
-      {/* Header */}
+      {/* Header — left portion is the drag handle, menu button excluded */}
       <div className="flex items-center justify-between px-3 py-2 sm:p-4 sm:pb-2 relative z-[65]">
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="drag-handle flex items-center gap-2 min-w-0 flex-1 cursor-grab active:cursor-grabbing pr-2">
           <div className="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(103,156,255,0.6)] shrink-0" />
           <h3 className="font-headline text-sm font-bold text-on-surface uppercase tracking-wide truncate">
             {config.name}

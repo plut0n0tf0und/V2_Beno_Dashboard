@@ -434,7 +434,6 @@ export default function ProjectDetails({
                   {charts.map((chart) => (
                     <div key={chart.id} className="relative group/grid-item">
                       <div className="w-full h-full bg-surface-container-low rounded-2xl border border-tertiary/5 hover:border-tertiary/20 transition-all duration-300 shadow-xl overflow-hidden pointer-events-auto">
-                        <div className="drag-handle absolute top-0 left-0 right-10 h-12 cursor-grab active:cursor-grabbing z-[55]" />
                         <BentoChart
                           config={chart}
                           onEditName={handleEditNameInternal}

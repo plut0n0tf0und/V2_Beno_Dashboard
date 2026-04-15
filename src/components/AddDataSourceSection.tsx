@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, ChevronUp, Database, Plus, MoreVertical, ExternalLink, Trash2, Search, Check, X } from 'lucide-react';
 import { DataSource } from '../types';
@@ -74,9 +74,16 @@ export default function AddDataSourceSection({
   onDeleteSource
 }: AddDataSourceSectionProps) {
   const [isAdding, setIsAdding] = useState(dataSources.length === 0);
+
+  // Auto-show the form whenever all sources are deleted
+  React.useEffect(() => {
+    if (dataSources.length === 0) setIsAdding(true);
+  }, [dataSources.length]);
   const [newUrl, setNewUrl] = useState('');
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [menuPos, setMenuPos] = useState<{ top: number; right: number } | null>(null);
+  const menuBtnRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [previewData, setPreviewData] = useState<any>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -183,7 +190,7 @@ export default function AddDataSourceSection({
                     )}
                   </div>
 
-                  <div className="flex flex-col gap-2 max-h-[260px] overflow-y-auto no-scrollbar">
+                  <div className="flex flex-col gap-2">
                     {dataSources.map((source) => (
                       <div
                         key={source.id}
@@ -236,7 +243,21 @@ export default function AddDataSourceSection({
 
                           <div className="relative">
                             <button
-                              onClick={() => setOpenMenuId(openMenuId === source.id ? null : source.id)}
+                              ref={(el) => { menuBtnRefs.current[source.id] = el; }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (openMenuId === source.id) {
+                                  setOpenMenuId(null);
+                                  setMenuPos(null);
+                                } else {
+                                  const rect = (e.currentTarget as HTMLButtonElement).getBoundingClientRect();
+                                  setMenuPos({
+                                    top: rect.bottom + 6,
+                                    right: window.innerWidth - rect.right,
+                                  });
+                                  setOpenMenuId(source.id);
+                                }
+                              }}
                               aria-label={`More options for ${source.name}`}
                               aria-expanded={openMenuId === source.id}
                               aria-haspopup="menu"
@@ -244,29 +265,6 @@ export default function AddDataSourceSection({
                             >
                               <MoreVertical className="w-3.5 h-3.5 lg:w-4 lg:h-4" aria-hidden="true" />
                             </button>
-
-                            <AnimatePresence>
-                              {openMenuId === source.id && (
-                                <motion.div
-                                  role="menu"
-                                  initial={{ opacity: 0, scale: 0.95, y: -6 }}
-                                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                                  exit={{ opacity: 0, scale: 0.95, y: -6 }}
-                                  transition={{ duration: 0.12 }}
-                                  className="absolute right-0 top-full mt-1.5 w-32 bg-surface-container-high border border-outline-variant/20 rounded-xl shadow-xl overflow-hidden z-[100]"
-                                >
-                                  <button
-                                    role="menuitem"
-                                    onClick={() => { setOpenMenuId(null); canEdit && onDeleteSource(source.id); }}
-                                    disabled={!canEdit}
-                                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm lg:text-base font-bold text-red-400 hover:bg-red-400/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                  >
-                                    <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
-                                    Delete
-                                  </button>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
                           </div>
                         </div>
                       </div>
@@ -402,6 +400,45 @@ export default function AddDataSourceSection({
 
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Fixed-position dropdown portal — escapes all overflow clipping ── */}
+      <AnimatePresence>
+        {openMenuId && menuPos && (
+          <>
+            <div
+              className="fixed inset-0 z-[199]"
+              onClick={() => { setOpenMenuId(null); setMenuPos(null); }}
+              aria-hidden="true"
+            />
+            <motion.div
+              role="menu"
+              aria-label="Source options"
+              initial={{ opacity: 0, scale: 0.95, y: -4 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -4 }}
+              transition={{ duration: 0.12 }}
+              style={{ top: menuPos.top, right: menuPos.right }}
+              className="fixed w-36 bg-surface-container-high border border-outline-variant/20 rounded-xl shadow-2xl overflow-hidden z-[200]"
+              onKeyDown={(e) => { if (e.key === 'Escape') { setOpenMenuId(null); setMenuPos(null); } }}
+            >
+              <button
+                role="menuitem"
+                onClick={() => {
+                  const id = openMenuId;
+                  setOpenMenuId(null);
+                  setMenuPos(null);
+                  canEdit && onDeleteSource(id);
+                }}
+                disabled={!canEdit}
+                className="w-full flex items-center gap-2 px-3 py-3 text-sm lg:text-base font-bold text-red-400 hover:bg-red-400/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Trash2 className="w-4 h-4" aria-hidden="true" />
+                Delete
+              </button>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
