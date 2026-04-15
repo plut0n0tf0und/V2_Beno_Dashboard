@@ -70,16 +70,16 @@ export default function MappingSection({
         onClick={() => setIsMappingOpen(!isMappingOpen)}
       >
         <div className="flex items-center gap-3">
-          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm leading-normal transition-colors shrink-0 ${canEdit ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-disabled-text'}`}>3</div>
+          <div className={`w-7 h-7 lg:w-9 lg:h-9 rounded-full flex items-center justify-center font-bold text-xs lg:text-sm leading-normal transition-colors shrink-0 ${canEdit ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-disabled-text'}`}>3</div>
           <div className="flex flex-col">
-            <h3 className={`font-headline text-base sm:text-xl font-extrabold transition-colors leading-tight ${canEdit ? 'text-on-surface group-hover:text-tertiary' : 'text-disabled-text'}`}>Mapping</h3>
-            <p className="text-xs text-on-surface-variant font-medium mt-0.5">Select data for chart from the fetched data</p>
+            <h3 className={`font-headline text-base lg:text-2xl font-extrabold transition-colors leading-tight ${canEdit ? 'text-on-surface group-hover:text-tertiary' : 'text-disabled-text'}`}>Mapping</h3>
+            <p className="text-xs lg:text-sm text-on-surface-variant font-medium mt-0.5">Select data for chart from the fetched data</p>
           </div>
         </div>
         {isMappingOpen ? (
-          <ChevronUp className="w-4 h-4 text-on-surface-variant" />
+          <ChevronUp className="w-4 h-4 lg:w-5 lg:h-5 text-on-surface-variant" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-on-surface-variant" />
+          <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5 text-on-surface-variant" />
         )}
       </div>
 
@@ -97,8 +97,8 @@ export default function MappingSection({
                 {/* Data Mapping */}
                 <div className="flex flex-col gap-3">
                   <div>
-                    <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">1. DATA MAPPING</label>
-                    <p className="text-xs text-on-surface-variant leading-normal mt-0.5">
+                    <label className="text-[10px] lg:text-xs font-bold uppercase tracking-widest text-on-surface-variant">1. DATA MAPPING</label>
+                    <p className="text-xs lg:text-sm text-on-surface-variant leading-normal mt-0.5">
                       {!isMappingEnabled ? 'Select a data source first to enable mapping' : 'Select data for chart from the fetched data'}
                     </p>
                   </div>

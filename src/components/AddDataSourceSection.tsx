@@ -115,25 +115,33 @@ export default function AddDataSourceSection({
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsSourceOpen(!isSourceOpen); } }}
       >
         {/* Step badge */}
-        <div className="w-7 h-7 rounded-full bg-on-surface-variant/20 flex items-center justify-center font-bold text-xs text-on-surface shrink-0">
+        <div className="w-7 h-7 lg:w-9 lg:h-9 rounded-full bg-on-surface-variant/20 flex items-center justify-center font-bold text-xs lg:text-sm text-on-surface shrink-0">
           1
         </div>
 
         {/* Title + subtitle — takes all remaining space */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-headline text-base font-extrabold text-on-surface group-hover:text-tertiary transition-colors leading-tight">
+          <h3 className="font-headline text-base lg:text-2xl font-extrabold text-on-surface group-hover:text-tertiary transition-colors leading-tight">
             Add Data Source
           </h3>
-          <p className="text-xs text-on-surface-variant font-medium mt-0.5 leading-tight">
-            {!isSourceOpen && selectedSource ? selectedSource.name : 'Get data to use in the chart'}
+          <p className="text-xs lg:text-sm text-on-surface-variant font-medium mt-0.5 leading-tight">
+            {!isSourceOpen && selectedSource
+              ? <span className="inline-flex items-center gap-1 text-on-surface font-bold">
+                  <svg className="w-3 h-3 text-on-surface shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                  {selectedSource.name}
+                </span>
+              : 'Get data to use in the chart'
+            }
           </p>
         </div>
 
         {/* Chevron — right-aligned, never pushes title */}
         <div className="shrink-0">
           {isSourceOpen
-            ? <ChevronUp className="w-4 h-4 text-on-surface-variant" aria-hidden="true" />
-            : <ChevronDown className="w-4 h-4 text-on-surface-variant" aria-hidden="true" />
+            ? <ChevronUp className="w-4 h-4 lg:w-5 lg:h-5 text-on-surface-variant" aria-hidden="true" />
+            : <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5 text-on-surface-variant" aria-hidden="true" />
           }
         </div>
       </div>
@@ -154,14 +162,14 @@ export default function AddDataSourceSection({
               {dataSources.length > 0 && (
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between">
-                    <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest">
+                    <p className="text-[10px] lg:text-xs font-bold text-on-surface-variant uppercase tracking-widest">
                       Added Sources
                     </p>
                     {/* "Add another" toggle — lives here, not in the header */}
                     {canEdit && (
                       <button
                         onClick={() => setIsAdding(!isAdding)}
-                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all ${
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs lg:text-sm font-bold transition-all ${
                           isAdding
                             ? 'bg-surface-container-high text-on-surface-variant'
                             : 'bg-tertiary/10 text-tertiary hover:bg-tertiary/20'
@@ -203,14 +211,14 @@ export default function AddDataSourceSection({
                         </div>
 
                         {/* Icon */}
-                        <div className="w-7 h-7 rounded-lg bg-tertiary/10 flex items-center justify-center shrink-0">
-                          <Database className="w-3.5 h-3.5 text-tertiary" aria-hidden="true" />
+                        <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-lg bg-tertiary/10 flex items-center justify-center shrink-0">
+                          <Database className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-tertiary" aria-hidden="true" />
                         </div>
 
                         {/* Name + URL — takes remaining space */}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-on-surface truncate leading-tight">{source.name}</p>
-                          <p className="text-xs text-on-surface-variant font-mono truncate leading-tight mt-0.5">{source.url}</p>
+                          <p className="text-sm lg:text-base font-bold text-on-surface truncate leading-tight">{source.name}</p>
+                          <p className="text-xs lg:text-sm text-on-surface-variant font-mono truncate leading-tight mt-0.5">{source.url}</p>
                         </div>
 
                         {/* Actions */}
@@ -221,9 +229,9 @@ export default function AddDataSourceSection({
                               window.open(URL.createObjectURL(blob), '_blank');
                             }}
                             aria-label={`View data for ${source.name}`}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container border border-outline-variant/20 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
+                            className="w-8 h-8 lg:w-9 lg:h-9 flex items-center justify-center rounded-lg bg-surface-container border border-outline-variant/20 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
                           >
-                            <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+                            <ExternalLink className="w-3.5 h-3.5 lg:w-4 lg:h-4" aria-hidden="true" />
                           </button>
 
                           <div className="relative">
@@ -232,9 +240,9 @@ export default function AddDataSourceSection({
                               aria-label={`More options for ${source.name}`}
                               aria-expanded={openMenuId === source.id}
                               aria-haspopup="menu"
-                              className="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-on-surface-variant/10 transition-all"
+                              className="w-8 h-8 lg:w-9 lg:h-9 flex items-center justify-center rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-on-surface-variant/10 transition-all"
                             >
-                              <MoreVertical className="w-3.5 h-3.5" aria-hidden="true" />
+                              <MoreVertical className="w-3.5 h-3.5 lg:w-4 lg:h-4" aria-hidden="true" />
                             </button>
 
                             <AnimatePresence>
@@ -251,7 +259,7 @@ export default function AddDataSourceSection({
                                     role="menuitem"
                                     onClick={() => { setOpenMenuId(null); canEdit && onDeleteSource(source.id); }}
                                     disabled={!canEdit}
-                                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm font-bold text-red-400 hover:bg-red-400/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm lg:text-base font-bold text-red-400 hover:bg-red-400/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                                     Delete
@@ -279,11 +287,11 @@ export default function AddDataSourceSection({
                   >
                     <div className={`flex flex-col gap-3 pt-3 ${dataSources.length > 0 ? 'border-t border-on-surface-variant/8' : ''}`}>
 
-                      <p className="text-sm font-bold text-on-surface">Fetch data from API</p>
+                      <p className="text-sm lg:text-base font-bold text-on-surface">Fetch data from API</p>
 
                       {/* URL input */}
                       <div className="flex flex-col gap-1.5">
-                        <label htmlFor="api-url-input" className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+                        <label htmlFor="api-url-input" className="text-[10px] lg:text-xs font-bold uppercase tracking-widest text-on-surface-variant">
                           API URL *
                         </label>
                         <input
@@ -293,15 +301,15 @@ export default function AddDataSourceSection({
                           onChange={(e) => canEdit && setNewUrl(e.target.value)}
                           placeholder="https://api.yoursite.com/v1/data"
                           disabled={!canEdit}
-                          className="w-full bg-surface-container-low border border-on-surface-variant/15 rounded-xl py-2.5 px-3 text-sm text-on-surface placeholder:text-placeholder focus:ring-2 focus:ring-tertiary/40 focus:border-tertiary outline-none transition-all disabled:bg-disabled-bg disabled:text-disabled-text disabled:cursor-not-allowed"
+                          className="w-full bg-surface-container-low border border-on-surface-variant/15 rounded-xl py-2.5 px-3 text-sm lg:text-base text-on-surface placeholder:text-placeholder focus:ring-2 focus:ring-tertiary/40 focus:border-tertiary outline-none transition-all disabled:bg-disabled-bg disabled:text-disabled-text disabled:cursor-not-allowed"
                         />
                       </div>
 
-                      {/* Fetch button — full width on mobile, auto on desktop */}
+                      {/* Fetch button */}
                       <button
                         onClick={handlePreviewData}
                         disabled={!isUrlValid || isLoading || !canEdit}
-                        className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-all ${
+                        className={`w-full sm:w-auto self-start flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm lg:text-base font-bold border transition-all ${
                           isUrlValid && !isLoading && canEdit
                             ? 'border-tertiary/50 text-tertiary bg-tertiary/5 hover:bg-tertiary/10 active:scale-[0.98]'
                             : 'border-on-surface-variant/15 text-disabled-text bg-surface-container-low cursor-not-allowed'
@@ -323,7 +331,7 @@ export default function AddDataSourceSection({
                       {/* JSON preview */}
                       {(previewData !== null || previewError !== null) && (
                         <div className="flex flex-col gap-1.5">
-                          <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+                          <p className="text-[10px] lg:text-xs font-bold uppercase tracking-widest text-on-surface-variant">
                             Data Preview
                           </p>
                           <div className="bg-surface-container-highest border border-on-surface-variant/10 rounded-xl p-3 max-h-[140px] overflow-y-auto minimal-scrollbar">
@@ -360,14 +368,14 @@ export default function AddDataSourceSection({
                         >
                           {isConfirmed && <Check className="w-3 h-3 text-surface" strokeWidth={3} />}
                         </span>
-                        <span className={`text-sm leading-snug select-none ${
+                        <span className={`text-sm lg:text-base leading-snug select-none ${
                           previewData && canEdit ? 'text-on-surface' : 'text-disabled-text'
                         }`}>
                           I can view the data fetched from the source
                         </span>
                       </button>
 
-                      {/* Submit button — full width on mobile */}
+                      {/* Submit button — full width on mobile, hug on desktop */}
                       <button
                         onClick={() => {
                           onAddSource(newUrl, extractSourceName(newUrl));
@@ -378,7 +386,7 @@ export default function AddDataSourceSection({
                           setIsAdding(false);
                         }}
                         disabled={!canAddSource || !canEdit}
-                        className={`w-full py-3 rounded-xl font-bold text-sm uppercase tracking-widest transition-all ${
+                        className={`w-full sm:w-auto self-end px-8 py-3 rounded-xl font-bold text-sm lg:text-base uppercase tracking-widest transition-all ${
                           canAddSource && canEdit
                             ? 'bg-on-surface text-surface hover:opacity-90 active:scale-[0.98] shadow-lg'
                             : 'bg-disabled-bg text-disabled-text cursor-not-allowed'

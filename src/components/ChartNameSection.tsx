@@ -36,14 +36,14 @@ export default function ChartNameSection({
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center gap-3">
-          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm leading-normal transition-colors shrink-0 ${isEnabled ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-disabled-text'}`}>4</div>
-          <h3 className={`font-headline text-base sm:text-xl font-extrabold transition-colors leading-tight ${isEnabled ? 'text-on-surface group-hover:text-tertiary' : 'text-disabled-text'}`}>
+          <div className={`w-7 h-7 lg:w-9 lg:h-9 rounded-full flex items-center justify-center font-bold text-xs lg:text-sm leading-normal transition-colors shrink-0 ${isEnabled ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-disabled-text'}`}>4</div>
+          <h3 className={`font-headline text-base lg:text-2xl font-extrabold transition-colors leading-tight ${isEnabled ? 'text-on-surface group-hover:text-tertiary' : 'text-disabled-text'}`}>
             Chart Name
           </h3>
         </div>
         {isOpen
-          ? <ChevronUp className="w-4 h-4 text-on-surface-variant" />
-          : <ChevronDown className="w-4 h-4 text-on-surface-variant" />
+          ? <ChevronUp className="w-4 h-4 lg:w-5 lg:h-5 text-on-surface-variant" />
+          : <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5 text-on-surface-variant" />
         }
       </div>
 
@@ -58,7 +58,7 @@ export default function ChartNameSection({
           >
             <div className={`flex flex-col gap-3 sm:gap-4 border border-on-surface-variant/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-8 bg-surface-container-low ${!canEdit ? 'opacity-70' : ''}`}>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-widest text-on-surface">
+                <label className="text-[10px] lg:text-xs font-bold uppercase tracking-widest text-on-surface">
                   {initialName ? 'Update chart name' : 'Enter chart name'}
                 </label>
                 <input
@@ -67,7 +67,7 @@ export default function ChartNameSection({
                   onChange={(e) => canEdit && setChartName(e.target.value)}
                   placeholder="e.g. Top Products Bought"
                   disabled={!canEdit}
-                  className="w-full bg-transparent border-b-2 border-tertiary/40 hover:border-tertiary/70 focus:border-tertiary px-1 py-2.5 text-base font-bold text-on-surface placeholder:text-placeholder outline-none transition-all leading-normal disabled:text-disabled-text disabled:cursor-not-allowed"
+                  className="w-full bg-transparent border-b-2 border-tertiary/40 hover:border-tertiary/70 focus:border-tertiary px-1 py-2.5 text-base lg:text-xl font-bold text-on-surface placeholder:text-placeholder outline-none transition-all leading-normal disabled:text-disabled-text disabled:cursor-not-allowed"
                 />
               </div>
 
@@ -75,7 +75,7 @@ export default function ChartNameSection({
                 <button
                   onClick={() => canConfirm && canEdit && onConfirm(chartName)}
                   disabled={!canConfirm || !canEdit}
-                  className={`px-6 sm:px-10 py-2.5 rounded-full font-bold text-sm uppercase tracking-widest transition-all shadow-lg ${
+                  className={`px-6 lg:px-10 py-2.5 lg:py-3 rounded-full font-bold text-sm lg:text-base uppercase tracking-widest transition-all shadow-lg ${
                     canConfirm && canEdit
                       ? 'bg-tertiary text-surface hover:opacity-95 active:scale-[0.97]'
                       : 'bg-disabled-bg text-disabled-text cursor-not-allowed'
