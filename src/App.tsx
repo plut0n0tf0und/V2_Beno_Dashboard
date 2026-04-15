@@ -70,7 +70,10 @@ export default function App() {
   const [isEditNameOpen, setIsEditNameOpen] = useState(false);
   const [editingChartId, setEditingChartId] = useState<string | null>(null);
   const [editingChartIdForMapping, setEditingChartIdForMapping] = useState<string | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const stored = localStorage.getItem('theme');
+    return stored ? stored === 'dark' : true;
+  });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Per-project state map
@@ -220,7 +223,11 @@ export default function App() {
     }));
   };
 
-  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
+  const toggleDarkMode = () => {
+    const next = !isDarkMode;
+    setIsDarkMode(next);
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+  };
   const showSidebar = currentPage === 'home';
 
   return (

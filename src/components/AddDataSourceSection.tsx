@@ -184,7 +184,7 @@ export default function AddDataSourceSection({
                       >
                         {isAdding
                           ? <><X className="w-3 h-3" aria-hidden="true" /> Cancel</>
-                          : <><Plus className="w-3 h-3" aria-hidden="true" /> Add</>
+                          : <><Plus className="w-3 h-3" aria-hidden="true" /> Add New</>
                         }
                       </button>
                     )}

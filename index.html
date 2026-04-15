@@ -4,6 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Google AI Studio App</title>
+    <!-- Prevent flash of white on load — runs synchronously before first paint -->
+    <script>
+      (function () {
+        var stored = localStorage.getItem('theme');
+        // Default to dark if no preference stored
+        var isDark = stored ? stored === 'dark' : true;
+        if (isDark) document.documentElement.classList.add('dark');
+        // Set bg immediately so the browser paints the right color before React loads
+        document.documentElement.style.background = isDark ? '#0E0E0E' : '#F8F9FA';
+      })();
+    </script>
+    <style>
+      /* Fallback: ensure body never shows white before CSS loads */
+      html { background: #0E0E0E; }
+      html:not(.dark) { background: #F8F9FA; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
