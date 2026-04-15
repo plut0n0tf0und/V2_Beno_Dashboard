@@ -101,19 +101,30 @@ export default function DataSourceMappingModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 sm:p-8 transition-all">
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 sm:p-8 transition-all"
+      onClick={(e) => { if (isClosable && e.target === e.currentTarget) onClose(); }}
+    >
       <motion.div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dsm-modal-title"
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className="bg-surface-container-low w-[90vw] md:w-[85vw] lg:w-[80vw] h-[90vh] md:h-[85vh] max-w-6xl rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden border border-outline-variant/20"
+        onKeyDown={(e) => { if (e.key === 'Escape' && isClosable) onClose(); }}
       >
         <div className="flex items-center justify-between p-6 md:p-8 border-b border-on-surface-variant/10 bg-surface-container shrink-0">
-          <h2 className="font-headline text-xl md:text-2xl font-bold text-on-surface">Manage Data Source & Mapping</h2>
+          <h2 id="dsm-modal-title" className="font-headline text-xl md:text-2xl font-bold text-on-surface">Manage Data Source & Mapping</h2>
           {isClosable && (
-            <button onClick={onClose} className="p-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-on-surface-variant/10 transition-colors">
-              <X className="w-6 h-6" />
+            <button
+              onClick={onClose}
+              aria-label="Close dialog"
+              className="p-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-on-surface-variant/10 transition-colors"
+            >
+              <X className="w-6 h-6" aria-hidden="true" />
             </button>
           )}
         </div>

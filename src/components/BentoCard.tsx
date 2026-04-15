@@ -33,16 +33,17 @@ const BentoCard: React.FC<BentoCardProps> = ({
     >
       {/* Top row: metadata + 3-dot */}
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-[0.15em] truncate">
+        <span className="text-[10px] font-bold text-on-surface-variant/70 uppercase tracking-[0.15em] truncate">
           {editedAt}
         </span>
         <button
           onClick={(e) => {
             e.stopPropagation();
           }}
+          aria-label={`More options for ${title}`}
           className="text-on-surface-variant hover:text-on-surface p-1.5 -mr-1.5 transition-colors rounded-lg hover:bg-surface-container-highest flex-shrink-0"
         >
-          <MoreVertical className="w-4 h-4" />
+          <MoreVertical className="w-4 h-4" aria-hidden="true" />
         </button>
       </div>
 
@@ -53,7 +54,7 @@ const BentoCard: React.FC<BentoCardProps> = ({
         </h3>
 
         {/* Description */}
-        <p className="font-body text-sm text-on-surface-variant/70 leading-relaxed line-clamp-2">
+        <p className="font-body text-sm text-on-surface-variant leading-relaxed line-clamp-2">
           {description}
         </p>
       </div>
@@ -68,7 +69,7 @@ const BentoCard: React.FC<BentoCardProps> = ({
               </div>
               <div className="flex flex-col">
                 <span className="text-xs font-black text-on-surface tracking-tight leading-none">{dashboardCount}</span>
-                <span className="text-[9px] font-bold text-on-surface-variant/60 uppercase tracking-widest leading-none mt-0.5">Dashboards</span>
+                <span className="text-[9px] font-bold text-on-surface-variant uppercase tracking-widest leading-none mt-0.5">Dashboards</span>
               </div>
             </div>
           )}
@@ -79,7 +80,7 @@ const BentoCard: React.FC<BentoCardProps> = ({
               </div>
               <div className="flex flex-col">
                 <span className="text-xs font-black text-on-surface tracking-tight leading-none">{dataCount}</span>
-                <span className="text-[9px] font-bold text-on-surface-variant/60 uppercase tracking-widest leading-none mt-0.5">Data</span>
+                <span className="text-[9px] font-bold text-on-surface-variant uppercase tracking-widest leading-none mt-0.5">Data</span>
               </div>
             </div>
           )}

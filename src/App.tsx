@@ -225,6 +225,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-surface-container-low transition-colors duration-300">
+      {/* Skip to main content — keyboard accessibility */}
+      <a href="#main-content" className="skip-link">Skip to main content</a>
+
       {showSidebar && (
         <Sidebar
           activePage={currentPage}
@@ -251,7 +254,7 @@ export default function App() {
           />
         )}
 
-        <main className="flex-grow pt-20 pb-20 px-4 sm:px-8 lg:px-12 max-w-[1600px] mx-auto w-full">
+        <main id="main-content" className="flex-grow pt-16 pb-20 px-3 sm:px-6 lg:px-12 max-w-[1600px] mx-auto w-full">
           {currentPage === 'home' && (
             <Home onProjectClick={handleProjectClick} />
           )}

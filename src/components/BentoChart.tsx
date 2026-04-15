@@ -45,7 +45,7 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
                     </div>
                   </motion.div>
                   {showLabel && (
-                    <span className="text-[10px] font-bold text-on-surface-variant/50 uppercase truncate w-full text-center group-hover/bar:text-on-surface transition-colors leading-tight" title={label}>
+                    <span className="text-[10px] font-bold text-on-surface-variant uppercase truncate w-full text-center group-hover/bar:text-on-surface transition-colors leading-tight" title={label}>
                       {label.substring(0, barCount > 10 ? 5 : 8)}
                     </span>
                   )}
@@ -178,7 +178,7 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
                     </div>
                   </motion.div>
                   {showLabel && (
-                    <div className="w-full text-[10px] font-bold text-on-surface-variant/40 truncate text-center mt-1" title={label}>
+                    <div className="w-full text-[10px] font-bold text-on-surface-variant truncate text-center mt-1" title={label}>
                       {label.substring(0, histCount > 10 ? 4 : 6)}
                     </div>
                   )}
@@ -330,15 +330,19 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
   };
 
   return (
-    <div className={`group relative w-full h-full bg-surface-container-low rounded-2xl flex flex-col shadow-lg transition-all border ${isEditing ? 'border-tertiary ring-2 ring-tertiary/20' : 'border-tertiary/5'}`}>
+    <div
+      className={`group relative w-full h-full bg-surface-container-low rounded-2xl flex flex-col shadow-lg transition-all border ${isEditing ? 'border-tertiary ring-2 ring-tertiary/20' : 'border-tertiary/5'}`}
+      role="region"
+      aria-label={`Chart: ${config.name}`}
+    >
       {isEditing && (
         <div className="absolute inset-0 bg-tertiary/5 rounded-2xl pointer-events-none animate-pulse" />
       )}
       {/* Header */}
-      <div className="flex items-center justify-between p-5 pb-2 relative z-[65]">
-        <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(103,156,255,0.6)]" />
-          <h3 className="font-headline text-base font-bold text-on-surface uppercase tracking-wider truncate max-w-[200px]">
+      <div className="flex items-center justify-between px-3 py-2 sm:p-4 sm:pb-2 relative z-[65]">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(103,156,255,0.6)] shrink-0" />
+          <h3 className="font-headline text-sm font-bold text-on-surface uppercase tracking-wide truncate">
             {config.name}
           </h3>
         </div>
@@ -347,40 +351,49 @@ export default function BentoChart({ config, onEditName, onEditMapping, onMaximi
           <div className="relative">
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`p-1.5 rounded-lg transition-all ${isMenuOpen ? 'bg-tertiary/10 text-tertiary' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'}`}
+              aria-label={`Chart options for ${config.name}`}
+              aria-haspopup="menu"
+              aria-expanded={isMenuOpen}
+              className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${isMenuOpen ? 'bg-tertiary/10 text-tertiary' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'}`}
             >
-              <MoreVertical className="w-5 h-5" />
+              <MoreVertical className="w-4 h-4" aria-hidden="true" />
             </button>
             
             <AnimatePresence>
               {isMenuOpen && (
                 <>
-                  <div className="fixed inset-0 z-[90]" onClick={() => setIsMenuOpen(false)} />
+                  <div className="fixed inset-0 z-[90]" onClick={() => setIsMenuOpen(false)} aria-hidden="true" />
                   <motion.div 
+                    role="menu"
+                    aria-label={`Options for ${config.name}`}
                     initial={{ opacity: 0, scale: 0.9, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     className="absolute right-0 top-11 w-48 bg-surface-container shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] rounded-xl border border-outline-variant/30 overflow-hidden z-[100] p-1.5"
+                    onKeyDown={(e) => { if (e.key === 'Escape') setIsMenuOpen(false); }}
                   >
                     <button 
+                      role="menuitem"
                       onClick={() => { onEditMapping(config.id); setIsMenuOpen(false); }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-on-surface hover:bg-tertiary/10 hover:text-tertiary rounded-lg transition-all"
                     >
-                      <Layout className="w-5 h-5" />
+                      <Layout className="w-5 h-5" aria-hidden="true" />
                       Edit Mapping
                     </button>
                     <button 
+                      role="menuitem"
                       onClick={() => { onEditName(config.id); setIsMenuOpen(false); }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-on-surface hover:bg-tertiary/10 hover:text-tertiary rounded-lg transition-all"
                     >
-                      <Edit2 className="w-5 h-5" />
+                      <Edit2 className="w-5 h-5" aria-hidden="true" />
                       Edit Name
                     </button>
                     <button 
+                      role="menuitem"
                       onClick={() => { onDeleteChart(config.id); setIsMenuOpen(false); }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
                     >
-                      <Trash2 className="w-5 h-5" />
+                      <Trash2 className="w-5 h-5" aria-hidden="true" />
                       Delete Chart
                     </button>
                   </motion.div>

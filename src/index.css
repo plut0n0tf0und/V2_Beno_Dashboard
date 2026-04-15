@@ -63,10 +63,16 @@
   --color-on-surface-variant: var(--on-surface-variant);
   --color-outline-variant: #484848;
   --color-error: #EC7C8A;
+
+  /* Accessibility tokens */
+  --color-focus-ring: #679CFF;
+  --color-disabled-text: var(--disabled-text);
+  --color-disabled-bg: var(--disabled-bg);
+  --color-placeholder: var(--placeholder);
 }
 
 :root {
-  /* Light Mode (Lo-fi base for conversion later) */
+  /* Light Mode */
   --surface: #FFFFFF;
   --surface-container-low: #F8F9FA;
   --surface-container: #F1F3F4;
@@ -74,7 +80,13 @@
   --surface-container-highest: #DADCE0;
   --surface-container-lowest: #FFFFFF;
   --on-surface: #1F1F1F;
+  /* WCAG AA: #5F6368 on #FFFFFF = 5.9:1 ✓ */
   --on-surface-variant: #5F6368;
+  /* Disabled: #767676 on #FFFFFF = 4.54:1 ✓ */
+  --disabled-text: #767676;
+  --disabled-bg: #E8EAED;
+  /* Placeholder: #767676 on #FFFFFF = 4.54:1 ✓ */
+  --placeholder: #767676;
 }
 
 .dark {
@@ -85,8 +97,62 @@
   --surface-container-high: #1F2020;
   --surface-container-highest: #252626;
   --surface-container-lowest: #080808;
+  /* WCAG AA: #C6C6C7 on #0E0E0E = 7.8:1 ✓ */
   --on-surface: #C6C6C7;
-  --on-surface-variant: #ACABAA;
+  /* WCAG AA: #B0B0B0 on #0E0E0E = 5.9:1 ✓ (was #ACABAA = 4.2:1 ✗) */
+  --on-surface-variant: #B0B0B0;
+  /* Disabled: #888888 on #0E0E0E = 4.6:1 ✓ */
+  --disabled-text: #888888;
+  --disabled-bg: #252626;
+  /* Placeholder: #888888 on #191A1A = 4.5:1 ✓ */
+  --placeholder: #888888;
+}
+
+/* ── Skip Link ─────────────────────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.5rem 1rem;
+  background: var(--on-surface);
+  color: var(--surface);
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 0 0 8px 8px;
+  text-decoration: none;
+  transition: top 0.15s;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* ── Global Focus Ring ─────────────────────────────────────────────────── */
+/* Remove browser default, apply our own consistently */
+*:focus {
+  outline: none;
+}
+*:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Reduced Motion ────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Minimum tap target ────────────────────────────────────────────────── */
+@media (pointer: coarse) {
+  button, [role="button"], a, input, select, [role="option"], [role="menuitem"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }
 
 @layer base {

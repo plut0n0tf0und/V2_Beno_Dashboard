@@ -277,12 +277,12 @@ export default function ProjectDetails({
               transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="relative w-full"
             >
-              <div className="flex flex-col gap-3 lg:gap-8 px-0 lg:px-10 pt-3 lg:pt-10 max-w-4xl mx-auto pb-12">
+              <div className="flex flex-col gap-2 sm:gap-4 lg:gap-8 px-0 lg:px-10 pt-2 sm:pt-4 lg:pt-10 max-w-4xl mx-auto pb-12">
                 {/* Back to Dashboard — M3 text button, low emphasis */}
                 <div className="flex justify-end">
                   <button
                     onClick={() => handleStepClick(2)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-on-surface-variant/50 hover:text-on-surface-variant hover:bg-on-surface-variant/8 transition-all outline-none select-none"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-on-surface-variant/8 transition-all select-none"
                   >
                     Back to Dashboard
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -388,21 +388,33 @@ export default function ProjectDetails({
               transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
               className={`relative w-full bg-surface-container ${highlightMapping ? 'opacity-20 blur-[4px] scale-98' : 'opacity-100'}`}
             >
-              <div className="flex flex-col gap-3 lg:gap-8 px-0 lg:px-10 pt-3 lg:pt-10 max-w-7xl mx-auto pb-12">
-                <div className={`${charts.length === 0 ? 'hidden lg:flex' : 'flex'} items-center justify-between mb-4`}>
-                  <h2 className="font-headline text-xl lg:text-3xl font-bold text-on-surface tracking-tighter">Dashboard</h2>
-                  <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-2 sm:gap-4 lg:gap-8 px-0 lg:px-10 pt-2 sm:pt-4 lg:pt-10 max-w-7xl mx-auto pb-12">
+                <div className={`${charts.length === 0 ? 'hidden lg:flex' : 'flex'} items-center justify-between gap-2 mb-3`}>
+                  <h1 className="font-headline text-lg sm:text-2xl lg:text-3xl font-bold text-on-surface tracking-tighter shrink-0">Dashboard</h1>
+                  <div className="flex items-center gap-2 shrink-0">
                     {charts.length > 0 && (
                       <>
-                        <button 
+                        {/* Mobile: icon-only button */}
+                        <button
                           onClick={handleStartOnboarding}
-                          className="flex items-center gap-2 bg-on-surface text-surface px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-lg hover:opacity-95 active:scale-95 transition-all"
+                          aria-label="Add new chart"
+                          className="flex sm:hidden items-center justify-center w-9 h-9 bg-on-surface text-surface rounded-xl shadow-md active:scale-95 transition-all"
                         >
-                          <Plus className="w-5 h-5 text-surface" strokeWidth={3} />
+                          <Plus className="w-4 h-4" strokeWidth={3} aria-hidden="true" />
+                        </button>
+                        {/* Desktop: full label button */}
+                        <button
+                          onClick={handleStartOnboarding}
+                          className="hidden sm:flex items-center gap-2 bg-on-surface text-surface px-4 py-2 rounded-xl text-sm font-bold shadow-lg hover:opacity-95 active:scale-95 transition-all"
+                        >
+                          <Plus className="w-4 h-4 text-surface" strokeWidth={3} aria-hidden="true" />
                           <span>Add New Chart</span>
                         </button>
-                        <button className="flex items-center justify-center w-10 h-10 text-on-surface hover:text-on-surface border border-outline-variant/20 rounded-xl hover:bg-surface-container-high active:scale-95 transition-all outline-none">
-                          <Share2 className="w-5 h-5" />
+                        <button
+                          aria-label="Share dashboard"
+                          className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-on-surface border border-outline-variant/20 rounded-xl hover:bg-surface-container-high active:scale-95 transition-all"
+                        >
+                          <Share2 className="w-4 h-4" aria-hidden="true" />
                         </button>
                       </>
                     )}
@@ -414,10 +426,10 @@ export default function ProjectDetails({
                   layouts={layouts}
                   breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
                   cols={{ lg: 12, md: 10, sm: 6, xs: 2, xxs: 1 }}
-                  rowHeight={100}
+                  rowHeight={80}
                   draggableHandle=".drag-handle"
                   onLayoutChange={(currentLayout) => onLayoutChange(currentLayout)}
-                  margin={[10, 10]}
+                  margin={[8, 8]}
                 >
                   {charts.map((chart) => (
                     <div key={chart.id} className="relative group/grid-item">
@@ -444,7 +456,7 @@ export default function ProjectDetails({
                         <Layout className="w-5 h-5 text-tertiary" />
                       </div>
                       <div className="flex flex-col items-center gap-2 text-center">
-                        <h3 className="text-lg font-black text-on-surface tracking-tight">No charts to display</h3>
+                        <h2 className="text-lg font-black text-on-surface tracking-tight">No charts to display</h2>
                       </div>
                       <button
                         onClick={handleStartOnboarding}
@@ -461,7 +473,7 @@ export default function ProjectDetails({
                         <div className="w-20 h-20 rounded-full bg-surface-container-highest flex items-center justify-center mb-1 shadow-inner group-hover/empty:scale-110 transition-transform duration-500">
                           <Layout className="w-8 h-8 text-tertiary" />
                         </div>
-                        <h3 className="text-2xl font-black text-on-surface tracking-tight">No charts to display</h3>
+                        <h2 className="text-2xl font-black text-on-surface tracking-tight">No charts to display</h2>
                       </div>
                       <button
                         onClick={handleStartOnboarding}

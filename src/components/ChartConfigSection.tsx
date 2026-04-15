@@ -25,23 +25,23 @@ export default function ChartConfigSection({
   onChartSelected,
 }: ChartConfigSectionProps) {
   return (
-    <div className="w-full bg-surface-container rounded-[2rem] p-4 lg:p-8 flex flex-col gap-4 shadow-sm transition-all duration-500 relative z-[65]">
+    <div className="w-full bg-surface-container rounded-2xl sm:rounded-[2rem] p-3 sm:p-5 lg:p-8 flex flex-col gap-3 sm:gap-4 shadow-sm transition-all duration-500 relative z-[65]">
       <div
         className="flex items-center justify-between cursor-pointer group"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="flex items-center gap-4">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm leading-normal transition-colors ${isEnabled ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-on-surface-variant/40'}`}>2</div>
+        <div className="flex items-center gap-3">
+          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm leading-normal transition-colors shrink-0 ${isEnabled ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-disabled-text'}`}>2</div>
           <div className="flex flex-col">
-            <h3 className={`font-headline text-xl font-extrabold transition-colors leading-tight ${isEnabled ? 'text-on-surface group-hover:text-tertiary' : 'text-on-surface-variant/40'}`}>
+            <h3 className={`font-headline text-base sm:text-xl font-extrabold transition-colors leading-tight ${isEnabled ? 'text-on-surface group-hover:text-tertiary' : 'text-disabled-text'}`}>
               Chart Type
             </h3>
-            <p className="text-xs text-on-surface-variant/60 font-medium mt-0.5">Select the type of chart</p>
+            <p className="text-xs text-on-surface-variant font-medium mt-0.5">Select the type of chart</p>
           </div>
         </div>
         {isOpen
-          ? <ChevronUp className="w-5 h-5 text-on-surface-variant" />
-          : <ChevronDown className="w-5 h-5 text-on-surface-variant" />
+          ? <ChevronUp className="w-4 h-4 text-on-surface-variant" />
+          : <ChevronDown className="w-4 h-4 text-on-surface-variant" />
         }
       </div>
 
@@ -54,7 +54,7 @@ export default function ChartConfigSection({
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
             className="overflow-hidden"
           >
-            <div className={`border border-on-surface-variant/10 rounded-2xl p-4 lg:p-8 bg-surface-container-low ${!canEdit ? 'opacity-70' : ''}`}>
+            <div className={`border border-on-surface-variant/10 rounded-xl p-3 sm:p-4 lg:p-8 bg-surface-container-low ${!canEdit ? 'opacity-70' : ''}`}>
               <CustomDropdown
                 headerLabel="REQUIRED CHART"
                 options={chartTypes}

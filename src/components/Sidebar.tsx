@@ -19,30 +19,38 @@ export default function Sidebar({ activePage, onNavigate, isOpen, onClose }: Sid
     <div className="flex flex-col h-full w-full bg-surface p-6 gap-6 transition-colors duration-300">
       <div className="flex items-center justify-between lg:hidden mb-2">
         <span className="font-headline font-bold text-xl text-tertiary">Menu</span>
-        <button onClick={onClose} className="p-2 text-on-surface-variant">
-          <X className="w-5 h-5" />
+        <button
+          onClick={onClose}
+          aria-label="Close navigation menu"
+          className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors"
+        >
+          <X className="w-5 h-5" aria-hidden="true" />
         </button>
       </div>
 
-      <nav className="flex flex-col gap-1">
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => { onNavigate(item.id); onClose(); }}
-            className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
-              activePage === item.id 
-                ? 'text-on-surface bg-surface-container font-bold shadow-sm' 
-                : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low'
-            }`}
-          >
-            <span className="font-body text-base font-semibold tracking-tight">{item.label}</span>
-          </button>
-        ))}
+      <nav aria-label="Sidebar navigation">
+        <ul className="flex flex-col gap-1 list-none m-0 p-0">
+          {navItems.map((item) => (
+            <li key={item.id}>
+              <button
+                onClick={() => { onNavigate(item.id); onClose(); }}
+                aria-current={activePage === item.id ? 'page' : undefined}
+                className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
+                  activePage === item.id 
+                    ? 'text-on-surface bg-surface-container font-bold shadow-sm' 
+                    : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low'
+                }`}
+              >
+                <span className="font-body text-base font-semibold tracking-tight">{item.label}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
       </nav>
 
       <div className="mt-auto">
-        <button className="p-2 text-on-surface-variant hover:text-on-surface transition-colors">
-          <Square className="w-6 h-6" />
+        <button aria-label="Toggle layout" className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors">
+          <Square className="w-6 h-6" aria-hidden="true" />
         </button>
       </div>
     </div>
@@ -64,7 +72,7 @@ export default function Sidebar({ activePage, onNavigate, isOpen, onClose }: Sid
       </AnimatePresence>
 
       {/* Sidebar Container */}
-      <aside className={`fixed left-0 top-0 lg:top-16 h-full lg:h-[calc(100vh-64px)] w-64 z-[60] lg:z-40 transition-transform duration-300 ease-out transform 
+      <aside aria-label="Application sidebar" className={`fixed left-0 top-0 lg:top-16 h-full lg:h-[calc(100vh-64px)] w-64 z-[60] lg:z-40 transition-transform duration-300 ease-out transform 
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         {sidebarContent}
       </aside>

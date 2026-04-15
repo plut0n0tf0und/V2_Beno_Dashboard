@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronDown, ChevronUp, Database, Plus, MoreVertical, ExternalLink, Trash2, Search, ArrowRight } from 'lucide-react';
+import { ChevronDown, ChevronUp, Database, Plus, MoreVertical, ExternalLink, Trash2, Search, Check, X } from 'lucide-react';
 import { DataSource } from '../types';
 
 const extractSourceName = (url: string) => {
@@ -83,21 +83,16 @@ export default function AddDataSourceSection({
 
   const isUrlValid = newUrl.trim().length > 0;
   const selectedSource = dataSources.find(s => s.id === selectedSourceId);
-  const sourceNameHint = selectedSource ? selectedSource.name : "None selected";
   const canAddSource = isUrlValid && isConfirmed && previewData !== null && previewError === null;
 
   const handlePreviewData = async () => {
     if (!isUrlValid) return;
-    
     setIsLoading(true);
     setPreviewError(null);
     setPreviewData(null);
-    
     try {
       const response = await fetch(newUrl);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       const data = await response.json();
       setPreviewData(data);
     } catch (error) {
@@ -108,136 +103,157 @@ export default function AddDataSourceSection({
   };
 
   return (
-    <div className="w-full bg-surface-container rounded-[2rem] p-4 lg:p-10 flex flex-col gap-4 lg:gap-8 shadow-sm transition-all duration-500">
-      <div 
-        className="flex items-center justify-between cursor-pointer group"
+    <div className="w-full bg-surface-container rounded-2xl sm:rounded-[2rem] p-3 sm:p-5 lg:p-10 flex flex-col gap-3 sm:gap-4 lg:gap-8 shadow-sm transition-all duration-500">
+
+      {/* ── Section header ─────────────────────────────────────────────── */}
+      <div
+        className="flex items-center gap-3 cursor-pointer group"
         onClick={() => setIsSourceOpen(!isSourceOpen)}
+        role="button"
+        aria-expanded={isSourceOpen}
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsSourceOpen(!isSourceOpen); } }}
       >
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-8 rounded-full bg-on-surface-variant/20 flex items-center justify-center font-bold text-sm text-on-surface">1</div>
-          <div className="flex flex-col">
-            <h3 className="font-headline text-xl font-extrabold text-on-surface group-hover:text-tertiary transition-colors leading-tight">Add Data Source</h3>
-            <p className="text-xs text-on-surface-variant/60 font-medium mt-0.5">Get data to use in the chart</p>
-            {!isSourceOpen && selectedSource && (
-              <div className="flex items-center gap-1.5 mt-1">
-                <div className="w-3.5 h-3.5 rounded-full bg-tertiary/20 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-2 h-2 text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <span className="text-xs font-semibold text-on-surface-variant/70 tracking-wide">{selectedSource.name}</span>
-              </div>
-            )}
-          </div>
+        {/* Step badge */}
+        <div className="w-7 h-7 rounded-full bg-on-surface-variant/20 flex items-center justify-center font-bold text-xs text-on-surface shrink-0">
+          1
         </div>
-        
-        <div className="flex items-center gap-4">
-          {isSourceOpen && dataSources.length > 0 && canEdit && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsAdding(!isAdding);
-              }}
-              className={`${isAdding ? 'bg-tertiary text-surface' : 'bg-on-surface-variant/10 text-on-surface hover:bg-on-surface-variant/20'} px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all outline-none`}
-            >
-              <Plus className={`w-3.5 h-3.5 transition-transform duration-300 ${isAdding ? 'rotate-45' : ''}`} />
-              {isAdding ? 'Cancel' : 'Add Source'}
-            </button>
-          )}
-          {isSourceOpen ? (
-            <ChevronUp className="w-5 h-5 text-on-surface-variant" />
-          ) : (
-            <ChevronDown className="w-5 h-5 text-on-surface-variant" />
-          )}
+
+        {/* Title + subtitle — takes all remaining space */}
+        <div className="flex-1 min-w-0">
+          <h3 className="font-headline text-base font-extrabold text-on-surface group-hover:text-tertiary transition-colors leading-tight">
+            Add Data Source
+          </h3>
+          <p className="text-xs text-on-surface-variant font-medium mt-0.5 leading-tight">
+            {!isSourceOpen && selectedSource ? selectedSource.name : 'Get data to use in the chart'}
+          </p>
+        </div>
+
+        {/* Chevron — right-aligned, never pushes title */}
+        <div className="shrink-0">
+          {isSourceOpen
+            ? <ChevronUp className="w-4 h-4 text-on-surface-variant" aria-hidden="true" />
+            : <ChevronDown className="w-4 h-4 text-on-surface-variant" aria-hidden="true" />
+          }
         </div>
       </div>
 
+      {/* ── Expanded content ───────────────────────────────────────────── */}
       <AnimatePresence initial={false}>
         {isSourceOpen && (
-          <motion.div 
+          <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
+            animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
-            className="overflow-visible pb-4"
+            className="overflow-visible"
           >
-            <div className="space-y-3 pt-3">
-              {/* Added Data Source Container */}
+            <div className="flex flex-col gap-4 pt-1">
+
+              {/* ── Existing sources list ─────────────────────────────── */}
               {dataSources.length > 0 && (
-                <div className="space-y-4">
-                  <p className="font-body text-sm font-bold text-on-surface-variant uppercase tracking-widest">Added Data Source</p>
-                  <div className="max-h-[300px] overflow-y-auto pr-1 no-scrollbar space-y-3">
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest">
+                      Added Sources
+                    </p>
+                    {/* "Add another" toggle — lives here, not in the header */}
+                    {canEdit && (
+                      <button
+                        onClick={() => setIsAdding(!isAdding)}
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all ${
+                          isAdding
+                            ? 'bg-surface-container-high text-on-surface-variant'
+                            : 'bg-tertiary/10 text-tertiary hover:bg-tertiary/20'
+                        }`}
+                      >
+                        {isAdding
+                          ? <><X className="w-3 h-3" aria-hidden="true" /> Cancel</>
+                          : <><Plus className="w-3 h-3" aria-hidden="true" /> Add</>
+                        }
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2 max-h-[260px] overflow-y-auto no-scrollbar">
                     {dataSources.map((source) => (
                       <div
                         key={source.id}
                         onClick={() => canEdit && onSelectSource(source.id)}
-                        className={`flex items-center justify-between border rounded-xl p-4 group/item transition-all ${
+                        className={`flex items-center gap-3 border rounded-xl px-3 py-2.5 transition-all ${
                           canEdit ? 'cursor-pointer' : 'cursor-default'
                         } ${
                           selectedSourceId === source.id
-                            ? 'bg-tertiary/10 border-tertiary ring-1 ring-tertiary/30'
+                            ? 'bg-tertiary/10 border-tertiary ring-1 ring-tertiary/20'
                             : 'bg-surface-container-low border-on-surface-variant/10 hover:border-tertiary/30'
                         }`}
                       >
-                        <div className="flex items-center gap-4">
-                          {/* Radio Button */}
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
-                            selectedSourceId === source.id ? 'border-tertiary' : 'border-on-surface-variant/30 group-hover/item:border-tertiary/50'
-                          }`}>
-                            {selectedSourceId === source.id && (
-                              <div className="w-2.5 h-2.5 rounded-full bg-tertiary" />
-                            )}
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-tertiary/10 flex items-center justify-center">
-                              <Database className="w-4 h-4 text-tertiary" />
-                            </div>
-                            <div className="flex flex-col">
-                              <span className="text-base font-bold text-on-surface">{source.name}</span>
-                              <span className="text-sm text-on-surface-variant font-mono truncate max-w-[150px]">
-                                {source.url}
-                              </span>
-                            </div>
-                          </div>
+                        {/* Custom radio */}
+                        <div
+                          className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                            selectedSourceId === source.id
+                              ? 'border-tertiary'
+                              : 'border-on-surface-variant/40'
+                          }`}
+                          aria-hidden="true"
+                        >
+                          {selectedSourceId === source.id && (
+                            <div className="w-2 h-2 rounded-full bg-tertiary" />
+                          )}
                         </div>
-                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                          <button 
+
+                        {/* Icon */}
+                        <div className="w-7 h-7 rounded-lg bg-tertiary/10 flex items-center justify-center shrink-0">
+                          <Database className="w-3.5 h-3.5 text-tertiary" aria-hidden="true" />
+                        </div>
+
+                        {/* Name + URL — takes remaining space */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-on-surface truncate leading-tight">{source.name}</p>
+                          <p className="text-xs text-on-surface-variant font-mono truncate leading-tight mt-0.5">{source.url}</p>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                          <button
                             onClick={() => {
                               const blob = new Blob([JSON.stringify(mockJsonData, null, 2)], { type: 'application/json' });
-                              const jsonUrl = URL.createObjectURL(blob);
-                              window.open(jsonUrl, '_blank');
+                              window.open(URL.createObjectURL(blob), '_blank');
                             }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-container hover:bg-surface-container-high border border-outline-variant/20 rounded-lg text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors outline-none"
+                            aria-label={`View data for ${source.name}`}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container border border-outline-variant/20 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
                           >
-                            <ExternalLink className="w-4 h-4" />
-                            View data
+                            <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
                           </button>
+
                           <div className="relative">
-                            <button 
+                            <button
                               onClick={() => setOpenMenuId(openMenuId === source.id ? null : source.id)}
-                              className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-on-surface-variant/10 rounded-lg transition-all outline-none"
+                              aria-label={`More options for ${source.name}`}
+                              aria-expanded={openMenuId === source.id}
+                              aria-haspopup="menu"
+                              className="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-on-surface-variant/10 transition-all"
                             >
-                              <MoreVertical className="w-4 h-4" />
+                              <MoreVertical className="w-3.5 h-3.5" aria-hidden="true" />
                             </button>
-                            
+
                             <AnimatePresence>
                               {openMenuId === source.id && (
-                                <motion.div 
-                                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                <motion.div
+                                  role="menu"
+                                  initial={{ opacity: 0, scale: 0.95, y: -6 }}
                                   animate={{ opacity: 1, scale: 1, y: 0 }}
-                                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                                  transition={{ duration: 0.15 }}
-                                  className="absolute right-0 top-full mt-2 w-36 bg-surface-container-high border border-outline-variant/20 rounded-xl shadow-xl overflow-hidden z-[100]"
+                                  exit={{ opacity: 0, scale: 0.95, y: -6 }}
+                                  transition={{ duration: 0.12 }}
+                                  className="absolute right-0 top-full mt-1.5 w-32 bg-surface-container-high border border-outline-variant/20 rounded-xl shadow-xl overflow-hidden z-[100]"
                                 >
                                   <button
-                                    onClick={() => {
-                                      setOpenMenuId(null);
-                                      canEdit && onDeleteSource(source.id);
-                                    }}
+                                    role="menuitem"
+                                    onClick={() => { setOpenMenuId(null); canEdit && onDeleteSource(source.id); }}
                                     disabled={!canEdit}
-                                    className="w-full flex items-center gap-2 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-400/10 transition-colors text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm font-bold text-red-400 hover:bg-red-400/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                   >
-                                    <Trash2 className="w-4 h-4" />
+                                    <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                                     Delete
                                   </button>
                                 </motion.div>
@@ -251,96 +267,107 @@ export default function AddDataSourceSection({
                 </div>
               )}
 
-              {/* Add New Source Form */}
-              <AnimatePresence>
+              {/* ── Add new source form ───────────────────────────────── */}
+              <AnimatePresence initial={false}>
                 {isAdding && (
-                  <motion.div 
+                  <motion.div
                     initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
+                    animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="space-y-3 pt-3 border-t border-on-surface-variant/5"
+                    transition={{ duration: 0.25, ease: [0.33, 1, 0.68, 1] }}
+                    className="overflow-hidden"
                   >
-                    <p className="font-body text-sm font-bold text-on-surface tracking-tight">Fetch Data in API link</p>
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
-                        Enter API URL *
-                      </label>
-                      <input
-                        type="text"
-                        value={newUrl}
-                        onChange={(e) => canEdit && setNewUrl(e.target.value)}
-                        placeholder="https://api.yoursite.com/v1/users"
-                        disabled={!canEdit}
-                        className="w-full bg-surface-container-low border border-on-surface-variant/10 rounded-xl py-2.5 px-3 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-tertiary/20 transition-all outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed"
-                      />
+                    <div className={`flex flex-col gap-3 pt-3 ${dataSources.length > 0 ? 'border-t border-on-surface-variant/8' : ''}`}>
+
+                      <p className="text-sm font-bold text-on-surface">Fetch data from API</p>
+
+                      {/* URL input */}
+                      <div className="flex flex-col gap-1.5">
+                        <label htmlFor="api-url-input" className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+                          API URL *
+                        </label>
+                        <input
+                          id="api-url-input"
+                          type="text"
+                          value={newUrl}
+                          onChange={(e) => canEdit && setNewUrl(e.target.value)}
+                          placeholder="https://api.yoursite.com/v1/data"
+                          disabled={!canEdit}
+                          className="w-full bg-surface-container-low border border-on-surface-variant/15 rounded-xl py-2.5 px-3 text-sm text-on-surface placeholder:text-placeholder focus:ring-2 focus:ring-tertiary/40 focus:border-tertiary outline-none transition-all disabled:bg-disabled-bg disabled:text-disabled-text disabled:cursor-not-allowed"
+                        />
+                      </div>
+
+                      {/* Fetch button — full width on mobile, auto on desktop */}
                       <button
                         onClick={handlePreviewData}
                         disabled={!isUrlValid || isLoading || !canEdit}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border transition-all
-                          ${(isUrlValid && !isLoading && canEdit)
-                            ? 'border-tertiary/40 text-tertiary hover:bg-tertiary/10 active:scale-95'
-                            : 'border-on-surface-variant/10 text-on-surface-variant/30 cursor-not-allowed'
-                          }`}
+                        className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-all ${
+                          isUrlValid && !isLoading && canEdit
+                            ? 'border-tertiary/50 text-tertiary bg-tertiary/5 hover:bg-tertiary/10 active:scale-[0.98]'
+                            : 'border-on-surface-variant/15 text-disabled-text bg-surface-container-low cursor-not-allowed'
+                        }`}
                       >
                         {isLoading ? (
                           <>
-                            <span className="w-3.5 h-3.5 border-2 border-tertiary/30 border-t-tertiary rounded-full animate-spin" />
-                            Loading...
+                            <span className="w-3.5 h-3.5 border-2 border-tertiary/30 border-t-tertiary rounded-full animate-spin shrink-0" aria-hidden="true" />
+                            Checking...
                           </>
                         ) : (
                           <>
-                            <Search className="w-3.5 h-3.5" />
-                          Check if data is fetched
+                            <Search className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                            Check if data is fetched
                           </>
                         )}
                       </button>
-                    </div>
-                    
-                    {/* JSON Preview Container */}
-                    {(previewData !== null || previewError !== null) && (
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
-                          Data Preview
-                        </label>
-                        <div className="bg-surface-container-highest border border-on-surface-variant/10 rounded-xl p-3 max-h-[160px] overflow-y-auto">
-                          {previewError ? (
-                            <div className="text-red-400 text-xs font-mono">Error: {previewError}</div>
-                          ) : (
-                            <pre className="text-xs text-on-surface font-mono whitespace-pre-wrap leading-normal">
-                              {JSON.stringify(previewData, null, 2)}
-                            </pre>
-                          )}
-                        </div>
-                      </div>
-                    )}
 
-                    {/* Confirmation Checkbox */}
-                    <div className="flex items-start gap-2.5">
-                      <div
+                      {/* JSON preview */}
+                      {(previewData !== null || previewError !== null) && (
+                        <div className="flex flex-col gap-1.5">
+                          <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+                            Data Preview
+                          </p>
+                          <div className="bg-surface-container-highest border border-on-surface-variant/10 rounded-xl p-3 max-h-[140px] overflow-y-auto minimal-scrollbar">
+                            {previewError ? (
+                              <p className="text-red-400 text-xs font-mono">Error: {previewError}</p>
+                            ) : (
+                              <pre className="text-xs text-on-surface font-mono whitespace-pre-wrap leading-relaxed">
+                                {JSON.stringify(previewData, null, 2)}
+                              </pre>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* ── Custom checkbox ─────────────────────────────── */}
+                      <button
+                        type="button"
+                        role="checkbox"
+                        aria-checked={isConfirmed}
+                        disabled={!previewData || !canEdit}
                         onClick={() => canEdit && previewData && setIsConfirmed(!isConfirmed)}
-                        className={`w-5 h-5 rounded border-2 mt-0.5 flex items-center justify-center transition-all flex-shrink-0 ${
-                          !previewData || !canEdit
-                            ? 'border-on-surface-variant/15 bg-on-surface-variant/5 cursor-not-allowed opacity-40'
-                            : isConfirmed
-                              ? 'bg-tertiary border-tertiary cursor-pointer'
-                              : 'border-on-surface-variant/30 hover:border-tertiary cursor-pointer'
+                        className={`flex items-start gap-3 text-left w-full transition-all disabled:cursor-not-allowed ${
+                          !previewData || !canEdit ? 'opacity-50' : ''
                         }`}
                       >
-                        {isConfirmed && (
-                          <svg className="w-3 h-3 text-surface" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </div>
-                      <label
-                        onClick={() => canEdit && previewData && setIsConfirmed(!isConfirmed)}
-                        className={`text-sm select-none leading-normal transition-colors ${previewData && canEdit ? 'text-on-surface cursor-pointer' : 'text-on-surface-variant/40 cursor-not-allowed'}`}
-                      >
-                        I can view the data fetched from the Source
-                      </label>
-                    </div>
+                        {/* Box */}
+                        <span
+                          className={`mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${
+                            isConfirmed
+                              ? 'bg-tertiary border-tertiary'
+                              : 'border-on-surface-variant/40 bg-surface-container-low'
+                          }`}
+                          aria-hidden="true"
+                        >
+                          {isConfirmed && <Check className="w-3 h-3 text-surface" strokeWidth={3} />}
+                        </span>
+                        <span className={`text-sm leading-snug select-none ${
+                          previewData && canEdit ? 'text-on-surface' : 'text-disabled-text'
+                        }`}>
+                          I can view the data fetched from the source
+                        </span>
+                      </button>
 
-                    <div className="flex justify-end">
+                      {/* Submit button — full width on mobile */}
                       <button
                         onClick={() => {
                           onAddSource(newUrl, extractSourceName(newUrl));
@@ -351,18 +378,20 @@ export default function AddDataSourceSection({
                           setIsAdding(false);
                         }}
                         disabled={!canAddSource || !canEdit}
-                        className={`px-10 py-2.5 rounded-full font-bold text-sm uppercase tracking-widest transition-all shadow-lg
-                          ${canAddSource && canEdit
-                            ? 'bg-on-surface text-surface hover:opacity-90 hover:shadow-xl active:scale-[0.97]'
-                            : 'bg-on-surface-variant/20 text-on-surface-variant/50 cursor-not-allowed shadow-none'
-                          }`}
+                        className={`w-full py-3 rounded-xl font-bold text-sm uppercase tracking-widest transition-all ${
+                          canAddSource && canEdit
+                            ? 'bg-on-surface text-surface hover:opacity-90 active:scale-[0.98] shadow-lg'
+                            : 'bg-disabled-bg text-disabled-text cursor-not-allowed'
+                        }`}
                       >
                         Add Data Source
                       </button>
+
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
+
             </div>
           </motion.div>
         )}

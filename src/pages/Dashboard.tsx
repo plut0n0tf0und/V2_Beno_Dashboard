@@ -17,14 +17,14 @@ export default function Dashboard({ chartName }: DashboardProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold font-headline text-primary">Dashboard</h2>
+        <h1 className="text-xl font-semibold font-headline text-primary">Dashboard</h1>
         <div className="flex gap-3">
           <button className="bg-surface-container text-primary px-4 py-2 rounded-xl text-sm font-medium hover:bg-surface-container-high transition-all flex items-center gap-2">
-            <Filter className="w-4 h-4" />
+            <Filter className="w-4 h-4" aria-hidden="true" />
             Filter
           </button>
           <button className="bg-surface-container text-primary px-4 py-2 rounded-xl text-sm font-medium hover:bg-surface-container-high transition-all flex items-center gap-2">
-            <Share2 className="w-4 h-4" />
+            <Share2 className="w-4 h-4" aria-hidden="true" />
             Export
           </button>
         </div>
@@ -33,11 +33,11 @@ export default function Dashboard({ chartName }: DashboardProps) {
       <div className="bg-surface-container rounded-xl p-8 flex-1 flex flex-col relative min-h-[500px]">
         <div className="flex items-start justify-between mb-12">
           <div>
-            <h3 className="text-2xl font-bold font-headline text-primary tracking-tight">{chartName}</h3>
+            <h2 className="text-2xl font-bold font-headline text-primary tracking-tight">{chartName}</h2>
             <p className="text-sm text-on-surface-variant mt-1">Volume by Category Distribution</p>
           </div>
-          <button className="p-2 rounded-lg hover:bg-surface-container-high text-on-surface-variant">
-            <MoreVertical className="w-5 h-5" />
+          <button aria-label="More options" className="p-2 rounded-lg hover:bg-surface-container-high text-on-surface-variant">
+            <MoreVertical className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 

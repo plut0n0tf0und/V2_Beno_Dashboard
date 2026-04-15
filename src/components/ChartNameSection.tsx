@@ -30,20 +30,20 @@ export default function ChartNameSection({
   const canConfirm = chartName.trim().length > 0;
 
   return (
-    <div className="w-full bg-surface-container rounded-[2rem] p-4 lg:p-8 flex flex-col gap-4 shadow-sm transition-all duration-500 relative z-[60]">
+    <div className="w-full bg-surface-container rounded-2xl sm:rounded-[2rem] p-3 sm:p-5 lg:p-8 flex flex-col gap-3 sm:gap-4 shadow-sm transition-all duration-500 relative z-[60]">
       <div
         className="flex items-center justify-between cursor-pointer group"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="flex items-center gap-4">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm leading-normal transition-colors ${isEnabled ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-on-surface-variant/40'}`}>4</div>
-          <h3 className={`font-headline text-xl font-extrabold transition-colors leading-tight ${isEnabled ? 'text-on-surface group-hover:text-tertiary' : 'text-on-surface-variant/40'}`}>
+        <div className="flex items-center gap-3">
+          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm leading-normal transition-colors shrink-0 ${isEnabled ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-disabled-text'}`}>4</div>
+          <h3 className={`font-headline text-base sm:text-xl font-extrabold transition-colors leading-tight ${isEnabled ? 'text-on-surface group-hover:text-tertiary' : 'text-disabled-text'}`}>
             Chart Name
           </h3>
         </div>
         {isOpen
-          ? <ChevronUp className="w-5 h-5 text-on-surface-variant" />
-          : <ChevronDown className="w-5 h-5 text-on-surface-variant" />
+          ? <ChevronUp className="w-4 h-4 text-on-surface-variant" />
+          : <ChevronDown className="w-4 h-4 text-on-surface-variant" />
         }
       </div>
 
@@ -56,7 +56,7 @@ export default function ChartNameSection({
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
             className="overflow-hidden"
           >
-            <div className={`flex flex-col gap-4 border border-on-surface-variant/10 rounded-2xl p-4 lg:p-8 bg-surface-container-low ${!canEdit ? 'opacity-70' : ''}`}>
+            <div className={`flex flex-col gap-3 sm:gap-4 border border-on-surface-variant/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-8 bg-surface-container-low ${!canEdit ? 'opacity-70' : ''}`}>
               <div className="space-y-1.5">
                 <label className="text-xs font-bold uppercase tracking-widest text-on-surface">
                   {initialName ? 'Update chart name' : 'Enter chart name'}
@@ -67,7 +67,7 @@ export default function ChartNameSection({
                   onChange={(e) => canEdit && setChartName(e.target.value)}
                   placeholder="e.g. Top Products Bought"
                   disabled={!canEdit}
-                  className="w-full bg-transparent border-b-2 border-tertiary/40 hover:border-tertiary/70 focus:border-tertiary px-1 py-2.5 text-base font-bold text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-all leading-normal disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-transparent border-b-2 border-tertiary/40 hover:border-tertiary/70 focus:border-tertiary px-1 py-2.5 text-base font-bold text-on-surface placeholder:text-placeholder outline-none transition-all leading-normal disabled:text-disabled-text disabled:cursor-not-allowed"
                 />
               </div>
 
@@ -75,13 +75,13 @@ export default function ChartNameSection({
                 <button
                   onClick={() => canConfirm && canEdit && onConfirm(chartName)}
                   disabled={!canConfirm || !canEdit}
-                  className={`px-10 py-2.5 rounded-full font-bold text-sm uppercase tracking-widest transition-all shadow-lg ${
+                  className={`px-6 sm:px-10 py-2.5 rounded-full font-bold text-sm uppercase tracking-widest transition-all shadow-lg ${
                     canConfirm && canEdit
                       ? 'bg-tertiary text-surface hover:opacity-95 active:scale-[0.97]'
-                      : 'bg-on-surface-variant/20 text-on-surface-variant cursor-not-allowed opacity-50'
+                      : 'bg-disabled-bg text-disabled-text cursor-not-allowed'
                   }`}
                 >
-                  {initialName ? 'Update mapping' : 'Publish chart to dashboard'}
+                  {initialName ? 'Update mapping' : 'Publish chart'}
                 </button>
               </div>
             </div>

@@ -9,72 +9,80 @@ interface HomeNavbarProps {
 
 export default function HomeNavbar({ isDarkMode, onToggleDarkMode, onToggleSidebar }: HomeNavbarProps) {
   return (
-    <nav className="fixed top-0 right-0 left-0 h-16 bg-surface/80 backdrop-blur-xl z-[80] px-3 sm:px-6 flex items-center justify-between transition-colors duration-300">
+    <header>
+    <nav aria-label="Main navigation" className="fixed top-0 right-0 left-0 h-16 bg-surface/80 backdrop-blur-xl z-[80] px-3 sm:px-6 flex items-center justify-between transition-colors duration-300">
       <div className="flex items-center gap-3 sm:gap-8 shrink-0">
         {/* Mobile Menu Toggle */}
         <button 
           onClick={onToggleSidebar}
+          aria-label="Open navigation menu"
           className="lg:hidden p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container"
         >
-          <Menu className="w-6 h-6" />
+          <Menu className="w-6 h-6" aria-hidden="true" />
         </button>
 
         {/* Logo — desktop only */}
-        <div className="hidden sm:block text-on-surface">
+        <div className="hidden sm:block text-on-surface" aria-hidden="true">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
           </svg>
         </div>
 
         {/* Org Switcher */}
-        <div className="flex items-center gap-2 bg-surface-container-high px-3 py-1.5 rounded-lg cursor-pointer group hover:bg-surface-container-highest transition-colors">
-          <div className="text-on-surface">
+        <button
+          type="button"
+          aria-label="Switch organization: WOOOYS's Org"
+          className="flex items-center gap-2 bg-surface-container-high px-3 py-1.5 rounded-lg cursor-pointer group hover:bg-surface-container-highest transition-colors"
+        >
+          <div className="text-on-surface" aria-hidden="true">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 3v12"/><path d="M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M12 12h3"/>
             </svg>
           </div>
           <span className="hidden sm:inline-block font-headline text-base font-bold text-on-surface whitespace-nowrap leading-tight">WOOOYS's Org</span>
-          <div className="flex flex-col ml-1">
-            <ChevronDown className="w-3 h-3 text-on-surface-variant group-hover:text-on-surface" />
-          </div>
-        </div>
+          <ChevronDown className="w-3 h-3 text-on-surface-variant group-hover:text-on-surface ml-1" aria-hidden="true" />
+        </button>
       </div>
 
       <div className="flex items-center gap-3 sm:gap-6 shrink-0">
-
-
         {/* English Toggle */}
-        <div className="hidden sm:flex items-center gap-2 px-2 py-1.5 cursor-pointer text-on-surface-variant hover:text-on-surface transition-colors group">
-          <Globe className="w-4 h-4" />
+        <button
+          type="button"
+          aria-label="Change language: English"
+          className="hidden sm:flex items-center gap-2 px-2 py-1.5 cursor-pointer text-on-surface-variant hover:text-on-surface transition-colors group rounded-lg"
+        >
+          <Globe className="w-4 h-4" aria-hidden="true" />
           <span className="text-sm font-bold">English</span>
-          <ChevronDown className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" />
-        </div>
+          <ChevronDown className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" aria-hidden="true" />
+        </button>
 
         {/* Action Icons */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <button className="hidden sm:flex p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-full hover:bg-surface-container group">
-            <Search className="w-5 h-5" />
+          <button aria-label="Search" className="hidden sm:flex p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-full hover:bg-surface-container group">
+            <Search className="w-5 h-5" aria-hidden="true" />
           </button>
 
-          <button className="hidden sm:flex p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-full hover:bg-surface-container group">
-            <HelpCircle className="w-5 h-5" />
+          <button aria-label="Help" className="hidden sm:flex p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-full hover:bg-surface-container group">
+            <HelpCircle className="w-5 h-5" aria-hidden="true" />
           </button>
           
-          <button className="hidden sm:flex p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-full hover:bg-surface-container relative">
-            <Bell className="w-5 h-5" />
+          <button aria-label="Notifications" className="hidden sm:flex p-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-full hover:bg-surface-container relative">
+            <Bell className="w-5 h-5" aria-hidden="true" />
           </button>
 
-          {/* Modern Theme Toggle */}
+          {/* Theme Toggle */}
           <button 
             onClick={onToggleDarkMode}
+            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-pressed={isDarkMode}
             className="hidden sm:flex items-center bg-surface-container p-1 rounded-full hover:bg-surface-container-high transition-all"
           >
-            <div className={`p-1 rounded-full transition-all ${!isDarkMode ? 'bg-tertiary text-surface' : 'text-on-surface-variant'}`}>
+            <span className={`p-1 rounded-full transition-all ${!isDarkMode ? 'bg-tertiary text-surface' : 'text-on-surface-variant'}`} aria-hidden="true">
               <Sun className="w-3 h-3" />
-            </div>
-            <div className={`p-1 rounded-full transition-all ${isDarkMode ? 'bg-tertiary text-surface' : 'text-on-surface-variant'}`}>
+            </span>
+            <span className={`p-1 rounded-full transition-all ${isDarkMode ? 'bg-tertiary text-surface' : 'text-on-surface-variant'}`} aria-hidden="true">
               <Moon className="w-3 h-3" />
-            </div>
+            </span>
           </button>
         </div>
 
@@ -82,5 +90,6 @@ export default function HomeNavbar({ isDarkMode, onToggleDarkMode, onToggleSideb
         <ProfilePopup isDarkMode={isDarkMode} onToggleDarkMode={onToggleDarkMode} />
       </div>
     </nav>
+    </header>
   );
 }

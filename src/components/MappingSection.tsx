@@ -60,7 +60,7 @@ export default function MappingSection({
         ]
       } : {}}
       transition={{ duration: 1, repeat: highlightMapping ? Infinity : 0 }}
-      className={`w-full bg-surface-container rounded-[2rem] p-4 lg:p-8 flex flex-col gap-4 lg:gap-8 shadow-sm transition-all duration-500 relative z-[70] ${highlightMapping ? 'ring-4 ring-tertiary shadow-[0_0_50px_-12px_rgba(var(--color-tertiary),0.5)] bg-surface-container-high' : ''}`}
+      className={`w-full bg-surface-container rounded-2xl sm:rounded-[2rem] p-3 sm:p-5 lg:p-8 flex flex-col gap-3 sm:gap-4 lg:gap-8 shadow-sm transition-all duration-500 relative z-[70] ${highlightMapping ? 'ring-4 ring-tertiary shadow-[0_0_50px_-12px_rgba(var(--color-tertiary),0.5)] bg-surface-container-high' : ''}`}
     >
       {highlightMapping && (
         <div className="absolute -inset-2 bg-tertiary/5 rounded-[22px] -z-10 animate-pulse" />
@@ -69,17 +69,17 @@ export default function MappingSection({
         className="flex items-center justify-between cursor-pointer group"
         onClick={() => setIsMappingOpen(!isMappingOpen)}
       >
-        <div className="flex items-center gap-4">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm leading-normal transition-colors ${canEdit ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-on-surface-variant/40'}`}>3</div>
+        <div className="flex items-center gap-3">
+          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm leading-normal transition-colors shrink-0 ${canEdit ? 'bg-on-surface-variant/20 text-on-surface' : 'bg-on-surface-variant/10 text-disabled-text'}`}>3</div>
           <div className="flex flex-col">
-            <h3 className={`font-headline text-xl font-extrabold transition-colors leading-tight ${canEdit ? 'text-on-surface group-hover:text-tertiary' : 'text-on-surface-variant/40'}`}>Mapping</h3>
-            <p className="text-xs text-on-surface-variant/60 font-medium mt-0.5">Select data for chart from the fetched data</p>
+            <h3 className={`font-headline text-base sm:text-xl font-extrabold transition-colors leading-tight ${canEdit ? 'text-on-surface group-hover:text-tertiary' : 'text-disabled-text'}`}>Mapping</h3>
+            <p className="text-xs text-on-surface-variant font-medium mt-0.5">Select data for chart from the fetched data</p>
           </div>
         </div>
         {isMappingOpen ? (
-          <ChevronUp className="w-5 h-5 text-on-surface-variant" />
+          <ChevronUp className="w-4 h-4 text-on-surface-variant" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-on-surface-variant" />
+          <ChevronDown className="w-4 h-4 text-on-surface-variant" />
         )}
       </div>
 
@@ -92,13 +92,13 @@ export default function MappingSection({
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
             className="overflow-visible pb-4"
           >
-            <div className="pt-2">
-              <div className={`flex flex-col gap-4 border border-on-surface-variant/10 rounded-2xl p-4 lg:p-8 bg-surface-container-low ${!isMappingEnabled ? 'opacity-50' : ''}`}>
+              <div className="pt-2">
+              <div className={`flex flex-col gap-3 sm:gap-4 border border-on-surface-variant/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-8 bg-surface-container-low ${!isMappingEnabled ? 'opacity-50' : ''}`}>
                 {/* Data Mapping */}
                 <div className="flex flex-col gap-3">
                   <div>
                     <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">1. DATA MAPPING</label>
-                    <p className="text-xs text-on-surface-variant/60 leading-normal mt-0.5">
+                    <p className="text-xs text-on-surface-variant leading-normal mt-0.5">
                       {!isMappingEnabled ? 'Select a data source first to enable mapping' : 'Select data for chart from the fetched data'}
                     </p>
                   </div>
