@@ -38,7 +38,7 @@ export default function Home({ onProjectClick }: HomeProps) {
   const sortOptions = ['Recent', 'Name A–Z', 'Name Z–A', 'Most Data'];
 
   return (
-    <div className="space-y-6 pb-24 sm:pb-6">
+    <div className="max-w-[1024px] mx-auto space-y-6 pb-24 sm:pb-6">
       <header className="flex flex-col gap-4 sm:gap-6">
         <h1 className="font-headline text-3xl font-extrabold tracking-tighter text-on-surface leading-tight">Projects</h1>
 

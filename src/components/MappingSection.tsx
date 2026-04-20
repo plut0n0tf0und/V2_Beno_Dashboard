@@ -137,6 +137,7 @@ export default function MappingSection({
                           labelField={selectedLabel}
                           valueField={selectedValue}
                           onContinue={onContinue}
+                          isEditMode={!!editingChartId}
                         />
                       </div>
                     </>

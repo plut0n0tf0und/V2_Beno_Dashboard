@@ -229,14 +229,13 @@ export default function ProjectDetails({
   };
 
   useEffect(() => {
-    // In a restricted edit mode, never auto-advance the data selection step
-    if (editMode !== null) return;
-    // Only auto-advance to step 3 if we are currently in the config phase (steps 1, 2, or 3)
-    // This prevents the UI from snapping back to step 3 when we try to move to step 4 (Dashboard)
+    // In name-edit mode, never auto-advance the data selection step
+    if (editMode === 'name') return;
+
     if (selectedLabel && selectedValue && activeStep < 4) {
       if (!isDataSelectionOpen) {
         setIsDataSelectionOpen(true);
-        setActiveStep(3);
+        if (editMode === null) setActiveStep(3);
 
         // Skip scroll if we are just entering "Edit" mode
         if (skipAutoScrollRef.current) {
@@ -347,9 +346,28 @@ export default function ProjectDetails({
                   dataSelectionRef={dataSelectionRef}
                   onCancelEdit={handleCancelEdit}
                   onContinue={(data) => {
-                    setSelectedData(data);
-                    setIsChartNameOpen(true);
-                    setIsMappingOpen(false);
+                    if (editMode === 'mapping' && editingChartId) {
+                      // Edit mapping flow: apply immediately, skip rename, go to dashboard
+                      onCreateChart(
+                        charts.find(c => c.id === editingChartId)?.name ?? '',
+                        data,
+                        { chartType: selectedChart, label: selectedLabel, value: selectedValue }
+                      );
+                      setDirection(1);
+                      setActiveStep(4);
+                      setIsDataSelectionOpen(false);
+                      setSelectedData([]);
+                      setSelectedChart('');
+                      setSelectedLabel('');
+                      setSelectedValue('');
+                      setIsChartConfigOpen(false);
+                      handleCancelEdit();
+                      onCancelEditMapping();
+                    } else {
+                      setSelectedData(data);
+                      setIsChartNameOpen(true);
+                      setIsMappingOpen(false);
+                    }
                   }}
                 />
                 <div ref={chartNameRef}>

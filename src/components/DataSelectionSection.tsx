@@ -18,6 +18,7 @@ interface DataSelectionSectionProps {
   labelField: string;
   valueField: string;
   onContinue: (selectedData: any[]) => void;
+  isEditMode?: boolean;
 }
 
 export default function DataSelectionSection({
@@ -28,7 +29,8 @@ export default function DataSelectionSection({
   chartType,
   labelField,
   valueField,
-  onContinue
+  onContinue,
+  isEditMode = false,
 }: DataSelectionSectionProps) {
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [filterText, setFilterText] = useState("");
@@ -236,7 +238,7 @@ export default function DataSelectionSection({
                           : 'bg-on-surface-variant/20 text-on-surface-variant cursor-not-allowed opacity-50'
                       }`}
                     >
-                      Show selected data in new chart
+                      {isEditMode ? 'Apply changes to chart' : 'Show selected data in new chart'}
                     </button>
                   </div>
                 </>
